@@ -1,0 +1,8 @@
+<productname>Open Liberty</productname>
+<productnumber>19.0.0.8</productnumber>
+<subtitle>For Use with Open Liberty</subtitle>
+<abstract>
+  <para>This guide describes how to install, configure, monitor, and
+  manage the Open Liberty.</para>
+</abstract>
+<xi:include href="Common_Content/Legal_Notice.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
