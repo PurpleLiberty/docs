@@ -84,7 +84,7 @@ value that indicates the path within the WAR that the JAX-RS application accepts
 
 [source, Java, linenums, role='code_column']
 ----
-include::finish/src/main/java/io/openliberty/guides/rest/SystemApplication.java[tags=!*]
+include::finish/src/main/java/io/openliberty/guides/rest/SystemApplication.java[tags=!comment]
 ----
 
 == Creating the JAX-RS resource
