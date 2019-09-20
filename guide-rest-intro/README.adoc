@@ -57,7 +57,7 @@ include::{common-includes}/gitclone.adoc[]
 include::{common-includes}/trywhatyoubuild-beg.adoc[]
 
 Check out the service at the
-http://localhost:9080/LibertyProject/System/properties[^] URL. 
+http://localhost:9080/LibertyProject/System/properties[^] URL.
 
 [role=command]
 include::{common-includes}/trywhatyoubuild-end.adoc[]
@@ -83,11 +83,11 @@ path specified in the [hotspot=systemApplication]`SystemApplication` class. The 
 value that indicates the path within the WAR that the JAX-RS application accepts requests from.
 
 SystemApplication.java
-[source, Java, linenums, role='code_column hide_tags=comment']
+[source, Java, linenums, role='code_column']
 ----
-include::finish/src/main/java/io/openliberty/guides/rest/SystemApplication.java[]
+include::finish/src/main/java/io/openliberty/guides/rest/SystemApplication.java[tags=!*]
 ----
-
+ 
 == Creating the JAX-RS resource
 
 In JAX-RS, a single class should represent a single resource, or a group of resources of the same type.
@@ -119,9 +119,9 @@ For this application, a JSON structure is to be returned. The desired `Content-T
 response is `application/json` with `MediaType.APPLICATION_JSON` instead of the `String` content type. Using a constant such as `MediaType.APPLICATION_JSON` is better because in the event of a spelling error, a compile failure occurs.
 
 JAX-RS supports a number of ways to marshal JSON. The JAX-RS 2.1 specification mandates JSON-Binding
-(JSON-B) and JAX-B. 
+(JSON-B) and JAX-B.
 
-The method body returns the result of `System.getProperties()` which is of type `java.util.Properties`. Since the method 
+The method body returns the result of `System.getProperties()` which is of type `java.util.Properties`. Since the method
 is annotated with `@Produces(MediaType.APPLICATION_JSON)`, JAX-RS uses JSON-B to automatically convert the returned object
 to JSON data in the HTTP response.
 
@@ -174,7 +174,7 @@ of the Maven [hotspot file=1]`pom.xml`.
 include::{common-includes}/mvnbuild.adoc[]
 
 Check out the service you created at the
-http://localhost:9080/LibertyProject/System/properties[^] URL. 
+http://localhost:9080/LibertyProject/System/properties[^] URL.
 
 When you are done checking out the services, stop the Open Liberty server by running the following command:
 [role="command"]
@@ -226,7 +226,7 @@ Getting the values to create a representation of the URL is simple. The test cla
 to get the application details.
 
 To call the JAX-RS service using the JAX-RS client, first create a `WebTarget` object by calling
-the [hotspot=target file=0]`target` method providing the URL. To cause the HTTP request to occur [hotspot=requestget file=0]`request().get()` 
+the [hotspot=target file=0]`target` method providing the URL. To cause the HTTP request to occur [hotspot=requestget file=0]`request().get()`
 is invoked on the `WebTarget`. The [hotspot=requestget file=0]`get` method
 call is a synchronous call that blocks until a response is received. This call returns a [hotspot=requestget file=0]`Response`
 object, which can be inspected to determine whether the request was successful.
@@ -247,7 +247,7 @@ If the server is still running from the previous steps, stop it using the Maven 
 mvn liberty:stop-server
 ```
 
-To rebuild, run the tests, and see that the test passes, run the Maven `install` command: 
+To rebuild, run the tests, and see that the test passes, run the Maven `install` command:
 
 [role='command']
 ```
