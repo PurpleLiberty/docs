@@ -82,12 +82,11 @@ resource classes in the WAR file with this JAX-RS application, making them avail
 path specified in the [hotspot=systemApplication]`SystemApplication` class. The [hotspot=applicationPath]`@ApplicationPath` annotation has a
 value that indicates the path within the WAR that the JAX-RS application accepts requests from.
 
-SystemApplication.java
 [source, Java, linenums, role='code_column']
 ----
 include::finish/src/main/java/io/openliberty/guides/rest/SystemApplication.java[tags=!*]
 ----
- 
+
 == Creating the JAX-RS resource
 
 In JAX-RS, a single class should represent a single resource, or a group of resources of the same type.
