@@ -1,0 +1,16 @@
+[id="using-the-open-liberty-maven-plugin{context}"]
+= Using the Open Liberty Maven plugin
+
+
+
+// Module included in the following assemblies:
+//
+// <>
+
+Open Liberty provides a Maven plug-in to simplify and manage build processes.
+
+After you define the details and dependencies of a project, Maven automatically downloads and installs all of the dependencies. It also runs automated tests on an application after it is built. If the tests don’t pass after you update an application, the build fails and you know that you need to fix your code.
+
+To learn how to configure a simple web servlet application by using Maven and the Liberty Maven plug-in, see the Open Liberty guide to link:https://openliberty.io/guides/maven-intro.html[Building a web application with Maven].
+
+Java EE applications consist of multiple modules that work together as one entity. To learn how to build an application with multiple modules by using Maven and Open Liberty, see the Open Liberty guide to link:https://openliberty.io/guides/maven-multimodules.html[Creating a multi-module application].

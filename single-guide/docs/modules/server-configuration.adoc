@@ -1,0 +1,39 @@
+// Module included in the following assemblies:
+//
+//
+
+[id="server-configuration-{context}"]
+= Server configuration
+
+The Open Liberty server configuration includes a `server.xml` file and a set of optional files. The `server.xml` file is mandatory and must be in XML. Use the `server.xml` file to configure the features that your application needs to run. For more information about adding features to your server configuration, see the link:https://openliberty.io/docs/ref/feature/[Feature overview].
+
+The following example shows what a default `server.xml` file might look like:
+
+[source,xml]
+----
+<server description="new server">
+    <featureManager>
+        <feature>jsp-2.3</feature>
+    </featureManager>
+    <httpEndpoint id="defaultHttpEndpoint"
+                  httpPort="9080"
+                  httpsPort="9443" />
+    <applicationManager autoExpand="true"/>
+</server>
+----
+
+This example file configures the server to support the link:https://openliberty.io/docs/ref/feature/#jsp-2.3.html[JavaServer Pages 2.3] feature, listens to incoming traffic to localhost on port `9080`, and automatically expands WAR files when they are deployed.
+
+Open Liberty server configuration files are processed in the following order:
+
+. `server.env` file - The `server.env` files are optional. When present, they specify environment variables that are primarily used to influence the behavior of the `bin/server` script.
+. `jvm.options` file - The `jvm.options` files are optional. When present, they determine what options to use when the Open Liberty JVM starts.
+. `bootstrap.properties` file - The `bootstrap.properties` file is optional. When present, it provides configuration information for the earliest stages of the server start.
+. `server.xml` file - While the other files are optional, the `server.xml` file is required. In this file, `server` is the root element, and any unknown elements or attributes are ignored.
+
+For more information about these files or configuring an Open Liberty server, see the link:https://openliberty.io/docs/ref/config/[Server configuration overview].
+
+.Additional resources
+
+* link:https://openliberty.io/docs/ref/config/[Open Liberty server configuration overview]
+* link:https://openliberty.io/docs/ref/feature/[Open Liberty feature overview]
