@@ -1,0 +1,18 @@
+[id="deploying-open-liberty-on-openshift{context}"]
+= Deploying Open Liberty on OpenShift
+
+
+
+// Module included in the following assemblies:
+//
+// <>
+
+== Prerequisites
+* A containerized Open Liberty application
+
+When you run Open Liberty applications on OpenShift, you combine the most flexible server runtime available to Java developers with a streamlined DevOps process and an intuitive development pipeline. You have all the tools to easily build, deploy, and manage cloud-native apps and microservices, but you run only the features that you need. To learn how to deploy microservices in Open Liberty containers to an OpenShift cluster, see the Open Liberty guide to link:https://www.openliberty.io/guides/cloud-openshift.html[Deploying microservices to OpenShift].
+
+.Additional resources
+* link:https://www.openliberty.io/guides/getting-started.html[Deploying and packaging applications]
+* link:https://openliberty.io/guides/containerize.html[Containerizing microservices]
+* link:https://openliberty.io/guides/kubernetes-intro.html[Deploying microservices to Kubernetes]

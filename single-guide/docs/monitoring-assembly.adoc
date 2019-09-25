@@ -1,0 +1,15 @@
+:parent-context: {context}
+
+[id="monitoring-assembly{context}"]
+= Monitoring Open Liberty
+:context: monitoring-assembly
+
+include::modules/monitoring-openliberty.adoc[leveloffset=+1]
+
+include::modules/providing-metrics.adoc[leveloffset=+1]
+
+include::modules/tracing-requests.adoc[leveloffset=+1]
+
+include::modules/monitoring-resources.adoc[leveloffset=+1]
+
+:context: {parent-context}

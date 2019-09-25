@@ -1,0 +1,10 @@
+[id="monitoring-open-liberty{context}"]
+= Monitoring Open Liberty
+
+
+
+// Module included in the following assemblies:
+//
+// <monitoring-assembly>
+
+The following resources are available to help you monitor microservices and applications that run on Open Liberty.
