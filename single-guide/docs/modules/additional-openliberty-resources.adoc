@@ -5,7 +5,8 @@
 [id="additional-open-liberty-resources-{context}"]
 = Additional Open Liberty resources
 
+* link:https://openliberty.io/docs/ref/feature/[Open Liberty feature documentation]
+* link:https://openliberty.io/docs/ref/config/[Open Liberty server configuration documentation]
 * link:https://openliberty.io/docs/ref/command/[Open Liberty server commands]
-* link:https://openliberty.io/blog/[Open Liberty blog]
 * link:https://openliberty.io/docs/ref/javaee/8/[Java EE API]
 * link:https://openliberty.io/docs/ref/microprofile/3.0/[MicroProfile API]
