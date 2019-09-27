@@ -1,17 +1,15 @@
-[id="deploying-and-packaging-applications{context}"]
-= Deploying and packaging applications
-
-
-
 // Module included in the following assemblies:
 //
-// <>
+// 
 
+[id="deploying-and-packaging-applications-{context}"]
+= Deploying and packaging applications
 
+You can use containers as a lightweight and portable way to deploy your applications or microservices in different environments. Use a container image to run a container. A container image is a package of the code, dependencies, and configuration that you need to run your application. To learn how to package your applications and use Docker to build container images and run containers for your applications, see link:https://openliberty.io/guides/containerize.html[Containerizing microservices]. 
 
-Open Liberty is an application server that is designed with modern cloud-native development in mind. It's fully composable, so you run only the features that you need, keeping the server lightweight. Open Liberty supports all MicroProfile and Java EE APIs and deploys to every major cloud platform, including Docker, Kubernetes, and OpenShift. To get started with Open Liberty, learn how to to run and update a simple REST microservice with the Open Liberty guide to link:https://openliberty.io/guides/getting-started.html[Deploying and packaging applications].
+You can also package an Open Liberty server, its resources, and applications in a compressed file that you can store, distribute or deploy to a different location by using the `server package` command. To see usage examples, syntax, and options for the `server package` command, see link:https://openliberty.io/docs/ref/command/#server-package.html[server package].
 
-To package an Open Liberty server, its resources, and applications in a compressed file that you can store, distribute or deploy to a different location, use the `server package` command. To see usage examples, syntax, and options for this command, see link:https://openliberty.io/docs/ref/command/#server-package.html[server package].
+Open Liberty is an application server that is designed with modern cloud-native development in mind. It's fully composable, so you run only the features that you need, keeping the server lightweight. Open Liberty supports all MicroProfile and Java EE APIs and deploys to every major cloud platform, including link:https://openliberty.io/guides/cloud-ibm.html[IBM Cloud], link:https://openliberty.io/guides/cloud-aws.html[Amazon Web Services], and link:https://openliberty.io/guides/cloud-azure.html[Azure]. To get started with Open Liberty, learn how to to run and update a simple REST microservice with link:https://openliberty.io/guides/getting-started.html[Deploying and packaging applications].
 
 .Additional resources
 * https://www.openliberty.io/guides/cloud-openshift.html[Deploying microservices to OpenShift]

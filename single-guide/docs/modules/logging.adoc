@@ -1,0 +1,10 @@
+// Module included in the following assemblies:
+//
+// <debugging-assembly>
+
+[id="logging-{context}"]
+= Logging
+
+The unified logging component handles messages that are written by applications and the runtime, and provides First Failure Data Capture Capability that helps troubleshoot errors when accessing the Open Liberty server.
+
+For more information about logging and tracing, see link:https://www.openliberty.io/docs/ref/general/#logging.html[Logging and tracing]. To learn about the `logging` element in the Open Liberty server configuration, see link:https://openliberty.io/docs/ref/config/#logging.html[`logging`].

@@ -1,11 +1,9 @@
-[id="monitoring-resources{context}"]
-= Additional monitoring resources
-
-
-
 // Module included in the following assemblies:
 //
-// <monitoring-assembly>
+// Not currently included anywhere in the RHR doc
+
+[id="monitoring-resources-{context}"]
+= Additional monitoring resources
 
 * link:https://www.openliberty.io/docs/ref/general/#health-check-microservices.html[Enabling health checking of microservices]
 * link:https://www.openliberty.io/guides/microprofile-health.html[Adding health reports to microservices]

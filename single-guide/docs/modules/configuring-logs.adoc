@@ -1,21 +1,24 @@
-[id="configuring-logs{context}"]
-= Configuring logs
-
-
-
 // Module included in the following assemblies:
 //
-// <>
+// 
 
+[id="configuring-logs-{context}"]
+= Configuring logs
 
+Open Liberty has a unified logging component. It handles messages that are written by applications and the runtime, and provides First Failure Data Capture (FFDC) capability.
 
-Open Liberty has a unified logging component that handles messages that are written by applications and the runtime, and provides First Failure Data Capture (FFDC) capability.
+The logging component is controlled through the server configuration. To configure the logging component in the `server.xml` file, use the `logging` element. The following example uses the `server.xml` file to configure log files to be stored in JSON format:
 
-The logging component is controlled through the server configuration. To configure the logging component in the `server.xml` file, use the `logging` element. It is also possible to configure logging by using `bootstrap.properties` and in some cases by using environment variables.
+[source,xml]
+----
+<logging messageFormat="json" messageSource="message,trace,accessLog,ffdc,audit" />
+----
 
-To learn more about Open Liberty's logging configuration, see example configurations and an index of configuration settings by source, see link:https://www.openliberty.io/docs/ref/general/#logging.html[Logging and tracing].
+It is also possible to configure logging by using the `bootstrap.properties` file and in some cases by using environment variables. 
 
-To learn how to configure access log settings specifically for HTTP endpoints, and to see a list of log format options, see link:https://www.openliberty.io/docs/ref/general/#access-logging.html[HTTP access logging].
+To learn more about Open Liberty's logging configuration, see example configurations and a table of configuration settings by source, see link:https://www.openliberty.io/docs/ref/general/#logging.html[Logging and tracing].
+
+To learn how to configure access log settings for HTTP endpoints, and to see a list of log format options, see link:https://www.openliberty.io/docs/ref/general/#access-logging.html[HTTP access logging].
 
 .Additional resources
 * link:https://openliberty.io/docs/ref/config/#logging.html[Open Liberty server configuration: Logging]
