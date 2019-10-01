@@ -1,7 +1,0 @@
-<productname>Open Liberty</productname>
-<productnumber>19.0.0.9</productnumber>
-<subtitle>Open Liberty documentation resources for Red Hat Runtimes</subtitle>
-<abstract>
-  <para>These topics provide a brief introduction to Open Liberty and links to in-depth documentation resources.</para>
-</abstract>
-<xi:include href="Common_Content/Legal_Notice.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
