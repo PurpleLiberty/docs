@@ -1,0 +1,8 @@
+// Module included in the following assemblies:
+//
+//
+
+[id="new-features-{context}"]
+= New features
+
+The Open Liberty runtime is composed of multiple features that help provide the framework for developing cloud-native applications and microservices. For information about the latest Open Liberty features, see the https://openliberty.io/blog/?search=announcements[Open Liberty blog]. For additional information about the latest features, see the https://openliberty.io/docs/[Open Liberty docs].

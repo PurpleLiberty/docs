@@ -1,0 +1,11 @@
+// Module included in the following assemblies:
+//
+//
+
+[id="testing-with-container-{context}"]
+= Testing with a container
+
+You can use an link:https://github.com/OpenLiberty/liberty-arquillian/tree/master/liberty-managed[Arquillian Liberty managed container] and JUnit with Maven to develop tests for your microservices. An Arquillian Liberty managed container is an Arquillian container adapter that can start, stop, and test a local Open Liberty process over a remote protocol. To learn how to develop and run tests for your microservices, see link:https://openliberty.io/guides/arquillian-managed.html[Testing microservices with the Arquillian managed container].
+
+.Additional resources
+* link:http://arquillian.org/modules/arquillian-liberty-managed-container-adapter/[Arquillian Liberty managed container adapter]

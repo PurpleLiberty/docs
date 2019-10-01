@@ -1,0 +1,11 @@
+:parent-context: {context}
+
+[id="debugging-assembly-{context}"]
+= Debugging
+:context: debugging-assembly
+
+include::modules/logging.adoc[leveloffset=+1]
+
+include::modules/tracing-requests.adoc[leveloffset=+1]
+
+:context: {parent-context}
