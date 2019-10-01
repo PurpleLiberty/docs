@@ -1,0 +1,10 @@
+// Module included in the following assemblies:
+//
+// <debugging-assembly>
+
+[id="tracing-requests-{context}"]
+= Tracing Requests
+
+Distributed tracing helps you troubleshoot microservices by examining and logging requests as they propagate through a distributed system, allowing developers to tackle the otherwise difficult task of debugging these requests. Without a distributed tracing system in place, it's difficult to analyze workflows and pinpoint when and by whom a request is received or when a response is returned.
+
+To learn how to monitor and trace logging requests across microservices in an application, see link:https://www.openliberty.io/guides/microprofile-opentracing.html[Enabling distributed tracing in microservices].

@@ -1,0 +1,29 @@
+include::attributes.adoc[]
+
+= Documentation for Open Liberty
+:context: open-liberty
+
+include::docs/modules/what-is-openliberty.adoc[leveloffset=+1]
+
+include::docs/modules/new-features.adoc[leveloffset=+1]
+
+include::docs/modules/deploying-openliberty-on-openshift.adoc[leveloffset=+1]
+
+include::docs/modules/packaging-and-deploying-applications.adoc[leveloffset=+1]
+
+include::docs/modules/using-the-maven-plugin.adoc[leveloffset=+1]
+
+include::docs/modules/features.adoc[leveloffset=+1]
+
+include::docs/modules/server-configuration.adoc[leveloffset=+1]
+
+include::docs/modules/logging.adoc[leveloffset=+1]
+
+include::docs/modules/testing-with-container.adoc[leveloffset=+1]
+
+include::docs/debugging-assembly.adoc[leveloffset=+1]
+
+include::docs/monitoring-assembly.adoc[leveloffset=+1]
+
+[appendix]
+include::docs/modules/additional-openliberty-resources.adoc[leveloffset=+1]
