@@ -1,0 +1,732 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE book [
+<!ENTITY % sgml.features "IGNORE">
+<!ENTITY % xml.features "INCLUDE">
+<!ENTITY % DOCBOOK_ENTS PUBLIC "-//OASIS//ENTITIES DocBook Character Entities V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/dbcentx.mod">
+%DOCBOOK_ENTS;
+]>
+<?asciidoc-toc?><?asciidoc-numbered?><book xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+<info>
+<title>Deploying microservices to OpenShift</title><subtitle>Open Liberty documentation resources for Red Hat Runtimes</subtitle>
+
+<date>2019-10-11</date>
+<productname>Open Liberty</productname>
+<productnumber>19.0.0.9</productnumber>
+<abstract>
+  <para>These topics provide a brief introduction to Open Liberty and links to in-depth documentation resources.</para>
+</abstract>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Common_Content/Legal_Notice.xml"/>
+</info>
+<preface>
+<title>Preface</title>
+<note role="hidden">
+<simpara>This repository contains the guide documentation source. To view the guide in published form, view it on the <link xlink:href="https://openliberty.io/guides/cloud-openshift.html">Open Liberty website</link>.</simpara>
+</note>
+<simpara>Explore how to deploy microservices to Red Hat OpenShift.</simpara>
+</preface>
+<chapter xml:id="what_you_ll_learn" remap="_what_you_ll_learn">
+<title>What you’ll learn</title>
+<simpara>You will learn how to deploy two microservices in Open Liberty containers to an OpenShift cluster.</simpara>
+<simpara>There are different cloud-based solutions for running your Kubernetes workloads.
+With a cloud-based infrastructure, you can focus on developing your microservices without worrying about low-level infrastructure details for deployment.
+Using a cloud helps you to easily scale and manage your microservices in a high-availability setup.</simpara>
+<simpara>Kubernetes is an open source container orchestrator that automates many tasks that are involved in deploying, managing, and scaling containerized applications.
+If you would like to learn more about Kubernetes, check out the <link xlink:href="https://openliberty.io/guides/kubernetes-intro.html">Deploying microservices to Kubernetes</link> guide.</simpara>
+<simpara>OpenShift is a Kubernetes-based platform with added functions. It streamlines the DevOps process by providing an intuitive development pipeline.
+It also provides integration with multiple tools to make the deployment and management of cloud applications easier.
+To learn more about the different platforms that Red Hat OpenShift offers, check out their <link xlink:href="https://docs.openshift.com">official documentation</link>.</simpara>
+<simpara>The two microservices you will deploy are called <literal>system</literal> and <literal>inventory</literal>.
+The <literal>system</literal> microservice returns the JVM system properties of the running container.
+It also returns the pod’s name in the HTTP header, making replicas easy to distinguish
+from each other. The <literal>inventory</literal> microservice adds the properties from the <literal>system</literal> microservice
+to the inventory. This process demonstrates how communication can be established between pods inside a cluster.</simpara>
+</chapter>
+<chapter xml:id="additional_prerequisites" remap="_additional_prerequisites">
+<title>Additional prerequisites</title>
+<simpara>Before you begin, the following additional tools need to be installed:</simpara>
+<itemizedlist>
+<listitem>
+<simpara><emphasis role="strong">Docker:</emphasis> You need a containerization software for building containers. Kubernetes
+supports various container types, but you will use Docker in this guide. For installation
+instructions, refer to the official <link xlink:href="https://docs.docker.com/install/">Docker documentation</link>.</simpara>
+</listitem>
+<listitem>
+<simpara><emphasis role="strong">OpenShift account:</emphasis> To access a Kubernetes cluster, you must sign up for a Red Hat OpenShift online account. To sign up, refer to the
+<link xlink:href="https://manage.openshift.com/register/plan">official website</link>. Keep in mind that the creation time depends on resource availability
+and may take some time.</simpara>
+</listitem>
+<listitem>
+<simpara><emphasis role="strong">OpenShift CLI:</emphasis> You need the OpenShift command-line tool <literal>oc</literal> to interact with your Kubernetes cluster.
+For installation instructions, refer to the official
+<link xlink:href="https://docs.openshift.com/online/getting_started/beyond_the_basics.html#btb-installing-the-openshift-cli">OpenShift Online documentation</link>.</simpara>
+</listitem>
+</itemizedlist>
+<simpara>To verify that the OpenShift CLI is installed correctly, run the following command:</simpara>
+<screen role="command">oc version</screen>
+<simpara>The output will be similar to:</simpara>
+<screen role="no_copy">Client Version: version.Info{Major:"4", Minor:"1+", GitVersion:"v4.1.14", ... }</screen>
+<simpara role="command"><link xlink:href="https://raw.githubusercontent.com/OpenLiberty/guides-common/master/gitclone.adoc">https://raw.githubusercontent.com/OpenLiberty/guides-common/master/gitclone.adoc</link></simpara>
+</chapter>
+<chapter xml:id="accessing_an_openshift_cluster" remap="_accessing_an_openshift_cluster">
+<title>Accessing an OpenShift cluster</title>
+<simpara>Before you can deploy your microservices, you must gain access to a cluster on OpenShift.</simpara>
+<simpara>Creating an OpenShift account automatically grants you access to their multi-tenant, OpenShift cluster.
+After you have access, you are also given access to their online web console. To login to OpenShift by using the CLI,
+navigate to the online web console by following the <literal>[username] &gt; Copy Login Command &gt; Display Token &gt; Log in with this token</literal> path.</simpara>
+<simpara>The command looks like the following example:</simpara>
+<screen role="no_copy">oc login --token=[your-token] --server=https://api.[region].online-starter.openshift.com:[port]</screen>
+<simpara>Create a project by running the following command:</simpara>
+<screen role="command">oc new-project [project-name]</screen>
+</chapter>
+<chapter xml:id="deploying_microservices_to_openshift" remap="_deploying_microservices_to_openshift">
+<title>Deploying microservices to OpenShift</title>
+<simpara>In this section, you will learn how to deploy two microservices in Open Liberty containers to a Kubernetes
+cluster on OpenShift. You will build and containerize the <literal>system</literal> and <literal>inventory</literal> microservices,
+push them to a container registry, and then deploy them to your Kubernetes cluster.</simpara>
+<section xml:id="building_and_containerizing_the_microservices" remap="_building_and_containerizing_the_microservices">
+<title>Building and containerizing the microservices</title>
+<simpara>The first step of deploying to Kubernetes is to build your microservices and containerize them.</simpara>
+<simpara>The starting Java project, which is located in the start directory, is a multi-module Maven project.
+It is made up of the <literal>system</literal> and <literal>inventory</literal> microservices. Each microservice resides in its own directory,
+<literal>start/system</literal> or <literal>start/inventory</literal>. Both of these directories contain a Dockerfile, which is necessary
+for building the Docker images. See the <link xlink:href="https://openliberty.io/guides/containerize.html">Containerizing microservices</link>
+guide if you’re unfamiliar with Dockerfiles.</simpara>
+<simpara>If you’re familiar with Maven and Docker, you might be tempted to run a Maven build first and then
+use the <literal>.war</literal> file to build a Docker image. The projects are set up so that this process is automated
+as a part of a single Maven build.</simpara>
+<simpara>To build these microservices, navigate to the <literal>start</literal> directory and run the following command:</simpara>
+<screen role="command">mvn package</screen>
+<simpara>Next, run the <literal>docker build</literal> commands to build container images for your application:</simpara>
+<screen role="command">docker build -t system:1.0-SNAPSHOT system/.
+docker build -t inventory:1.0-SNAPSHOT inventory/.</screen>
+<simpara>The <literal>-t</literal> flag in the <literal>docker build</literal> command allows the Docker image to be labeled (tagged) in the <literal>name[:tag]</literal> format.
+The tag for an image describes the specific image version. If the optional <literal>[:tag]</literal> tag is not specified, the <literal>latest</literal> tag is created by default.</simpara>
+<simpara>During the build, you see various Docker messages that describe what images are being downloaded and
+built. When the build finishes, run the following command to list all local Docker images:</simpara>
+<screen role="command">docker images</screen>
+<simpara>Verify that the <literal>system:1.0-SNAPSHOT</literal> and <literal>inventory:1.0-SNAPSHOT</literal> images are listed among them, for example:</simpara>
+<screen role="no_copy">REPOSITORY                    TAG
+system                        1.0-SNAPSHOT
+inventory                     1.0-SNAPSHOT
+open-liberty                  latest</screen>
+<simpara>If you don’t see the <literal>system:1.0-SNAPSHOT</literal> and <literal>inventory:1.0-SNAPSHOT</literal> images, check the Maven
+build log for any potential errors.</simpara>
+</section>
+<section xml:id="pushing_the_images_to_openshift_s_internal_registry" remap="_pushing_the_images_to_openshift_s_internal_registry">
+<title>Pushing the images to OpenShift’s internal registry</title>
+<simpara>In order to run the microservices on the cluster, you need to push the microservice images into a container image registry.
+You will use OpenShift’s integrated container image registry called OpenShift Container Registry (OCR).
+After your images are pushed into the registry, you can use them in the pods you create later in the guide.</simpara>
+<simpara>First, you must authenticate your Docker client to your OCR. Start by running the login command:</simpara>
+<screen role="command">oc registry login</screen>
+<simpara>You can store your Docker credentials in a custom external credential store, which is more secure than using a Docker configuration file.
+If you are using a custom credential store for securing your registry credentials, or if you are unsure where your credentials are stored, use the following command:</simpara>
+<simpara><link xlink:href="https://raw.githubusercontent.com/OpenLiberty/guides-common/master/os-tabs.adoc">https://raw.githubusercontent.com/OpenLiberty/guides-common/master/os-tabs.adoc</link></simpara>
+<screen role="command">docker login -u `oc whoami` -p `oc whoami -t` `oc registry info`</screen>
+<simpara>Because the Windows command prompt doesn’t support the command substitution that is displayed for Mac and Linux, run the following commands:</simpara>
+<screen role="command">oc whoami
+oc whoami -t
+oc registry info</screen>
+<simpara>Replace the square brackets in the following <literal>docker login</literal> command with the results from the previous commands:</simpara>
+<screen role="command">docker login -u [oc whoami] -p [oc whoami -t] [oc registry info]</screen>
+<simpara>The command authenticates your credentials against the internal registry so that you are able to push and pull images.
+The registry address will be displayed after you run the <literal>oc registry login</literal> command. It is formatted similar to the following output:</simpara>
+<screen role="no_copy">default-route-openshift-image-registry.apps.[region].starter.openshift-online.com</screen>
+<simpara>You can also view the registry address by running the following command:</simpara>
+<screen role="command">oc registry info</screen>
+<simpara>Ensure that you are logged in to OpenShift and the registry, and run the following commands to tag your applications:</simpara>
+<simpara><link xlink:href="https://raw.githubusercontent.com/OpenLiberty/guides-common/master/os-tabs.adoc">https://raw.githubusercontent.com/OpenLiberty/guides-common/master/os-tabs.adoc</link></simpara>
+<screen role="command">docker tag system:1.0-SNAPSHOT `oc registry info`/`oc project -q`/system:1.0-SNAPSHOT
+docker tag inventory:1.0-SNAPSHOT `oc registry info`/`oc project -q`/inventory:1.0-SNAPSHOT</screen>
+<simpara>Because the Windows command prompt doesn’t support the command substitution that is displayed for Mac and Linux, run the following commands:</simpara>
+<screen role="command">oc registry info
+oc project -q</screen>
+<simpara>Replace the square brackets in the following <literal>docker tag</literal> commands with the results from the previous commands:</simpara>
+<screen role="command">docker tag system:1.0-SNAPSHOT [oc registry info]/[oc project -q]/system:1.0-SNAPSHOT
+docker tag inventory:1.0-SNAPSHOT [oc registry info]/[oc project -q]/inventory:1.0-SNAPSHOT</screen>
+<simpara>Finally, push your images to the registry:</simpara>
+<simpara><link xlink:href="https://raw.githubusercontent.com/OpenLiberty/guides-common/master/os-tabs.adoc">https://raw.githubusercontent.com/OpenLiberty/guides-common/master/os-tabs.adoc</link></simpara>
+<screen role="command">docker push `oc registry info`/`oc project -q`/system:1.0-SNAPSHOT
+docker push `oc registry info`/`oc project -q`/inventory:1.0-SNAPSHOT</screen>
+<simpara>Because the Windows command prompt doesn’t support the command substitution that is displayed for Mac and Linux, run the following commands:</simpara>
+<screen role="command">oc registry info
+oc project -q</screen>
+<simpara>Replace the square brackets in the following <literal>docker push</literal> commands with the results from the previous commands:</simpara>
+<screen role="command">docker push [oc registry info]/[oc project -q]/system:1.0-SNAPSHOT
+docker push [oc registry info]/[oc project -q]/inventory:1.0-SNAPSHOT</screen>
+<simpara>After you push the images, run the following command to list the images that you pushed to the internal OCR:</simpara>
+<screen role="command">oc get imagestream</screen>
+<simpara>Verify that the <literal>system</literal> and <literal>inventory</literal> images are listed among them, for example:</simpara>
+<screen role="no_copy">NAME        IMAGE REPOSITORY                                                                                     TAGS           UPDATED
+inventory   default-route-openshift-image-registry.apps.us-west-1.starter.openshift-online.com/guide/inventory   1.0-SNAPSHOT   3 seconds ago
+system      default-route-openshift-image-registry.apps.us-west-1.starter.openshift-online.com/guide/system      1.0-SNAPSHOT   17 seconds ago</screen>
+</section>
+<section xml:id="deploying_the_microservices" remap="_deploying_the_microservices">
+<title>Deploying the microservices</title>
+<simpara>Now that your container images are built, deploy them by using a Kubernetes object configuration file.</simpara>
+<simpara>Kubernetes objects can be configured in a YAML file that contains a description of all your
+deployments, services, or any other objects that you want to deploy. All objects can
+also be deleted from the cluster by using the same YAML file that you used to deploy them.
+The <literal role="hotspot">kubernetes.yaml</literal> object configuration file is provided for you. If you are interested
+in learning more about using and configuring Kubernetes clusters, check out the
+<link xlink:href="https://openliberty.io/guides/kubernetes-intro.html">Deploying microservices to Kubernetes</link>
+guide.</simpara>
+<simpara>kubernetes.yaml</simpara>
+<programlisting role="code_column" language="yaml" linenumbering="numbered">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: system-deployment
+  labels:
+    app: system
+spec:
+  selector:
+    matchLabels:
+      app: system
+  template:
+    metadata:
+      labels:
+        app: system
+    spec:
+      containers:
+      - name: system-container
+        # tag::systemImage[]
+        image: image-registry.openshift-image-registry.svc:5000/[project-name]/system:1.0-SNAPSHOT
+        # end::systemImage[]
+        ports:
+        - containerPort: 9080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-deployment
+  labels:
+    app: inventory
+spec:
+  selector:
+    matchLabels:
+      app: inventory
+  template:
+    metadata:
+      labels:
+        app: inventory
+    spec:
+      containers:
+      - name: inventory-container
+        # tag::inventoryImage[]
+        image: image-registry.openshift-image-registry.svc:5000/[project-name]/inventory:1.0-SNAPSHOT
+        # end::inventoryImage[]
+        ports:
+        - containerPort: 9080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: system-service
+spec:
+  selector:
+    app: system
+  ports:
+  - protocol: TCP
+    port: 9080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-service
+spec:
+  selector:
+    app: inventory
+  ports:
+  - protocol: TCP
+    port: 9080
+---
+# tag::systemRoute[]
+apiVersion: v1
+kind: Route
+metadata:
+  name: system-route
+spec:
+  to:
+    kind: Service
+    name: system-service
+# end::systemRoute[]
+---
+# tag::inventoryRoute[]
+apiVersion: v1
+kind: Route
+metadata:
+  name: inventory-route
+spec:
+  to:
+    kind: Service
+    name: inventory-service
+# end::inventoryRoute[]</programlisting>
+<screen role="code_command hotspot"><emphasis role="marked">Update the <literal>kubernetes.yaml</literal> file.</emphasis>
+<literal>kubernetes.yaml</literal></screen>
+<simpara role="edit_command_text">The <literal role="hotspot=systemImage hotspot=inventoryImage">image</literal> is the name and tag of the container image that you want
+to use for the container. The image address is the OCR address that you logged in to. Update the system
+<literal role="hotspot=systemImage">image</literal> and the inventory <literal role="hotspot=inventoryImage">image</literal> fields to include your project name.</simpara>
+<simpara>Run the following commands to deploy the objects as defined in kubernetes.yaml file:</simpara>
+<screen role="command">oc apply -f kubernetes.yaml</screen>
+<simpara>You see an output similar to the following example:</simpara>
+<screen role="no_copy">deployment.apps/system-deployment created
+deployment.apps/inventory-deployment created
+service/system-service created
+service/inventory-service created
+route.route.openshift.io/system-route created
+route.route.openshift.io/inventory-route created</screen>
+<simpara>When the apps are deployed, run the following command to check the status of your pods:</simpara>
+<screen role="command">oc get pods</screen>
+<simpara>If all the pods are healthy and running, you see an output similar to the following example:</simpara>
+<screen role="no_copy">NAME                                    READY     STATUS    RESTARTS   AGE
+system-deployment-6bd97d9bf6-4ccds      1/1       Running   0          15s
+inventory-deployment-645767664f-nbtd9   1/1       Running   0          15s</screen>
+</section>
+</chapter>
+<chapter xml:id="making_requests_to_the_microservices" remap="_making_requests_to_the_microservices">
+<title>Making requests to the microservices</title>
+<simpara>To access the services and the application, use a route. A route in OpenShift exposes a service at
+a hostname such as <literal>www.your-web-app.com</literal> so external users can access the application.</simpara>
+<simpara>kubernetes.yaml</simpara>
+<programlisting role="code_column" language="yaml" linenumbering="numbered">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: system-deployment
+  labels:
+    app: system
+spec:
+  selector:
+    matchLabels:
+      app: system
+  template:
+    metadata:
+      labels:
+        app: system
+    spec:
+      containers:
+      - name: system-container
+        # tag::systemImage[]
+        image: image-registry.openshift-image-registry.svc:5000/[project-name]/system:1.0-SNAPSHOT
+        # end::systemImage[]
+        ports:
+        - containerPort: 9080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-deployment
+  labels:
+    app: inventory
+spec:
+  selector:
+    matchLabels:
+      app: inventory
+  template:
+    metadata:
+      labels:
+        app: inventory
+    spec:
+      containers:
+      - name: inventory-container
+        # tag::inventoryImage[]
+        image: image-registry.openshift-image-registry.svc:5000/[project-name]/inventory:1.0-SNAPSHOT
+        # end::inventoryImage[]
+        ports:
+        - containerPort: 9080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: system-service
+spec:
+  selector:
+    app: system
+  ports:
+  - protocol: TCP
+    port: 9080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-service
+spec:
+  selector:
+    app: inventory
+  ports:
+  - protocol: TCP
+    port: 9080
+---
+# tag::systemRoute[]
+apiVersion: v1
+kind: Route
+metadata:
+  name: system-route
+spec:
+  to:
+    kind: Service
+    name: system-service
+# end::systemRoute[]
+---
+# tag::inventoryRoute[]
+apiVersion: v1
+kind: Route
+metadata:
+  name: inventory-route
+spec:
+  to:
+    kind: Service
+    name: inventory-service
+# end::inventoryRoute[]</programlisting>
+<simpara>Both the <literal role="hotspot=systemRoute">system</literal> and <literal role="hotspot=inventoryRoute">inventory</literal> routes are configured in the <literal role="hotspot">kubernetes.yaml</literal>
+file, and running the <literal>oc apply -f kubernetes.yaml</literal> command exposed both services.</simpara>
+<simpara>Your microservices can now be accessed through the hostnames that you can find by running the following command:</simpara>
+<screen role="command">oc get routes</screen>
+<simpara>They can also be found in the web console by following the <literal>Networking &gt; Routes &gt; Location</literal> path.
+Hostnames are in the <literal>inventory-route-[project-name].apps.[region].starter.openshift-online.com</literal> format. Ensure that
+you are in your project, not the <literal>default</literal> project, which is shown in the upper-left corner of the web console.</simpara>
+<simpara>To access your microservices, point your browser to the following URLs. Substitute the appropriate hostnames
+for the <literal>system</literal> and <literal>inventory</literal> services:</simpara>
+<itemizedlist>
+<listitem>
+<simpara><literal>http://[system-hostname]/system/properties/</literal></simpara>
+</listitem>
+<listitem>
+<simpara><literal>http://[inventory-hostname]/inventory/systems</literal></simpara>
+</listitem>
+</itemizedlist>
+<simpara>In the first URL, you see a result in JSON format with the system properties of the container JVM. The second URL returns an empty list,
+which is expected because no system properties are stored in the inventory yet.</simpara>
+<simpara>Point your browser to the <literal>http://[inventory-hostname]/inventory/systems/system-service</literal> URL. When you to go this URL, the system
+properties that are taken from the <literal>system-service</literal> are automatically stored in the inventory. Go back to <literal>http://[inventory-hostname]/inventory/systems</literal>
+and you see a new entry.</simpara>
+</chapter>
+<chapter xml:id="testing_the_microservices" remap="_testing_the_microservices">
+<title>Testing the microservices</title>
+<simpara>pom.xml</simpara>
+<programlisting role="code_column" language="xml" linenumbering="numbered">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;parent&gt;
+        &lt;groupId&gt;net.wasdev.wlp.maven.parent&lt;/groupId&gt;
+        &lt;artifactId&gt;liberty-maven-app-parent&lt;/artifactId&gt;
+        &lt;version&gt;RELEASE&lt;/version&gt;
+    &lt;/parent&gt;
+
+    &lt;groupId&gt;io.openliberty.guides&lt;/groupId&gt;
+    &lt;artifactId&gt;kube-demo&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;packaging&gt;pom&lt;/packaging&gt;
+
+    &lt;properties&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+        &lt;project.reporting.outputEncoding&gt;UTF-8&lt;/project.reporting.outputEncoding&gt;
+        &lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;
+        &lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt;
+        &lt;!-- Plugins --&gt;
+        &lt;version.maven-war-plugin&gt;2.6&lt;/version.maven-war-plugin&gt;
+        &lt;version.exec-maven-plugin&gt;1.6.0&lt;/version.exec-maven-plugin&gt;
+        &lt;version.maven-surefire-plugin&gt;3.0.0-M1&lt;/version.maven-surefire-plugin&gt;
+        &lt;version.maven-failsafe-plugin&gt;3.0.0-M1&lt;/version.maven-failsafe-plugin&gt;
+        &lt;!-- OpenLiberty runtime --&gt;
+        &lt;version.openliberty-runtime&gt;RELEASE&lt;/version.openliberty-runtime&gt;
+        &lt;http.port&gt;9080&lt;/http.port&gt;
+        &lt;https.port&gt;9443&lt;/https.port&gt;
+        &lt;!-- Default test properties --&gt;
+        &lt;!-- tag::systemIP[] --&gt;
+        &lt;system.ip&gt;system-service-[project-name].apps.[cluster-ip].online-starter.openshift.com&lt;/system.ip&gt;
+        &lt;!-- end::systemIP[] --&gt;
+        &lt;!-- tag::inventoryIP[] --&gt;
+        &lt;inventory.ip&gt;inventory-service-[project-name].apps.[cluster-ip].online-starter.openshift.com&lt;/inventory.ip&gt;
+        &lt;!-- end::inventoryIP[] --&gt;
+        &lt;!-- tag::systemKubeService[] --&gt;
+        &lt;system.kube.service&gt;system-service&lt;/system.kube.service&gt;
+        &lt;!-- end::systemKubeService[] --&gt;
+    &lt;/properties&gt;
+
+    &lt;dependencyManagement&gt;
+        &lt;dependencies&gt;
+           &lt;dependency&gt;
+               &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+               &lt;artifactId&gt;features-bom&lt;/artifactId&gt;
+               &lt;version&gt;RELEASE&lt;/version&gt;
+               &lt;type&gt;pom&lt;/type&gt;
+               &lt;scope&gt;import&lt;/scope&gt;
+           &lt;/dependency&gt;
+           &lt;dependency&gt;
+                &lt;groupId&gt;org.eclipse.microprofile.rest.client&lt;/groupId&gt;
+                &lt;artifactId&gt;microprofile-rest-client-api&lt;/artifactId&gt;
+                &lt;version&gt;1.0.1&lt;/version&gt;
+                &lt;scope&gt;provided&lt;/scope&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;junit&lt;/groupId&gt;
+                &lt;artifactId&gt;junit&lt;/artifactId&gt;
+                &lt;version&gt;4.12&lt;/version&gt;
+                &lt;scope&gt;test&lt;/scope&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;org.glassfish&lt;/groupId&gt;
+                &lt;artifactId&gt;javax.json&lt;/artifactId&gt;
+                &lt;version&gt;1.0.4&lt;/version&gt;
+                &lt;scope&gt;test&lt;/scope&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;org.apache.cxf&lt;/groupId&gt;
+                &lt;artifactId&gt;cxf-rt-rs-extension-providers&lt;/artifactId&gt;
+                &lt;version&gt;3.2.6&lt;/version&gt;
+                &lt;scope&gt;test&lt;/scope&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;org.apache.cxf&lt;/groupId&gt;
+                &lt;artifactId&gt;cxf-rt-rs-client&lt;/artifactId&gt;
+                &lt;version&gt;3.2.6&lt;/version&gt;
+                &lt;scope&gt;test&lt;/scope&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;org.apache.commons&lt;/groupId&gt;
+                &lt;artifactId&gt;commons-lang3&lt;/artifactId&gt;
+                &lt;version&gt;3.0&lt;/version&gt;
+                &lt;scope&gt;compile&lt;/scope&gt;
+            &lt;/dependency&gt;
+            &lt;!-- Support for JDK 9 and above --&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;javax.xml.bind&lt;/groupId&gt;
+                &lt;artifactId&gt;jaxb-api&lt;/artifactId&gt;
+                &lt;version&gt;2.3.1&lt;/version&gt;
+                &lt;scope&gt;test&lt;/scope&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;com.sun.xml.bind&lt;/groupId&gt;
+                &lt;artifactId&gt;jaxb-core&lt;/artifactId&gt;
+                &lt;version&gt;2.3.0.1&lt;/version&gt;
+                &lt;scope&gt;test&lt;/scope&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;com.sun.xml.bind&lt;/groupId&gt;
+                &lt;artifactId&gt;jaxb-impl&lt;/artifactId&gt;
+                &lt;version&gt;2.3.2&lt;/version&gt;
+                &lt;scope&gt;test&lt;/scope&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;javax.activation&lt;/groupId&gt;
+                &lt;artifactId&gt;activation&lt;/artifactId&gt;
+                &lt;version&gt;1.1.1&lt;/version&gt;
+                &lt;scope&gt;test&lt;/scope&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    &lt;/dependencyManagement&gt;
+
+    &lt;profiles&gt;
+        &lt;profile&gt;
+            &lt;id&gt;windowsExtension&lt;/id&gt;
+            &lt;activation&gt;
+                &lt;os&gt;&lt;family&gt;Windows&lt;/family&gt;&lt;/os&gt;
+            &lt;/activation&gt;
+            &lt;properties&gt;
+                &lt;kubectl.extension&gt;.cmd&lt;/kubectl.extension&gt;
+            &lt;/properties&gt;
+        &lt;/profile&gt;
+        &lt;profile&gt;
+            &lt;id&gt;nonWindowsExtension&lt;/id&gt;
+            &lt;activation&gt;
+                &lt;os&gt;&lt;family&gt;!Windows&lt;/family&gt;&lt;/os&gt;
+            &lt;/activation&gt;
+            &lt;properties&gt;
+                &lt;kubectl.extension&gt;&lt;/kubectl.extension&gt;
+            &lt;/properties&gt;
+        &lt;/profile&gt;
+    &lt;/profiles&gt;
+
+    &lt;build&gt;
+        &lt;pluginManagement&gt;
+            &lt;plugins&gt;
+                &lt;plugin&gt;
+                    &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                    &lt;artifactId&gt;maven-war-plugin&lt;/artifactId&gt;
+                    &lt;version&gt;${version.maven-war-plugin}&lt;/version&gt;
+                    &lt;configuration&gt;
+                        &lt;failOnMissingWebXml&gt;false&lt;/failOnMissingWebXml&gt;
+                        &lt;packagingExcludes&gt;pom.xml&lt;/packagingExcludes&gt;
+                    &lt;/configuration&gt;
+                &lt;/plugin&gt;
+                &lt;plugin&gt;
+                    &lt;groupId&gt;net.wasdev.wlp.maven.plugins&lt;/groupId&gt;
+                    &lt;artifactId&gt;liberty-maven-plugin&lt;/artifactId&gt;
+                    &lt;configuration&gt;
+                        &lt;assemblyArtifact&gt;
+                            &lt;groupId&gt;io.openliberty&lt;/groupId&gt;
+                            &lt;artifactId&gt;openliberty-runtime&lt;/artifactId&gt;
+                            &lt;version&gt;RELEASE&lt;/version&gt;
+                            &lt;type&gt;zip&lt;/type&gt;
+                        &lt;/assemblyArtifact&gt;
+                    &lt;/configuration&gt;
+                &lt;/plugin&gt;
+                &lt;!-- Plugin to run unit tests --&gt;
+                &lt;plugin&gt;
+                    &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                    &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
+                    &lt;version&gt;${version.maven-surefire-plugin}&lt;/version&gt;
+                    &lt;executions&gt;
+                        &lt;execution&gt;
+                            &lt;phase&gt;test&lt;/phase&gt;
+                            &lt;id&gt;default-test&lt;/id&gt;
+                            &lt;configuration&gt;
+                                &lt;excludes&gt;
+                                    &lt;exclude&gt;**/it/**&lt;/exclude&gt;
+                                &lt;/excludes&gt;
+                                &lt;reportsDirectory&gt;
+                                    ${project.build.directory}/test-reports/unit
+                                &lt;/reportsDirectory&gt;
+                            &lt;/configuration&gt;
+                        &lt;/execution&gt;
+                    &lt;/executions&gt;
+                &lt;/plugin&gt;
+                &lt;!-- Plugin to run functional tests --&gt;
+                &lt;plugin&gt;
+                    &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                    &lt;artifactId&gt;maven-failsafe-plugin&lt;/artifactId&gt;
+                    &lt;version&gt;${version.maven-failsafe-plugin}&lt;/version&gt;
+                    &lt;executions&gt;
+                        &lt;execution&gt;
+                            &lt;phase&gt;integration-test&lt;/phase&gt;
+                            &lt;id&gt;integration-test&lt;/id&gt;
+                            &lt;goals&gt;
+                                &lt;goal&gt;integration-test&lt;/goal&gt;
+                            &lt;/goals&gt;
+                            &lt;configuration&gt;
+                                &lt;includes&gt;
+                                    &lt;include&gt;**/it/**&lt;/include&gt;
+                                &lt;/includes&gt;
+                                &lt;systemPropertyVariables&gt;
+                                    &lt;system.kube.service&gt;
+                                        ${system.kube.service}
+                                    &lt;/system.kube.service&gt;
+                                    &lt;system.ip&gt;
+                                        ${system.ip}
+                                    &lt;/system.ip&gt;
+                                    &lt;inventory.ip&gt;
+                                        $(inventory.ip)
+                                    &lt;/inventory.ip&gt;
+                                    &lt;system.ingress.path&gt;
+                                        ${system.ingress.path}
+                                    &lt;/system.ingress.path&gt;
+                                    &lt;inventory.ingress.path&gt;
+                                        ${inventory.ingress.path}
+                                    &lt;/inventory.ingress.path&gt;
+                                &lt;/systemPropertyVariables&gt;
+                            &lt;/configuration&gt;
+                        &lt;/execution&gt;
+                        &lt;execution&gt;
+                            &lt;id&gt;verify-results&lt;/id&gt;
+                            &lt;goals&gt;
+                                &lt;goal&gt;verify&lt;/goal&gt;
+                            &lt;/goals&gt;
+                        &lt;/execution&gt;
+                    &lt;/executions&gt;
+                    &lt;configuration&gt;
+                        &lt;summaryFile&gt;
+                            ${project.build.directory}/test-reports/it/failsafe-summary.xml
+                        &lt;/summaryFile&gt;
+                        &lt;reportsDirectory&gt;
+                            ${project.build.directory}/test-reports/it
+                        &lt;/reportsDirectory&gt;
+                    &lt;/configuration&gt;
+                &lt;/plugin&gt;
+            &lt;/plugins&gt;
+        &lt;/pluginManagement&gt;
+    &lt;/build&gt;
+
+    &lt;modules&gt;
+        &lt;module&gt;system&lt;/module&gt;
+        &lt;module&gt;inventory&lt;/module&gt;
+    &lt;/modules&gt;
+
+&lt;/project&gt;</programlisting>
+<simpara>A few tests are included for you to test the basic functions of the microservices.
+If a test failure occurs, then you might have introduced a bug into the code.
+To run the tests, wait for all pods to be in the ready state before you proceed further.
+The default properties that are defined in the <literal role="hotspot">pom.xml</literal> file are:</simpara>
+<informaltable frame="all" rowsep="1" colsep="1">
+<tgroup cols="2">
+<colspec colname="col_1" colwidth="13*"/>
+<colspec colname="col_2" colwidth="87*"/>
+<thead>
+<row>
+<entry align="left" valign="top"><emphasis role="strong">Property</emphasis></entry>
+<entry align="left" valign="top"><emphasis role="strong">Description</emphasis></entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry align="left" valign="top"><simpara><literal role="hotspot=systemIP">system.ip</literal></simpara></entry>
+<entry align="left" valign="top"><simpara>IP or hostname of the <literal>system-service</literal> Kubernetes Service</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara><literal role="hotspot=inventoryIP">inventory.ip</literal></simpara></entry>
+<entry align="left" valign="top"><simpara>IP or hostname of the <literal>inventory-service</literal> Kubernetes Service</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara><literal role="hotspot=systemKubeService">system.kube.service</literal></simpara></entry>
+<entry align="left" valign="top"><simpara>Name of the Kubernetes Service wrapping the <literal>system</literal> pods, <literal>system-service</literal> by default</simpara></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<simpara>Use the following command to run the integration tests against your cluster. Substitute
+<literal>[region]</literal> and <literal>[project-name]</literal> with the appropriate values:</simpara>
+<screen role="command">mvn verify -Ddockerfile.skip=true \
+-Dsystem.ip=system-route-[project-name].apps.[region].starter.openshift-online.com  \
+-Dinventory.ip=inventory-route-[project-name].apps.[region].starter.openshift-online.com</screen>
+<itemizedlist>
+<listitem>
+<simpara>The <literal>dockerfile.skip</literal> parameter is set to <literal>true</literal> to skip building a new container image.</simpara>
+</listitem>
+<listitem>
+<simpara>The <literal>system.ip</literal> parameter is replaced with the appropriate hostname to access your system microservice.</simpara>
+</listitem>
+<listitem>
+<simpara>The <literal>inventory.ip</literal> parameter is replaced with the appropriate hostname to access your inventory microservice.</simpara>
+</listitem>
+</itemizedlist>
+<simpara>If the tests pass, you see an output for each service similar to the following example:</simpara>
+<screen role="no_copy">-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running it.io.openliberty.guides.system.SystemEndpointTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.673 sec - in it.io.openliberty.guides.system.SystemEndpointTest
+
+Results:
+
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0</screen>
+<screen role="no_copy">-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running it.io.openliberty.guides.inventory.InventoryEndpointTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.222 sec - in it.io.openliberty.guides.inventory.InventoryEndpointTest
+
+Results:
+
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0</screen>
+</chapter>
+<chapter xml:id="tearing_down_the_environment" remap="_tearing_down_the_environment">
+<title>Tearing down the environment</title>
+<simpara>When you no longer need your deployed microservices, you can delete the Kubernetes deployments, services, and routes
+by running the following command:</simpara>
+<screen role="command">oc delete -f kubernetes.yaml</screen>
+<simpara>To delete the pushed images, run the following commands:</simpara>
+<screen role="command">oc delete imagestream/inventory
+oc delete imagestream/system</screen>
+<simpara>Finally, you can delete the project by running the following command:</simpara>
+<screen role="command">oc delete project [project-name]</screen>
+</chapter>
+<chapter xml:id="great_work_you_re_done" remap="_great_work_you_re_done">
+<title>Great work! You’re done!</title>
+<simpara>You just deployed two microservices running in Open Liberty to OpenShift. You also
+learned how to use <literal>oc</literal> to deploy your microservices on a Kubernetes cluster.</simpara>
+<simpara><link xlink:href="https://raw.githubusercontent.com/OpenLiberty/guides-common/master/attribution.adoc">https://raw.githubusercontent.com/OpenLiberty/guides-common/master/attribution.adoc</link></simpara>
+</chapter>
+</book>

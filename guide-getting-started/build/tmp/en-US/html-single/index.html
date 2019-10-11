@@ -1,0 +1,1129 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" class="chrometwo"><head><title>Deploying and packaging applications</title><link rel="stylesheet" type="text/css" href="Common_Content/css/default.css"/><meta name="generator" content="publican v4.3.4"/><meta name="description" content="These topics provide a brief introduction to Open Liberty and links to in-depth documentation resources."/><link rel="next" href="#idm140397232089792" title="Preface"/><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><script type="text/javascript" src="Common_Content/scripts/jquery-1.7.1.min.js"> </script><script type="text/javascript" src="Common_Content/scripts/utils.js"> </script><script type="text/javascript" src="Common_Content/scripts/highlight.js/highlight.pack.js"> </script></head><body><div id="chrometwo"><div id="main"><div xml:lang="en-US" class="book" id="idm140397232029472"><div class="titlepage"><div><div class="producttitle"><span class="productname">Open Liberty</span> <span class="productnumber">19.0.0.9</span></div><div><h1 class="title">Deploying and packaging applications</h1></div><div><h2 class="subtitle">Open Liberty documentation resources for Red Hat Runtimes</h2></div><div><a href="#idm140397237360592">Legal Notice</a></div><div><div class="abstract"><p class="title"><strong>Abstract</strong></p><div class="para">
+				These topics provide a brief introduction to Open Liberty and links to in-depth documentation resources.
+			</div></div></div></div><hr/></div><div class="toc"><ul class="toc"><li><span class="preface"><a href="#idm140397232089792">Preface</a></span></li><li><span class="chapter"><a href="#what_you_ll_learn">1. What you’ll learn</a></span></li><li><span class="chapter"><a href="#building_and_running_the_application">2. Building and running the application</a></span></li><li><span class="chapter"><a href="#updating_the_server_configuration_without_restarting_the_server">3. Updating the server configuration without restarting the server</a></span></li><li><span class="chapter"><a href="#updating_the_source_code_without_restarting_the_server">4. Updating the source code without restarting the server</a></span></li><li><span class="chapter"><a href="#checking_the_open_liberty_server_logs">5. Checking the Open Liberty server logs</a></span></li><li><span class="chapter"><a href="#starting_and_stopping_the_open_liberty_server_in_the_background">6. Starting and stopping the Open Liberty server in the background</a></span></li><li><span class="chapter"><a href="#running_the_application_from_a_minimal_runnable_jar">7. Running the application from a minimal runnable JAR</a></span></li><li><span class="chapter"><a href="#running_the_application_in_a_docker_container">8. Running the application in a Docker container</a></span></li><li><span class="chapter"><a href="#great_work_you_re_done">9. Great work! You’re done!</a></span></li></ul></div><section class="preface" id="idm140397232089792"><div class="titlepage"><div><div><h1 class="title">Preface</h1></div></div></div><div class="admonition note hidden"><div class="admonition_header">Note</div><div><p>
+				This repository contains the guide documentation source. To view the guide in published form, view it on the <a class="link" href="https://openliberty.io/guides/getting-started.html">Open Liberty website</a>.
+			</p></div></div><p>
+			Learn how to deploy and update an application on Open Liberty with Maven and Docker.
+		</p></section><section class="chapter" id="what_you_ll_learn"><div class="titlepage"><div><div><h1 class="title">Chapter 1. What you’ll learn</h1></div></div></div><p>
+			You will learn how to run and update a simple REST microservice on an Open Liberty server. You will use Maven throughout the guide to build and deploy the microservice as well as to interact with the running server instance.
+		</p><p>
+			Open Liberty is an application server designed for the cloud. It’s small, lightweight, and designed with modern cloud-native application development in mind. It supports the full MicroProfile and Java EE APIs and is composable, meaning that you can use only the features that you need, keeping the server lightweight, which is great for microservices. It also deploys to every major cloud platform, including Docker, Kubernetes, and Cloud Foundry.
+		</p><p>
+			Maven is an automation build tool that provides an efficient way to develop Java applications. Using Maven, you will build a simple microservice, called <code class="literal">system</code>, that collects basic system properties from your laptop and displays them on an endpoint that you can access in your web browser. You will then make server configuration and code changes and see how they are picked up by a running server. You’ll also explore how to package your application with the server runtime so that it can be deployed anywhere in one go.
+		</p><p>
+			Finally, you will package the application along with the server configuration into a Docker image and run that image as a container.
+		</p><p class="command command">
+			<a class="link" href="https://raw.githubusercontent.com/OpenLiberty/guides-common/master/gitclone.adoc">https://raw.githubusercontent.com/OpenLiberty/guides-common/master/gitclone.adoc</a>
+		</p></section><section class="chapter" id="building_and_running_the_application"><div class="titlepage"><div><div><h1 class="title">Chapter 2. Building and running the application</h1></div></div></div><p>
+			Your application is configured to be built with Maven. Every Maven-configured project contains a <code class="literal hotspot">pom.xml</code> file, which defines the project configuration, dependencies, plug-ins, and so on.
+		</p><p>
+			Navigate to the <code class="literal">start</code> directory where your <code class="literal hotspot">pom.xml</code> file is located. Your <code class="literal">pom.xml</code> file is configured to include the <code class="literal hotspot=168-190">liberty-maven-plugin</code>, which allows you to install applications into Open Liberty as well as manage the server instances.
+		</p><p>
+			pom.xml
+		</p><pre class="programlisting language-xml code_column numbered">&lt;?xml version='1.0' encoding='utf-8'?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;parent&gt;
+        &lt;groupId&gt;net.wasdev.wlp.maven.parent&lt;/groupId&gt;
+        &lt;artifactId&gt;liberty-maven-app-parent&lt;/artifactId&gt;
+        &lt;version&gt;RELEASE&lt;/version&gt;
+    &lt;/parent&gt;
+
+    &lt;groupId&gt;io.openliberty.guides&lt;/groupId&gt;
+    &lt;artifactId&gt;getting-started&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;packaging&gt;war&lt;/packaging&gt;
+
+    &lt;properties&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+        &lt;project.reporting.outputEncoding&gt;UTF-8&lt;/project.reporting.outputEncoding&gt;
+        &lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;
+        &lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt;
+        &lt;!-- Plugins --&gt;
+        &lt;version.maven-war-plugin&gt;3.2.2&lt;/version.maven-war-plugin&gt;
+        &lt;version.maven-surefire-plugin&gt;3.0.0-M1&lt;/version.maven-surefire-plugin&gt;
+        &lt;version.maven-failsafe-plugin&gt;3.0.0-M1&lt;/version.maven-failsafe-plugin&gt;
+        &lt;!-- OpenLiberty runtime --&gt;
+        &lt;version.openliberty-runtime&gt;RELEASE&lt;/version.openliberty-runtime&gt;
+        &lt;http.port&gt;9080&lt;/http.port&gt;
+        &lt;https.port&gt;9443&lt;/https.port&gt;
+        &lt;packaging.type&gt;usr&lt;/packaging.type&gt;
+        &lt;app.name&gt;${project.artifactId}&lt;/app.name&gt;
+        &lt;package.file&gt;${project.build.directory}/${app.name}.zip&lt;/package.file&gt;
+    &lt;/properties&gt;
+
+    &lt;!-- Profiles for temporarily switching packaging types --&gt;
+    &lt;profiles&gt;
+        &lt;profile&gt;
+            &lt;id&gt;runnable-package&lt;/id&gt;
+            &lt;properties&gt;
+                &lt;package.file&gt;
+                    ${project.build.directory}/${app.name}.jar
+                &lt;/package.file&gt;
+                &lt;packaging.type&gt;runnable&lt;/packaging.type&gt;
+            &lt;/properties&gt;
+        &lt;/profile&gt;
+        &lt;profile&gt;
+            &lt;id&gt;minify-runnable-package&lt;/id&gt;
+            &lt;properties&gt;
+                &lt;package.file&gt;
+                    ${project.build.directory}/${app.name}.jar
+                &lt;/package.file&gt;
+                &lt;packaging.type&gt;minify,runnable&lt;/packaging.type&gt;
+            &lt;/properties&gt;
+        &lt;/profile&gt;
+    &lt;/profiles&gt;
+
+    &lt;dependencyManagement&gt;
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+                &lt;artifactId&gt;features-bom&lt;/artifactId&gt;
+                &lt;version&gt;RELEASE&lt;/version&gt;
+                &lt;type&gt;pom&lt;/type&gt;
+                &lt;scope&gt;import&lt;/scope&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    &lt;/dependencyManagement&gt;
+
+    &lt;dependencies&gt;
+        &lt;!-- Open Liberty Features --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+            &lt;artifactId&gt;jaxrs-2.1&lt;/artifactId&gt;
+            &lt;type&gt;esa&lt;/type&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+            &lt;artifactId&gt;jsonp-1.1&lt;/artifactId&gt;
+            &lt;type&gt;esa&lt;/type&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+            &lt;artifactId&gt;cdi-2.0&lt;/artifactId&gt;
+            &lt;type&gt;esa&lt;/type&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+            &lt;artifactId&gt;mpMetrics-2.0&lt;/artifactId&gt;
+            &lt;type&gt;esa&lt;/type&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+            &lt;artifactId&gt;mpHealth-2.0&lt;/artifactId&gt;
+            &lt;type&gt;esa&lt;/type&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;!-- For tests --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;junit&lt;/groupId&gt;
+            &lt;artifactId&gt;junit&lt;/artifactId&gt;
+            &lt;version&gt;4.12&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.cxf&lt;/groupId&gt;
+            &lt;artifactId&gt;cxf-rt-rs-client&lt;/artifactId&gt;
+            &lt;version&gt;3.2.6&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.cxf&lt;/groupId&gt;
+            &lt;artifactId&gt;cxf-rt-rs-extension-providers&lt;/artifactId&gt;
+            &lt;version&gt;3.2.6&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.glassfish&lt;/groupId&gt;
+            &lt;artifactId&gt;javax.json&lt;/artifactId&gt;
+            &lt;version&gt;1.0.4&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;!-- Support for JDK 9 and above --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;javax.xml.bind&lt;/groupId&gt;
+            &lt;artifactId&gt;jaxb-api&lt;/artifactId&gt;
+            &lt;version&gt;2.3.1&lt;/version&gt;
+	    &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.sun.xml.bind&lt;/groupId&gt;
+            &lt;artifactId&gt;jaxb-core&lt;/artifactId&gt;
+            &lt;version&gt;2.3.0.1&lt;/version&gt;
+	    &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.sun.xml.bind&lt;/groupId&gt;
+            &lt;artifactId&gt;jaxb-impl&lt;/artifactId&gt;
+            &lt;version&gt;2.3.2&lt;/version&gt;
+	    &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;javax.activation&lt;/groupId&gt;
+            &lt;artifactId&gt;activation&lt;/artifactId&gt;
+            &lt;version&gt;1.1.1&lt;/version&gt;
+	    &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+    &lt;build&gt;
+        &lt;finalName&gt;${project.artifactId}&lt;/finalName&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-war-plugin&lt;/artifactId&gt;
+                &lt;version&gt;${version.maven-war-plugin}&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;failOnMissingWebXml&gt;false&lt;/failOnMissingWebXml&gt;
+                    &lt;packagingExcludes&gt;pom.xml&lt;/packagingExcludes&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+            &lt;!-- Enable liberty-maven plugin --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;net.wasdev.wlp.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;liberty-maven-plugin&lt;/artifactId&gt;
+                &lt;configuration&gt;
+                    &lt;assemblyArtifact&gt;
+                        &lt;groupId&gt;io.openliberty&lt;/groupId&gt;
+                        &lt;artifactId&gt;openliberty-runtime&lt;/artifactId&gt;
+                        &lt;version&gt;${version.openliberty-runtime}&lt;/version&gt;
+                        &lt;type&gt;zip&lt;/type&gt;
+                    &lt;/assemblyArtifact&gt;
+                    &lt;serverName&gt;GettingStartedServer&lt;/serverName&gt;
+                    &lt;stripVersion&gt;true&lt;/stripVersion&gt;
+                    &lt;configFile&gt;src/main/liberty/config/server.xml&lt;/configFile&gt;
+                    &lt;looseApplication&gt;true&lt;/looseApplication&gt;
+                    &lt;packageFile&gt;${package.file}&lt;/packageFile&gt;
+                    &lt;include&gt;${packaging.type}&lt;/include&gt;
+                    &lt;bootstrapProperties&gt;
+                        &lt;default.http.port&gt;${http.port}&lt;/default.http.port&gt;
+                        &lt;default.https.port&gt;${https.port}&lt;/default.https.port&gt;
+                        &lt;app.context.root&gt;${app.name}&lt;/app.context.root&gt;
+                    &lt;/bootstrapProperties&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+            &lt;!-- Plugin to run unit tests --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
+                &lt;version&gt;${version.maven-surefire-plugin}&lt;/version&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;phase&gt;test&lt;/phase&gt;
+                        &lt;id&gt;default-test&lt;/id&gt;
+                        &lt;configuration&gt;
+                            &lt;excludes&gt;
+                                &lt;exclude&gt;**/it/**&lt;/exclude&gt;
+                            &lt;/excludes&gt;
+                            &lt;reportsDirectory&gt;
+                                ${project.build.directory}/test-reports/unit
+                            &lt;/reportsDirectory&gt;
+                        &lt;/configuration&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+                &lt;configuration&gt;
+                    &lt;skipTests&gt;${skipTests}&lt;/skipTests&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+            &lt;!-- Plugin to run functional tests --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-failsafe-plugin&lt;/artifactId&gt;
+                &lt;version&gt;${version.maven-failsafe-plugin}&lt;/version&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;phase&gt;integration-test&lt;/phase&gt;
+                        &lt;id&gt;integration-test&lt;/id&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;integration-test&lt;/goal&gt;
+                        &lt;/goals&gt;
+                        &lt;configuration&gt;
+                            &lt;includes&gt;
+                                &lt;include&gt;**/it/**&lt;/include&gt;
+                            &lt;/includes&gt;
+                            &lt;systemPropertyVariables&gt;
+                                &lt;liberty.test.port&gt;${http.port}&lt;/liberty.test.port&gt;
+                                &lt;war.name&gt;${app.name}&lt;/war.name&gt;
+                            &lt;/systemPropertyVariables&gt;
+                        &lt;/configuration&gt;
+                    &lt;/execution&gt;
+                    &lt;execution&gt;
+                        &lt;id&gt;verify-results&lt;/id&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;verify&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+                &lt;configuration&gt;
+                    &lt;summaryFile&gt;
+                        ${project.build.directory}/test-reports/it/failsafe-summary.xml
+                    &lt;/summaryFile&gt;
+                    &lt;reportsDirectory&gt;
+                        ${project.build.directory}/test-reports/it
+                    &lt;/reportsDirectory&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;</pre><p>
+			To begin, build the <code class="literal">system</code> microservice that is provided and deploy it to Open Liberty by running the Maven <code class="literal">install</code> phase and the Maven <code class="literal">liberty:run-server</code> goal from the <code class="literal">start</code> directory:
+		</p><pre class="screen command command">mvn install liberty:run-server</pre><p>
+			The <code class="literal">mvn</code> command initiates a Maven build, during which the <code class="literal">target</code> directory is created to store all build-related files.
+		</p><p>
+			The <code class="literal">install</code> argument specifies the Maven <code class="literal">install</code> phase. During this phase, the application is built and packaged into a <code class="literal">.war</code> file, an Open Liberty server runtime is downloaded and installed into the <code class="literal">target/liberty/wlp</code> directory, a server instance is created and configured in the <code class="literal">target/liberty/wlp/usr/servers/GettingStartedServer</code> directory, and the application is installed into that server via <a class="link" href="https://www.ibm.com/support/knowledgecenter/en/SSEQTP_liberty/com.ibm.websphere.wlp.doc/ae/rwlp_loose_applications.html">loose config</a>.
+		</p><p>
+			The <code class="literal">liberty:run-server</code> argument specifies the Open Liberty <code class="literal">run-server</code> goal, which starts an Open Liberty server instance in the foreground.
+		</p><p>
+			For more information on the Liberty Maven plug-in, see its <a class="link" href="https://github.com/WASdev/ci.maven">GitHub repository</a>.
+		</p><p>
+			When the server begins starting up, various messages display in your active shell. Wait for the following message, which indicates that the server startup is complete:
+		</p><pre class="screen no_copy no_copy">[INFO] [AUDIT] CWWKF0011I: The server GettingStartedServer is ready to run a smarter planet.</pre><p>
+			To access the <code class="literal">system</code> microservice, visit the <a class="link" href="http://localhost:9080/system/properties">http://localhost:9080/system/properties</a> URL, and you’ll see a list of the various system properties of your JVM:
+		</p><pre class="programlisting language-json no_copy no_copy">{
+    "os.name": "Mac OS X",
+    "java.version": "1.8.0_151",
+    ...
+}</pre><p>
+			Later, when you need to stop the server, simply press <code class="literal">CTRL+C</code> in the shell session where you ran the server, or run the <code class="literal">liberty:stop-server</code> goal from the <code class="literal">start</code> directory in another shell session:
+		</p><pre class="screen command command">mvn liberty:stop-server</pre></section><section class="chapter" id="updating_the_server_configuration_without_restarting_the_server"><div class="titlepage"><div><div><h1 class="title">Chapter 3. Updating the server configuration without restarting the server</h1></div></div></div><p>
+			When you update the server configuration files, you can run the <code class="literal">mvn package</code> command to invoke the Maven <code class="literal">package</code> phase that executes various Maven goals that repackage the server.
+		</p><p>
+			Try updating the server configuration while the server is running. If you stopped the server, start it again before you proceed. The <code class="literal">system</code> microservice does not currently include health monitoring to report whether the server and the microservice that it runs are healthy. You can add health reports with the MicroProfile Health feature, which adds a <code class="literal">/health</code> endpoint to your application. If you try to access this endpoint now at the <a class="link" href="http://localhost:9080/health/">http://localhost:9080/health/</a> URL, you see a 404 error because the <code class="literal">/health</code> endpoint does not yet exist:
+		</p><pre class="screen no_copy no_copy">Error 404: java.io.FileNotFoundException: SRVE0190E: File not found: /health</pre><p>
+			To add the MicroProfile Health feature to the server, include the <code class="literal hotspot=7">mpHealth</code> feature in the <code class="literal hotspot">server.xml</code>.
+		</p><pre class="screen code_command hotspot code_command hotspot"><span class="marked marked">Replace the server configuration file.</span>
+<code class="literal">src/main/liberty/config/server.xml</code></pre><p>
+			server.xml
+		</p><pre class="programlisting language-xml code_column numbered">&lt;server description="Sample Liberty server"&gt;
+    &lt;featureManager&gt;
+        &lt;feature&gt;jaxrs-2.1&lt;/feature&gt;
+        &lt;feature&gt;jsonp-1.1&lt;/feature&gt;
+        &lt;feature&gt;cdi-2.0&lt;/feature&gt;
+        &lt;feature&gt;mpMetrics-2.0&lt;/feature&gt;
+        &lt;feature&gt;mpHealth-2.0&lt;/feature&gt;
+        &lt;feature&gt;mpConfig-1.3&lt;/feature&gt;
+    &lt;/featureManager&gt;
+
+    &lt;applicationManager autoExpand="true" /&gt;
+    &lt;quickStartSecurity userName="admin" userPassword="adminpwd" /&gt;
+    &lt;keyStore id="defaultKeyStore" password="mpKeystore" /&gt;
+    &lt;httpEndpoint host="*" httpPort="${default.http.port}"
+        httpsPort="${default.https.port}" id="defaultHttpEndpoint"/&gt;
+
+    &lt;variable name="io_openliberty_guides_system_inMaintenance" value="false"/&gt;
+
+    &lt;webApplication location="getting-started.war" contextRoot="/"/&gt;
+&lt;/server&gt;</pre><p>
+			Next, open a new shell session, navigate to the <code class="literal">start</code> directory, and repackage the server:
+		</p><pre class="screen command command">mvn package</pre><p>
+			When enabled, the <code class="literal hotspot=7">mpHealth</code> feature automatically adds a <code class="literal">/health</code> endpoint to the application. You can see the server being updated in the server log that’s displayed in your first shell session:
+		</p><pre class="screen no_copy no_copy">[INFO] [AUDIT] CWWKG0016I: Starting server configuration update.
+[INFO] [AUDIT] CWWKT0017I: Web application removed (default_host): http://foo:9080/
+[INFO] [AUDIT] CWWKZ0009I: The application io.openliberty.guides.getting-started has stopped successfully.
+[INFO] [AUDIT] CWWKG0017I: The server configuration was successfully updated in 0.284 seconds.
+[INFO] [AUDIT] CWWKT0016I: Web application available (default_host): http://foo:9080/health/
+[INFO] [AUDIT] CWWKF0012I: The server installed the following features: [mpHealth-1.0].
+[INFO] [AUDIT] CWWKF0008I: Feature update completed in 0.285 seconds.
+[INFO] [AUDIT] CWWKT0016I: Web application available (default_host): http://foo:9080/
+[INFO] [AUDIT] CWWKZ0003I: The application io.openliberty.guides.getting-started updated in 0.173 seconds.</pre><p>
+			Try to access the <code class="literal">/health</code> endpoint again by visiting the <a class="link" href="http://localhost:9080/health">http://localhost:9080/health</a> URL. This time you’ll see the following JSON:
+		</p><pre class="programlisting language-json no_copy no_copy">{
+    "checks":[],
+    "outcome":"UP"
+}</pre><p>
+			You now have a means of verifying if your server is up and running.
+		</p></section><section class="chapter" id="updating_the_source_code_without_restarting_the_server"><div class="titlepage"><div><div><h1 class="title">Chapter 4. Updating the source code without restarting the server</h1></div></div></div><p>
+			The JAX-RS application that contains your <code class="literal">system</code> microservice is configured as a loose application, meaning that it runs in a server from its <code class="literal">.class</code> file and other artifacts. Open Liberty automatically monitors these artifacts, and whenever they are updated, it updates the running server without the need for the server to be restarted.
+		</p><p>
+			Take a look at your <code class="literal hotspot file=0">pom.xml</code> file.
+		</p><p>
+			The loose application support is enabled with the <code class="literal hotspot=181 file=0">&lt;looseApplication/&gt;</code> element in the <code class="literal hotspot=168-190 file=0">liberty-maven-plugin</code> plug-in.
+		</p><p>
+			pom.xml
+		</p><pre class="programlisting language-xml code_column numbered">&lt;?xml version='1.0' encoding='utf-8'?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;parent&gt;
+        &lt;groupId&gt;net.wasdev.wlp.maven.parent&lt;/groupId&gt;
+        &lt;artifactId&gt;liberty-maven-app-parent&lt;/artifactId&gt;
+        &lt;version&gt;RELEASE&lt;/version&gt;
+    &lt;/parent&gt;
+
+    &lt;groupId&gt;io.openliberty.guides&lt;/groupId&gt;
+    &lt;artifactId&gt;getting-started&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;packaging&gt;war&lt;/packaging&gt;
+
+    &lt;properties&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+        &lt;project.reporting.outputEncoding&gt;UTF-8&lt;/project.reporting.outputEncoding&gt;
+        &lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;
+        &lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt;
+        &lt;!-- Plugins --&gt;
+        &lt;version.maven-war-plugin&gt;3.2.2&lt;/version.maven-war-plugin&gt;
+        &lt;version.maven-surefire-plugin&gt;3.0.0-M1&lt;/version.maven-surefire-plugin&gt;
+        &lt;version.maven-failsafe-plugin&gt;3.0.0-M1&lt;/version.maven-failsafe-plugin&gt;
+        &lt;!-- OpenLiberty runtime --&gt;
+        &lt;version.openliberty-runtime&gt;RELEASE&lt;/version.openliberty-runtime&gt;
+        &lt;http.port&gt;9080&lt;/http.port&gt;
+        &lt;https.port&gt;9443&lt;/https.port&gt;
+        &lt;packaging.type&gt;usr&lt;/packaging.type&gt;
+        &lt;app.name&gt;${project.artifactId}&lt;/app.name&gt;
+        &lt;package.file&gt;${project.build.directory}/${app.name}.zip&lt;/package.file&gt;
+    &lt;/properties&gt;
+
+    &lt;!-- Profiles for temporarily switching packaging types --&gt;
+    &lt;profiles&gt;
+        &lt;profile&gt;
+            &lt;id&gt;runnable-package&lt;/id&gt;
+            &lt;properties&gt;
+                &lt;package.file&gt;
+                    ${project.build.directory}/${app.name}.jar
+                &lt;/package.file&gt;
+                &lt;packaging.type&gt;runnable&lt;/packaging.type&gt;
+            &lt;/properties&gt;
+        &lt;/profile&gt;
+        &lt;profile&gt;
+            &lt;id&gt;minify-runnable-package&lt;/id&gt;
+            &lt;properties&gt;
+                &lt;package.file&gt;
+                    ${project.build.directory}/${app.name}.jar
+                &lt;/package.file&gt;
+                &lt;packaging.type&gt;minify,runnable&lt;/packaging.type&gt;
+            &lt;/properties&gt;
+        &lt;/profile&gt;
+    &lt;/profiles&gt;
+
+    &lt;dependencyManagement&gt;
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+                &lt;artifactId&gt;features-bom&lt;/artifactId&gt;
+                &lt;version&gt;RELEASE&lt;/version&gt;
+                &lt;type&gt;pom&lt;/type&gt;
+                &lt;scope&gt;import&lt;/scope&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    &lt;/dependencyManagement&gt;
+
+    &lt;dependencies&gt;
+        &lt;!-- Open Liberty Features --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+            &lt;artifactId&gt;jaxrs-2.1&lt;/artifactId&gt;
+            &lt;type&gt;esa&lt;/type&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+            &lt;artifactId&gt;jsonp-1.1&lt;/artifactId&gt;
+            &lt;type&gt;esa&lt;/type&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+            &lt;artifactId&gt;cdi-2.0&lt;/artifactId&gt;
+            &lt;type&gt;esa&lt;/type&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+            &lt;artifactId&gt;mpMetrics-2.0&lt;/artifactId&gt;
+            &lt;type&gt;esa&lt;/type&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+            &lt;artifactId&gt;mpHealth-2.0&lt;/artifactId&gt;
+            &lt;type&gt;esa&lt;/type&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;!-- For tests --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;junit&lt;/groupId&gt;
+            &lt;artifactId&gt;junit&lt;/artifactId&gt;
+            &lt;version&gt;4.12&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.cxf&lt;/groupId&gt;
+            &lt;artifactId&gt;cxf-rt-rs-client&lt;/artifactId&gt;
+            &lt;version&gt;3.2.6&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.cxf&lt;/groupId&gt;
+            &lt;artifactId&gt;cxf-rt-rs-extension-providers&lt;/artifactId&gt;
+            &lt;version&gt;3.2.6&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.glassfish&lt;/groupId&gt;
+            &lt;artifactId&gt;javax.json&lt;/artifactId&gt;
+            &lt;version&gt;1.0.4&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;!-- Support for JDK 9 and above --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;javax.xml.bind&lt;/groupId&gt;
+            &lt;artifactId&gt;jaxb-api&lt;/artifactId&gt;
+            &lt;version&gt;2.3.1&lt;/version&gt;
+	    &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.sun.xml.bind&lt;/groupId&gt;
+            &lt;artifactId&gt;jaxb-core&lt;/artifactId&gt;
+            &lt;version&gt;2.3.0.1&lt;/version&gt;
+	    &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.sun.xml.bind&lt;/groupId&gt;
+            &lt;artifactId&gt;jaxb-impl&lt;/artifactId&gt;
+            &lt;version&gt;2.3.2&lt;/version&gt;
+	    &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;javax.activation&lt;/groupId&gt;
+            &lt;artifactId&gt;activation&lt;/artifactId&gt;
+            &lt;version&gt;1.1.1&lt;/version&gt;
+	    &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+    &lt;build&gt;
+        &lt;finalName&gt;${project.artifactId}&lt;/finalName&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-war-plugin&lt;/artifactId&gt;
+                &lt;version&gt;${version.maven-war-plugin}&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;failOnMissingWebXml&gt;false&lt;/failOnMissingWebXml&gt;
+                    &lt;packagingExcludes&gt;pom.xml&lt;/packagingExcludes&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+            &lt;!-- Enable liberty-maven plugin --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;net.wasdev.wlp.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;liberty-maven-plugin&lt;/artifactId&gt;
+                &lt;configuration&gt;
+                    &lt;assemblyArtifact&gt;
+                        &lt;groupId&gt;io.openliberty&lt;/groupId&gt;
+                        &lt;artifactId&gt;openliberty-runtime&lt;/artifactId&gt;
+                        &lt;version&gt;${version.openliberty-runtime}&lt;/version&gt;
+                        &lt;type&gt;zip&lt;/type&gt;
+                    &lt;/assemblyArtifact&gt;
+                    &lt;serverName&gt;GettingStartedServer&lt;/serverName&gt;
+                    &lt;stripVersion&gt;true&lt;/stripVersion&gt;
+                    &lt;configFile&gt;src/main/liberty/config/server.xml&lt;/configFile&gt;
+                    &lt;looseApplication&gt;true&lt;/looseApplication&gt;
+                    &lt;packageFile&gt;${package.file}&lt;/packageFile&gt;
+                    &lt;include&gt;${packaging.type}&lt;/include&gt;
+                    &lt;bootstrapProperties&gt;
+                        &lt;default.http.port&gt;${http.port}&lt;/default.http.port&gt;
+                        &lt;default.https.port&gt;${https.port}&lt;/default.https.port&gt;
+                        &lt;app.context.root&gt;${app.name}&lt;/app.context.root&gt;
+                    &lt;/bootstrapProperties&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+            &lt;!-- Plugin to run unit tests --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
+                &lt;version&gt;${version.maven-surefire-plugin}&lt;/version&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;phase&gt;test&lt;/phase&gt;
+                        &lt;id&gt;default-test&lt;/id&gt;
+                        &lt;configuration&gt;
+                            &lt;excludes&gt;
+                                &lt;exclude&gt;**/it/**&lt;/exclude&gt;
+                            &lt;/excludes&gt;
+                            &lt;reportsDirectory&gt;
+                                ${project.build.directory}/test-reports/unit
+                            &lt;/reportsDirectory&gt;
+                        &lt;/configuration&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+                &lt;configuration&gt;
+                    &lt;skipTests&gt;${skipTests}&lt;/skipTests&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+            &lt;!-- Plugin to run functional tests --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-failsafe-plugin&lt;/artifactId&gt;
+                &lt;version&gt;${version.maven-failsafe-plugin}&lt;/version&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;phase&gt;integration-test&lt;/phase&gt;
+                        &lt;id&gt;integration-test&lt;/id&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;integration-test&lt;/goal&gt;
+                        &lt;/goals&gt;
+                        &lt;configuration&gt;
+                            &lt;includes&gt;
+                                &lt;include&gt;**/it/**&lt;/include&gt;
+                            &lt;/includes&gt;
+                            &lt;systemPropertyVariables&gt;
+                                &lt;liberty.test.port&gt;${http.port}&lt;/liberty.test.port&gt;
+                                &lt;war.name&gt;${app.name}&lt;/war.name&gt;
+                            &lt;/systemPropertyVariables&gt;
+                        &lt;/configuration&gt;
+                    &lt;/execution&gt;
+                    &lt;execution&gt;
+                        &lt;id&gt;verify-results&lt;/id&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;verify&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+                &lt;configuration&gt;
+                    &lt;summaryFile&gt;
+                        ${project.build.directory}/test-reports/it/failsafe-summary.xml
+                    &lt;/summaryFile&gt;
+                    &lt;reportsDirectory&gt;
+                        ${project.build.directory}/test-reports/it
+                    &lt;/reportsDirectory&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;</pre><p>
+			Try updating the source code while the server is running. At the moment, the <code class="literal">/health</code> endpoint reports whether or not the server is running, but the endpoint doesn’t provide any details on the microservices that are running inside of the server.
+		</p><p>
+			MicroProfile Health offers health checks for both readiness and liveness. A readiness check allows third-party services, such as Kubernetes, to know if the microservice is ready to process requests. A liveness check allows third-party services to determine if the microservice is running.
+		</p><pre class="screen code_command hotspot file=1 code_command hotspot file=1"><span class="marked marked">Create the <code class="literal">SystemReadinessCheck</code> class.</span>
+<code class="literal">src/main/java/io/openliberty/sample/system/SystemReadinessCheck.java</code></pre><p>
+			SystemReadinessCheck.java
+		</p><pre class="programlisting language-java code_column numbered">package io.openliberty.sample.system;
+
+import javax.enterprise.context.ApplicationScoped;
+
+import javax.inject.Inject;
+import javax.inject.Provider;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.health.Readiness;
+import org.eclipse.microprofile.health.HealthCheck;
+import org.eclipse.microprofile.health.HealthCheckResponse;
+import org.eclipse.microprofile.health.HealthCheckResponseBuilder;
+
+@Readiness
+@ApplicationScoped
+public class SystemReadinessCheck implements HealthCheck {
+
+    @Inject
+    @ConfigProperty(name = "io_openliberty_guides_system_inMaintenance")
+    Provider&lt;String&gt; inMaintenance;
+
+    @Override
+    public HealthCheckResponse call() {
+        HealthCheckResponseBuilder builder = HealthCheckResponse.named(
+		SystemResource.class.getSimpleName() + " readiness check");
+        if (inMaintenance != null &amp;&amp; inMaintenance.get().equalsIgnoreCase("true")) {
+            return builder.withData("services", "not available").down().build();
+        }
+        return builder.withData("services", "available").up().build();
+    }
+
+}</pre><p>
+			The <code class="literal hotspot=16-32 file=1">SystemReadinessCheck</code> class verifies that the <code class="literal">system</code> microservice is not in maintenance by checking a config property.
+		</p><pre class="screen code_command hotspot file=2 code_command hotspot file=2"><span class="marked marked">Create the <code class="literal">SystemLivenessCheck</code> class.</span>
+<code class="literal">src/main/java/io/openliberty/sample/system/SystemLivenessCheck.java</code></pre><p>
+			SystemLivenessCheck.java
+		</p><pre class="programlisting language-java code_column numbered">package io.openliberty.sample.system;
+
+import javax.enterprise.context.ApplicationScoped;
+
+import java.lang.management.MemoryMXBean;
+import java.lang.management.ManagementFactory;
+
+import org.eclipse.microprofile.health.Liveness;
+import org.eclipse.microprofile.health.HealthCheck;
+import org.eclipse.microprofile.health.HealthCheckResponse;
+
+@Liveness
+@ApplicationScoped
+public class SystemLivenessCheck implements HealthCheck {
+
+    @Override
+    public HealthCheckResponse call() {
+        MemoryMXBean memBean = ManagementFactory.getMemoryMXBean();
+        long memUsed = memBean.getHeapMemoryUsage().getUsed();
+        long memMax = memBean.getHeapMemoryUsage().getMax();
+
+        return HealthCheckResponse.named(
+            SystemResource.class.getSimpleName() + " liveness check")
+                                  .withData("memory used", memUsed)
+                                  .withData("memory max", memMax)
+                                  .state(memUsed &lt; memMax * 0.9).build();
+    }
+
+}</pre><p>
+			The <code class="literal hotspot=14-29 file=2">SystemLivenessCheck</code> class reports a status of <code class="literal">DOWN</code> if the microservice uses over 90% of the maximum amount of memory.
+		</p><p>
+			Next, recompile the application:
+		</p><pre class="screen command command">mvn compile</pre><p>
+			The following messages display in your first shell session:
+		</p><pre class="screen no_copy no_copy">[INFO] [AUDIT] CWWKT0017I: Web application removed (default_host): http://foo:9080/
+[INFO] [AUDIT] CWWKZ0009I: The application io.openliberty.guides.getting-started has stopped successfully.
+[INFO] [AUDIT] CWWKT0016I: Web application available (default_host): http://foo:9080/
+[INFO] [AUDIT] CWWKZ0003I: The application io.openliberty.guides.getting-started updated in 0.136 seconds.</pre><p>
+			Access the <code class="literal">/health</code> endpoint again by visiting the <a class="link" href="http://localhost:9080/health">http://localhost:9080/health</a> URL. This time you see the overall status of your server as well as the aggregated data of the liveness and readiness checks for the <code class="literal">system</code> microservice:
+		</p><pre class="programlisting language-json no_copy no_copy">{
+   "checks":[
+      {
+         "data":{
+            "services":"available"
+         },
+         "name":"SystemResource readiness check",
+         "status":"UP"
+      },
+      {
+         "data":{
+            "memory used":81064480,
+            "memory max":4294967296
+         },
+         "name":"SystemResource liveness check",
+         "status":"UP"
+      }
+   ],
+   "status":"UP"
+}</pre><p>
+			You can also access the <code class="literal">/health/ready</code> endpoint by visiting the <a class="link" href="http://localhost:9080/health/ready">http://localhost:9080/health/ready</a> URL to view the data from the readiness health check. Similarily, access the <code class="literal">/health/live</code> endpoint by visiting the <a class="link" href="http://localhost:9080/health/live">http://localhost:9080/health/live</a> URL to view the data from the liveness health check.
+		</p><p>
+			Making code changes and recompiling is fast and straightforward. Maven only rebuilds the <code class="literal">.class</code> files and artifacts that changed, and the server picks these up automatically without needing to be restarted.
+		</p></section><section class="chapter" id="checking_the_open_liberty_server_logs"><div class="titlepage"><div><div><h1 class="title">Chapter 5. Checking the Open Liberty server logs</h1></div></div></div><p>
+			While the server is running in the foreground, it displays various console messages in the shell. These messages are also logged to the <code class="literal">target/liberty/wlp/usr/servers/GettingStartedServer/logs/console.log</code> file. You can find the complete server logs in the <code class="literal">target/liberty/wlp/usr/servers/GettingStartedServer/logs</code> directory. The <code class="literal">console.log</code> and <code class="literal">messages.log</code> files are the primary log files that contain console output of the running application and the server. More logs are created when run time errors occur or whenever tracing is enabled. You can find the error logs in the <code class="literal">ffdc</code> directory and the tracing logs in the <code class="literal">trace.log</code> file.
+		</p><p>
+			In addition to the log files that are generated automatically, you can enable logging of specific Java packages or classes by using the <code class="literal">&lt;logging/&gt;</code> element:
+		</p><pre class="screen no_copy no_copy">&lt;logging traceSpecification="&lt;component_1&gt;=&lt;level&gt;:&lt;component_2&gt;=&lt;level&gt;:..."/&gt;</pre><p>
+			The <code class="literal">component</code> element is a Java package or class, and the <code class="literal">level</code> element is one of the following logging levels: <code class="literal">off</code>, <code class="literal">fatal</code>, <code class="literal">severe</code>, <code class="literal">warning</code>, <code class="literal">audit</code>, <code class="literal">info</code>, <code class="literal">config</code>, <code class="literal">detail</code>, <code class="literal">fine</code>, <code class="literal">finer</code>, <code class="literal">finest</code>, <code class="literal">all</code>.
+		</p><p>
+			Try enabling detailed logging of the MicroProfile Health feature by adding the <code class="literal hotspot=14">&lt;logging/&gt;</code> element to your configuration file.
+		</p><pre class="screen code_command hotspot code_command hotspot"><span class="marked marked">Replace the server configuration file.</span>
+<code class="literal">src/main/liberty/config/server.xml</code></pre><p>
+			server.xml
+		</p><pre class="programlisting language-xml code_column numbered">&lt;server description="Sample Liberty server"&gt;
+    &lt;featureManager&gt;
+        &lt;feature&gt;jaxrs-2.1&lt;/feature&gt;
+        &lt;feature&gt;jsonp-1.1&lt;/feature&gt;
+        &lt;feature&gt;cdi-2.0&lt;/feature&gt;
+        &lt;feature&gt;mpMetrics-2.0&lt;/feature&gt;
+        &lt;feature&gt;mpHealth-2.0&lt;/feature&gt;
+        &lt;feature&gt;mpConfig-1.3&lt;/feature&gt;
+    &lt;/featureManager&gt;
+
+    &lt;applicationManager autoExpand="true" /&gt;
+    &lt;quickStartSecurity userName="admin" userPassword="adminpwd" /&gt;
+    &lt;keyStore id="defaultKeyStore" password="mpKeystore" /&gt;
+    &lt;logging traceSpecification="com.ibm.ws.microprofile.health.*=all" /&gt;
+    &lt;httpEndpoint host="*" httpPort="${default.http.port}"
+        httpsPort="${default.https.port}" id="defaultHttpEndpoint"/&gt;
+
+    &lt;variable name="io_openliberty_guides_system_inMaintenance" value="false"/&gt;
+
+    &lt;webApplication location="getting-started.war" contextRoot="/"/&gt;
+&lt;/server&gt;</pre><p>
+			Next, repackage the server:
+		</p><pre class="screen command command">mvn package</pre><p>
+			Now, when you visit the <code class="literal">/health</code> endpoint, additional traces are logged into the <code class="literal">trace.log</code> file.
+		</p></section><section class="chapter" id="starting_and_stopping_the_open_liberty_server_in_the_background"><div class="titlepage"><div><div><h1 class="title">Chapter 6. Starting and stopping the Open Liberty server in the background</h1></div></div></div><p>
+			Although you can start and stop the server in the foreground by using the Maven <code class="literal">liberty:run-server</code> goal, you can also start and stop the server in the background with the Maven <code class="literal">liberty:start-server</code> and <code class="literal">liberty:stop-server</code> goals:
+		</p><pre class="screen command command">mvn liberty:start-server
+mvn liberty:stop-server</pre></section><section class="chapter" id="running_the_application_from_a_minimal_runnable_jar"><div class="titlepage"><div><div><h1 class="title">Chapter 7. Running the application from a minimal runnable JAR</h1></div></div></div><p>
+			So far, Open Liberty has been running out of the <code class="literal">target/liberty/wlp</code> directory, which effectively contains an Open Liberty server installation and the deployed application. The final product of the Maven build is a server package for use in a continuous integration pipeline and, ultimately, a production deployment.
+		</p><p>
+			Open Liberty supports a number of different server packages. The sample application currently generates a <code class="literal">usr</code> package that contains the servers and application to be extracted onto an Open Liberty installation.
+		</p><p>
+			The type of server package is configured with <code class="literal hotspot=32 file=0">&lt;packaging.type/&gt;</code> in the <code class="literal hotspot file=0">pom.xml</code>.
+		</p><p>
+			Instead of creating a server package, you can generate a runnable JAR file that contains the application along with a server runtime. This JAR can then be run anywhere and deploy your application and server at the same time. To generate a runnable JAR, invoke the <code class="literal hotspot=39-47 file=0">runnable-package</code> profile by using the <code class="literal">-P</code> flag:
+		</p><pre class="screen command command">mvn install -P runnable-package</pre><p>
+			The <code class="literal">-P</code> flag specifies the Maven profile to be run during the build. In this case, the <code class="literal hotspot=39-47 file=0">runnable-package</code> profile is invoked, which temporarily overrides the <code class="literal hotspot=32 hotspot=45 file=0">packaging.type</code> property from the <code class="literal">usr</code> package to the <code class="literal">runnable</code> package. This property then propagates to the <code class="literal hotspot=168-190 file=0">liberty-maven-plugin</code> plug-in, which generates the server package that you want.
+		</p><p>
+			When the build completes, you can find the runnable <code class="literal">getting-started.jar</code> file in the <code class="literal">target</code> directory. By default, this JAR file comes with all the features available in Open Liberty, including the entirety of Java EE and MicroProfile. As a result, this JAR is over 100 MB. To omit the features that you don’t need and package the JAR with only the <code class="literal hotspot=2-9 file=1">features</code> that you defined in the <code class="literal hotspot file=1">server.xml</code> file, use <code class="literal">minifiy,runnable</code> as the packaging type. To build a minimal runnable JAR, invoke the <code class="literal hotspot=48-56 file=0">minify-runnable-package</code> profile by using the <code class="literal">-P</code> flag:
+		</p><pre class="screen command command">mvn install -P minify-runnable-package</pre><p>
+			The <code class="literal hotspot=48-56 file=0">minify-runnable-package</code> profile overrides the <code class="literal hotspot=32 hotspot=54 file=0">packaging.type</code> property from the <code class="literal">usr</code> package to the <code class="literal">minify,runnable</code> package and generates a runnable JAR file that contains only the <code class="literal hotspot=2-9 file=1">features</code> that you explicitly enabled in your <code class="literal hotspot file=1">server.xml</code> file. As a result, the generated JAR is only about 50 MB.
+		</p><p>
+			To run the JAR, first stop the server if it’s running. Then, navigate to the <code class="literal">target</code> directory and run the <code class="literal">java -jar</code> command:
+		</p><pre class="screen command command">java -jar getting-started.jar</pre><p>
+			When the server starts, visit the <a class="link" href="http://localhost:9080/system/properties">http://localhost:9080/system/properties</a> URL to access your application that is now running out of the minimal runnable JAR.
+		</p><p>
+			At this point, you can stop the server by pressing <code class="literal">CTRL+C</code> in the shell session that the server runs in.
+		</p><p>
+			pom.xml
+		</p><pre class="programlisting language-xml code_column numbered">&lt;?xml version='1.0' encoding='utf-8'?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;parent&gt;
+        &lt;groupId&gt;net.wasdev.wlp.maven.parent&lt;/groupId&gt;
+        &lt;artifactId&gt;liberty-maven-app-parent&lt;/artifactId&gt;
+        &lt;version&gt;RELEASE&lt;/version&gt;
+    &lt;/parent&gt;
+
+    &lt;groupId&gt;io.openliberty.guides&lt;/groupId&gt;
+    &lt;artifactId&gt;getting-started&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;packaging&gt;war&lt;/packaging&gt;
+
+    &lt;properties&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+        &lt;project.reporting.outputEncoding&gt;UTF-8&lt;/project.reporting.outputEncoding&gt;
+        &lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;
+        &lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt;
+        &lt;!-- Plugins --&gt;
+        &lt;version.maven-war-plugin&gt;3.2.2&lt;/version.maven-war-plugin&gt;
+        &lt;version.maven-surefire-plugin&gt;3.0.0-M1&lt;/version.maven-surefire-plugin&gt;
+        &lt;version.maven-failsafe-plugin&gt;3.0.0-M1&lt;/version.maven-failsafe-plugin&gt;
+        &lt;!-- OpenLiberty runtime --&gt;
+        &lt;version.openliberty-runtime&gt;RELEASE&lt;/version.openliberty-runtime&gt;
+        &lt;http.port&gt;9080&lt;/http.port&gt;
+        &lt;https.port&gt;9443&lt;/https.port&gt;
+        &lt;packaging.type&gt;usr&lt;/packaging.type&gt;
+        &lt;app.name&gt;${project.artifactId}&lt;/app.name&gt;
+        &lt;package.file&gt;${project.build.directory}/${app.name}.zip&lt;/package.file&gt;
+    &lt;/properties&gt;
+
+    &lt;!-- Profiles for temporarily switching packaging types --&gt;
+    &lt;profiles&gt;
+        &lt;profile&gt;
+            &lt;id&gt;runnable-package&lt;/id&gt;
+            &lt;properties&gt;
+                &lt;package.file&gt;
+                    ${project.build.directory}/${app.name}.jar
+                &lt;/package.file&gt;
+                &lt;packaging.type&gt;runnable&lt;/packaging.type&gt;
+            &lt;/properties&gt;
+        &lt;/profile&gt;
+        &lt;profile&gt;
+            &lt;id&gt;minify-runnable-package&lt;/id&gt;
+            &lt;properties&gt;
+                &lt;package.file&gt;
+                    ${project.build.directory}/${app.name}.jar
+                &lt;/package.file&gt;
+                &lt;packaging.type&gt;minify,runnable&lt;/packaging.type&gt;
+            &lt;/properties&gt;
+        &lt;/profile&gt;
+    &lt;/profiles&gt;
+
+    &lt;dependencyManagement&gt;
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+                &lt;artifactId&gt;features-bom&lt;/artifactId&gt;
+                &lt;version&gt;RELEASE&lt;/version&gt;
+                &lt;type&gt;pom&lt;/type&gt;
+                &lt;scope&gt;import&lt;/scope&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    &lt;/dependencyManagement&gt;
+
+    &lt;dependencies&gt;
+        &lt;!-- Open Liberty Features --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+            &lt;artifactId&gt;jaxrs-2.1&lt;/artifactId&gt;
+            &lt;type&gt;esa&lt;/type&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+            &lt;artifactId&gt;jsonp-1.1&lt;/artifactId&gt;
+            &lt;type&gt;esa&lt;/type&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+            &lt;artifactId&gt;cdi-2.0&lt;/artifactId&gt;
+            &lt;type&gt;esa&lt;/type&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+            &lt;artifactId&gt;mpMetrics-2.0&lt;/artifactId&gt;
+            &lt;type&gt;esa&lt;/type&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.openliberty.features&lt;/groupId&gt;
+            &lt;artifactId&gt;mpHealth-2.0&lt;/artifactId&gt;
+            &lt;type&gt;esa&lt;/type&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;!-- For tests --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;junit&lt;/groupId&gt;
+            &lt;artifactId&gt;junit&lt;/artifactId&gt;
+            &lt;version&gt;4.12&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.cxf&lt;/groupId&gt;
+            &lt;artifactId&gt;cxf-rt-rs-client&lt;/artifactId&gt;
+            &lt;version&gt;3.2.6&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.cxf&lt;/groupId&gt;
+            &lt;artifactId&gt;cxf-rt-rs-extension-providers&lt;/artifactId&gt;
+            &lt;version&gt;3.2.6&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.glassfish&lt;/groupId&gt;
+            &lt;artifactId&gt;javax.json&lt;/artifactId&gt;
+            &lt;version&gt;1.0.4&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;!-- Support for JDK 9 and above --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;javax.xml.bind&lt;/groupId&gt;
+            &lt;artifactId&gt;jaxb-api&lt;/artifactId&gt;
+            &lt;version&gt;2.3.1&lt;/version&gt;
+	    &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.sun.xml.bind&lt;/groupId&gt;
+            &lt;artifactId&gt;jaxb-core&lt;/artifactId&gt;
+            &lt;version&gt;2.3.0.1&lt;/version&gt;
+	    &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.sun.xml.bind&lt;/groupId&gt;
+            &lt;artifactId&gt;jaxb-impl&lt;/artifactId&gt;
+            &lt;version&gt;2.3.2&lt;/version&gt;
+	    &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;javax.activation&lt;/groupId&gt;
+            &lt;artifactId&gt;activation&lt;/artifactId&gt;
+            &lt;version&gt;1.1.1&lt;/version&gt;
+	    &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+    &lt;build&gt;
+        &lt;finalName&gt;${project.artifactId}&lt;/finalName&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-war-plugin&lt;/artifactId&gt;
+                &lt;version&gt;${version.maven-war-plugin}&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;failOnMissingWebXml&gt;false&lt;/failOnMissingWebXml&gt;
+                    &lt;packagingExcludes&gt;pom.xml&lt;/packagingExcludes&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+            &lt;!-- Enable liberty-maven plugin --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;net.wasdev.wlp.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;liberty-maven-plugin&lt;/artifactId&gt;
+                &lt;configuration&gt;
+                    &lt;assemblyArtifact&gt;
+                        &lt;groupId&gt;io.openliberty&lt;/groupId&gt;
+                        &lt;artifactId&gt;openliberty-runtime&lt;/artifactId&gt;
+                        &lt;version&gt;${version.openliberty-runtime}&lt;/version&gt;
+                        &lt;type&gt;zip&lt;/type&gt;
+                    &lt;/assemblyArtifact&gt;
+                    &lt;serverName&gt;GettingStartedServer&lt;/serverName&gt;
+                    &lt;stripVersion&gt;true&lt;/stripVersion&gt;
+                    &lt;configFile&gt;src/main/liberty/config/server.xml&lt;/configFile&gt;
+                    &lt;looseApplication&gt;true&lt;/looseApplication&gt;
+                    &lt;packageFile&gt;${package.file}&lt;/packageFile&gt;
+                    &lt;include&gt;${packaging.type}&lt;/include&gt;
+                    &lt;bootstrapProperties&gt;
+                        &lt;default.http.port&gt;${http.port}&lt;/default.http.port&gt;
+                        &lt;default.https.port&gt;${https.port}&lt;/default.https.port&gt;
+                        &lt;app.context.root&gt;${app.name}&lt;/app.context.root&gt;
+                    &lt;/bootstrapProperties&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+            &lt;!-- Plugin to run unit tests --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
+                &lt;version&gt;${version.maven-surefire-plugin}&lt;/version&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;phase&gt;test&lt;/phase&gt;
+                        &lt;id&gt;default-test&lt;/id&gt;
+                        &lt;configuration&gt;
+                            &lt;excludes&gt;
+                                &lt;exclude&gt;**/it/**&lt;/exclude&gt;
+                            &lt;/excludes&gt;
+                            &lt;reportsDirectory&gt;
+                                ${project.build.directory}/test-reports/unit
+                            &lt;/reportsDirectory&gt;
+                        &lt;/configuration&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+                &lt;configuration&gt;
+                    &lt;skipTests&gt;${skipTests}&lt;/skipTests&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+            &lt;!-- Plugin to run functional tests --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-failsafe-plugin&lt;/artifactId&gt;
+                &lt;version&gt;${version.maven-failsafe-plugin}&lt;/version&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;phase&gt;integration-test&lt;/phase&gt;
+                        &lt;id&gt;integration-test&lt;/id&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;integration-test&lt;/goal&gt;
+                        &lt;/goals&gt;
+                        &lt;configuration&gt;
+                            &lt;includes&gt;
+                                &lt;include&gt;**/it/**&lt;/include&gt;
+                            &lt;/includes&gt;
+                            &lt;systemPropertyVariables&gt;
+                                &lt;liberty.test.port&gt;${http.port}&lt;/liberty.test.port&gt;
+                                &lt;war.name&gt;${app.name}&lt;/war.name&gt;
+                            &lt;/systemPropertyVariables&gt;
+                        &lt;/configuration&gt;
+                    &lt;/execution&gt;
+                    &lt;execution&gt;
+                        &lt;id&gt;verify-results&lt;/id&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;verify&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+                &lt;configuration&gt;
+                    &lt;summaryFile&gt;
+                        ${project.build.directory}/test-reports/it/failsafe-summary.xml
+                    &lt;/summaryFile&gt;
+                    &lt;reportsDirectory&gt;
+                        ${project.build.directory}/test-reports/it
+                    &lt;/reportsDirectory&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;</pre><p>
+			server.xml
+		</p><pre class="programlisting language-xml code_column numbered">&lt;server description="Sample Liberty server"&gt;
+    &lt;featureManager&gt;
+        &lt;feature&gt;jaxrs-2.1&lt;/feature&gt;
+        &lt;feature&gt;jsonp-1.1&lt;/feature&gt;
+        &lt;feature&gt;cdi-2.0&lt;/feature&gt;
+        &lt;feature&gt;mpMetrics-2.0&lt;/feature&gt;
+        &lt;feature&gt;mpHealth-2.0&lt;/feature&gt;
+        &lt;feature&gt;mpConfig-1.3&lt;/feature&gt;
+    &lt;/featureManager&gt;
+
+    &lt;applicationManager autoExpand="true" /&gt;
+    &lt;quickStartSecurity userName="admin" userPassword="adminpwd" /&gt;
+    &lt;keyStore id="defaultKeyStore" password="mpKeystore" /&gt;
+    &lt;logging traceSpecification="com.ibm.ws.microprofile.health.*=all" /&gt;
+    &lt;httpEndpoint host="*" httpPort="${default.http.port}"
+        httpsPort="${default.https.port}" id="defaultHttpEndpoint"/&gt;
+
+    &lt;variable name="io_openliberty_guides_system_inMaintenance" value="false"/&gt;
+
+    &lt;webApplication location="getting-started.war" contextRoot="/"/&gt;
+&lt;/server&gt;</pre></section><section class="chapter" id="running_the_application_in_a_docker_container"><div class="titlepage"><div><div><h1 class="title">Chapter 8. Running the application in a Docker container</h1></div></div></div><p>
+			To run the application in a container, you need to have Docker installed. For installation instructions, see the <a class="link" href="https://docs.docker.com/install/">Official Docker Docs</a>.
+		</p><p>
+			To containerize the application, you need a <code class="literal">Dockerfile</code>. This file contains a collection of instructions that define how a Docker image is built, what files are packaged into it, what commands run when the image runs as a container, and so on. You can find a complete <code class="literal">Dockerfile</code> in the <code class="literal">start</code> directory. This <code class="literal">Dockerfile</code> packages the <code class="literal">usr</code> server package into a Docker image that contains a preconfigured Open Liberty server.
+		</p><p>
+			To build and containerize the application, start your Docker daemon and run the following command:
+		</p><pre class="screen command command">docker build -t openliberty-getting-started:1.0-SNAPSHOT .</pre><p>
+			The <code class="literal">-t</code> flag in the <code class="literal">docker build</code> command allows the Docker image to be labeled (tagged) in the <code class="literal">name[:tag]</code> format. The tag for an image describes the specific image version. If the optional <code class="literal">[:tag]</code> tag is not specified, the <code class="literal">latest</code> tag is created by default. The Docker <code class="literal">openliberty-getting-started:1.0-SNAPSHOT</code> image is built from the <code class="literal">Dockerfile</code>. To verify that the image is built, run the <code class="literal">docker images</code> command to list all local Docker images:
+		</p><pre class="screen command command">docker images</pre><p>
+			Your image should appear in the list of all Docker images:
+		</p><pre class="screen no_copy no_copy">REPOSITORY                     TAG             IMAGE ID        CREATED         SIZE
+openliberty-getting-started    1.0-SNAPSHOT    85085141269b    21 hours ago    487MB</pre><p>
+			Next, run the image as a container:
+		</p><pre class="screen command command">docker run -d --name gettingstarted-app -p 9080:9080 openliberty-getting-started:1.0-SNAPSHOT</pre><p>
+			There is a bit going on here, so let’s break down the command:
+		</p><div class="informaltable"><table class="lt-4-cols lt-7-rows"><colgroup><col style="width: 13%; " class="col_1"/><col style="width: 87%; " class="col_2"/></colgroup><thead><tr><th align="left" valign="top" id="idm140397238006272" scope="col"><span class="strong strong"><strong>Flag</strong></span></th><th align="left" valign="top" id="idm140397238004720" scope="col"><span class="strong strong"><strong>Description</strong></span></th></tr></thead><tbody><tr><td align="left" valign="top" headers="idm140397238006272">
+						<p>
+							-d
+						</p>
+						</td><td align="left" valign="top" headers="idm140397238004720">
+						<p>
+							Runs the container in the background.
+						</p>
+						</td></tr><tr><td align="left" valign="top" headers="idm140397238006272">
+						<p>
+							--name
+						</p>
+						</td><td align="left" valign="top" headers="idm140397238004720">
+						<p>
+							Specifies a name for the container.
+						</p>
+						</td></tr><tr><td align="left" valign="top" headers="idm140397238006272">
+						<p>
+							-p
+						</p>
+						</td><td align="left" valign="top" headers="idm140397238004720">
+						<p>
+							Maps the container ports to the host ports.
+						</p>
+						</td></tr></tbody></table></div><p>
+			The final argument in the <code class="literal">docker run</code> command is the Docker image name.
+		</p><p>
+			Next, run the <code class="literal">docker ps</code> command to verify that your container started:
+		</p><pre class="screen command command">docker ps</pre><p>
+			Make sure that your container is running and does not have <code class="literal">Exited</code> as its status:
+		</p><pre class="screen no_copy no_copy">CONTAINER ID    IMAGE                         CREATED          STATUS           NAMES
+4294a6bdf41b    openliberty-getting-started   9 seconds ago    Up 11 seconds    gettingstarted-app</pre><p>
+			To access the application, visit the <a class="link" href="http://localhost:9080/system/properties">http://localhost:9080/system/properties</a> URL.
+		</p><p>
+			To stop and remove the container, run the following commands:
+		</p><pre class="screen command command">docker stop gettingstarted-app &amp;&amp; docker rm gettingstarted-app</pre><p>
+			To remove the image, run the following command:
+		</p><pre class="screen command command">docker rmi openliberty-getting-started:1.0-SNAPSHOT</pre></section><section class="chapter" id="great_work_you_re_done"><div class="titlepage"><div><div><h1 class="title">Chapter 9. Great work! You’re done!</h1></div></div></div><p>
+			You’ve learned the basics of deploying and updating an application on an Open Liberty server.
+		</p><p>
+			<a class="link" href="https://raw.githubusercontent.com/OpenLiberty/guides-common/master/attribution.adoc">https://raw.githubusercontent.com/OpenLiberty/guides-common/master/attribution.adoc</a>
+		</p></section><div><div xml:lang="en-US" class="legalnotice" id="idm140397237360592"><h1 class="legalnotice">Legal Notice</h1><div class="para">
+		Copyright <span class="trademark"/>© 2019 Red Hat, Inc.
+	</div><div class="para">
+		The text of and illustrations in this document are licensed by Red Hat under a Creative Commons Attribution–Share Alike 3.0 Unported license ("CC-BY-SA"). An explanation of CC-BY-SA is available at <a class="uri" href="http://creativecommons.org/licenses/by-sa/3.0/">http://creativecommons.org/licenses/by-sa/3.0/</a>. In accordance with CC-BY-SA, if you distribute this document or an adaptation of it, you must provide the URL for the original version.
+	</div><div class="para">
+		Red Hat, as the licensor of this document, waives the right to enforce, and agrees not to assert, Section 4d of CC-BY-SA to the fullest extent permitted by applicable law.
+	</div><div class="para">
+		Red Hat, Red Hat Enterprise Linux, the Shadowman logo, the Red Hat logo, JBoss, OpenShift, Fedora, the Infinity logo, and RHCE are trademarks of Red Hat, Inc., registered in the United States and other countries.
+	</div><div class="para">
+		<span class="trademark">Linux</span>® is the registered trademark of Linus Torvalds in the United States and other countries.
+	</div><div class="para">
+		<span class="trademark">Java</span>® is a registered trademark of Oracle and/or its affiliates.
+	</div><div class="para">
+		<span class="trademark">XFS</span>® is a trademark of Silicon Graphics International Corp. or its subsidiaries in the United States and/or other countries.
+	</div><div class="para">
+		<span class="trademark">MySQL</span>® is a registered trademark of MySQL AB in the United States, the European Union and other countries.
+	</div><div class="para">
+		<span class="trademark">Node.js</span>® is an official trademark of Joyent. Red Hat is not formally related to or endorsed by the official Joyent Node.js open source or commercial project.
+	</div><div class="para">
+		The <span class="trademark">OpenStack</span>® Word Mark and OpenStack logo are either registered trademarks/service marks or trademarks/service marks of the OpenStack Foundation, in the United States and other countries and are used with the OpenStack Foundation's permission. We are not affiliated with, endorsed or sponsored by the OpenStack Foundation, or the OpenStack community.
+	</div><div class="para">
+		All other trademarks are the property of their respective owners.
+	</div></div></div></div></div></div><script type="text/javascript">
+                        jQuery(document).ready(function() {
+                            initSwitchery();
+                            jQuery('pre[class*="language-"]').each(function(i, block){hljs.highlightBlock(block);});
+                        });
+                    </script></body></html>
