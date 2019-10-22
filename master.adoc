@@ -1,23 +1,19 @@
 include::attributes.adoc[]
 
-= Documentation for Open Liberty
+= Open Liberty User Guide
 :context: open-liberty
 
 include::docs/modules/what-is-openliberty.adoc[leveloffset=+1]
-
-include::docs/modules/new-features.adoc[leveloffset=+1]
-
-include::docs/modules/deploying-openliberty-on-openshift.adoc[leveloffset=+1]
 
 include::docs/modules/packaging-and-deploying-applications.adoc[leveloffset=+1]
 
 include::docs/modules/using-the-maven-plugin.adoc[leveloffset=+1]
 
-include::docs/modules/features.adoc[leveloffset=+1]
+include::https://raw.githubusercontent.com/OpenLiberty/docs/master/ref/feature/featureOverview.adoc[leveloffset=+1]
 
-include::docs/modules/server-configuration.adoc[leveloffset=+1]
+include::https://raw.githubusercontent.com/OpenLiberty/docs/master/ref/config/serverConfiguration.adoc[leveloffset=+1]
 
-include::docs/modules/logging.adoc[leveloffset=+1]
+include::https://raw.githubusercontent.com/OpenLiberty/docs/master/ref/general/logging.adoc[leveloffset=+1]
 
 include::docs/modules/testing-with-container.adoc[leveloffset=+1]
 

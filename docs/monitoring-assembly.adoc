@@ -10,4 +10,6 @@ include::modules/monitoring-openliberty.adoc[leveloffset=+1]
 
 include::modules/enabling-monitoring-microservices.adoc[leveloffset=+1]
 
+include::modules/enabling-health-checks.adoc[leveloffset=+1]
+
 :context: {parent-context}

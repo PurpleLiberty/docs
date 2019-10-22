@@ -1,0 +1,25 @@
+// Module included in the following assemblies:
+//
+// <monitoring-assembly>
+
+[id="enabling-health-checks{context}"]
+= Enabling health checks in microservices
+
+A health check is a special REST API implementation that you can use to validate the status of a microservice and its dependencies. link:https://github.com/eclipse/microprofile-health[MicroProfile Health] enables services in an application to self-check their health and then publishes the overall health status to a defined endpoint.
+
+A self-check can be used to assess anything that the service needs, such as:
+
+- Dependencies
+
+- System properties
+
+- Database connections
+
+- Endpoint connections
+
+- Resource availability
+
+To learn how to use MicroProfile Health to enable and report microservice health checks, see link:https://openliberty.io/guides/microprofile-health.html[Adding health reports to microservices].
+
+.Additional resources
+* link:https://www.openliberty.io/docs/ref/general/#health-check-microservices.html[Enabling health checking of microservices]

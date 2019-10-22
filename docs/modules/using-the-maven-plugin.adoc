@@ -1,6 +1,6 @@
 // Module included in the following assemblies:
 //
-// 
+//
 
 [id="using-the-open-liberty-maven-plugin-{context}"]
 = Using the Open Liberty Maven plug-in
@@ -8,6 +8,14 @@
 Open Liberty provides a Maven plug-in to simplify and manage build processes.
 
 After you define the details and dependencies of a project, Maven automatically downloads and installs all of the dependencies. It also runs automated tests on an application after it is built. If the tests don’t pass after you update an application, the build fails and you know that you need to fix your code.
+
+The coordinates for the Maven plugin are:
+
+[source,xml]
+----
+<groupId>org.apache.maven.plugins</groupId>
+<artifactId>maven-failsafe-plugin</artifactId>
+<version>2.22.2-M1</version>
 
 To learn how to configure a simple web servlet application by using Maven and the Liberty Maven plug-in, see link:https://openliberty.io/guides/maven-intro.html[Building a web application with Maven].
 

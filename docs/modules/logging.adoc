@@ -3,23 +3,6 @@
 //
 
 [id="logging-{context}"]
-= Logging
+=Logging
 
-The unified logging component handles messages that are written by applications and the runtime, and provides First Failure Data Capture (FFDC) capability that helps troubleshoot errors with the Open Liberty server.
-
-The logging component is controlled through the server configuration. To configure the logging component in the `server.xml` file, use the `logging` element. The following example shows how to configure log files that are stored in JSON format:
-
-[source,xml]
-----
-<logging messageFormat="json" messageSource="message,trace,accessLog,ffdc,audit" />
-----
-
-You can also configure logging by using the `bootstrap.properties` file and in some cases by using environment variables.
-
-For information about example log configurations and configuration settings by source, see link:https://www.openliberty.io/docs/ref/general/#logging.html[Logging and tracing].
-
-You can configure HTTP access logging to record all inbound client requests that are handled by HTTP endpoints. You can enable access logging as a single log for multiple HTTP endpoints or as one log for each endpoint. For more information, see link:https://www.openliberty.io/docs/ref/general/#access-logging.html[HTTP access logging].
-
-.Additional resources
-* link:https://openliberty.io/docs/ref/config/#logging.html[Open Liberty server configuration: Logging]
-* link:https://www.openliberty.io/guides/microprofile-opentracing.html[Enabling distributed tracing in microservices]
+include::https://raw.githubusercontent.com/OpenLiberty/docs/master/ref/general/logging.adoc[leveloffset=+1]
