@@ -1,8 +1,0 @@
-// Module included in the following assemblies:
-//<debugging-assembly>
-//
-
-[id="logging-{context}"]
-=Logging
-
-include::https://raw.githubusercontent.com/OpenLiberty/docs/master/ref/general/logging.adoc[leveloffset=+1]

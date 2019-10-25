@@ -1,6 +1,0 @@
-This repo contains files that require updating from remote sources.
-To update the content (`master.adoc` files), run the following command:
-
-----
-./bin/fetch-upstream.sh
-----
