@@ -6,7 +6,7 @@
 = Dev Mode
 
 
-Liberty dev mode enables you to rapidly code, deploy, and debug applications with Liberty. You enable dev mode through the Liberty Maven-plugin.
+With Liberty dev mode, you can rapidly code, deploy, and debug applications with Liberty. You enable dev mode through the Liberty Maven-plugin.
 
 To use dev mode, add the following code to your Maven pom.xml file and run the `mvn liberty:dev` command.
 
@@ -16,7 +16,7 @@ To use dev mode, add the following code to your Maven pom.xml file and run the `
 <plugin>
     <groupId>io.openliberty.tools</groupId>
     <artifactId>liberty-maven-plugin</artifactId>
-    <version>3.0.1</version>
+    <version>3.1.0</version>
 </plugin>
 ----
 
@@ -36,12 +36,11 @@ When you use dev mode, Liberty automatically detects the following changes to yo
 
 Dev Mode does not detect some changes. These changes include the following ones:
 
-- A configuration directory or configuration file addition that did not previously exist.
+- The addition of a configuration directory or file.
 - Changes to the host and port for Liberty.
-- Changes to the server name.
 
-If any of these changes are made, Liberty can detect them after you restart dev mode. To restart, quit the Maven build process.
 
-To exit dev mode, press `Control-C`, or type `q` and press `Enter`.
+If either of these changes are made, Liberty can detect them after you restart dev mode. To restart, first exit dev mode by typing `Control-C`, or by typing `q` and pressing `Enter`. Then, run the `mvn liberty:dev` command to restart.
+
 
 For more information, see link:https://github.com/OpenLiberty/ci.maven/blob/master/docs/dev.md[Liberty Dev mode].

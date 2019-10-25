@@ -1,0 +1,23 @@
+// Module included in the following assemblies:
+//
+//
+
+[id="managing-with-maven-{context}"]
+= Managing build processes with the Open Liberty Maven plug-in
+
+You can build and test your applications, whether they are simple applications with a single module or more complex applications that consist of multiple modules.
+
+After you define the details and dependencies of a project, Maven automatically downloads and installs all of the dependencies. It also runs automated tests on an application after it is built. If the tests don’t pass after you update an application, the build fails. You must fix your code.
+
+The following coordinates for the Maven plug-in are required:
+
+[source,xml]
+----
+<groupId>io.openliberty.tools</groupId>
+<artifactId>liberty-maven-plugin</artifactId>
+<version>3.1.0</version>
+----
+
+To learn how to configure a simple web servlet application by using Maven and the Liberty Maven plug-in, see link:https://openliberty.io/guides/maven-intro.html[Building a web application with Maven].
+
+Jakarta EE applications consist of multiple modules that work together as one entity. To learn how to build an application with multiple modules by using Maven and Open Liberty, see link:https://openliberty.io/guides/maven-multimodules.html[Creating a multi-module application].

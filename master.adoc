@@ -1,13 +1,11 @@
 include::attributes.adoc[]
 
-= Open Liberty User Guide
+= User Guide for Red Hat Runtimes
 :context: open-liberty
 
 include::docs/modules/what-is-openliberty.adoc[leveloffset=+1]
 
 include::docs/modules/packaging-and-deploying-applications.adoc[leveloffset=+1]
-
-include::docs/modules/using-the-maven-plugin.adoc[leveloffset=+1]
 
 include::https://raw.githubusercontent.com/OpenLiberty/docs/master/ref/feature/featureOverview.adoc[leveloffset=+1]
 

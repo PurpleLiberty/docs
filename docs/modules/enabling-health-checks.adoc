@@ -5,7 +5,7 @@
 [id="enabling-health-checks{context}"]
 = Enabling health checks in microservices
 
-A health check is a special REST API implementation that you can use to validate the status of a microservice and its dependencies. link:https://github.com/eclipse/microprofile-health[MicroProfile Health] enables services in an application to self-check their health and then publishes the overall health status to a defined endpoint.
+A health check is a special REST API that you can use to validate the status of a microservice and its dependencies. link:https://github.com/eclipse/microprofile-health[MicroProfile Health] enables services in an application to self-check their health and then publishes the overall health status to a defined endpoint.
 
 A self-check can be used to assess anything that the service needs, such as:
 
@@ -18,6 +18,8 @@ A self-check can be used to assess anything that the service needs, such as:
 - Endpoint connections
 
 - Resource availability
+
+With MicroProfile Health, you can enable the services in your liberty application to self-check for liveness and readiness. A liveness check determines whether a service encountered a bug or deadlock. If this check fails, the service is not running and can be terminated. This check corresponds to the Kubernetes liveness probe, which automatically restarts the pod if the check fails. A readiness check determines whether a service is ready to process requests. This check corresponds to the readiness probe in Kubernetes.
 
 To learn how to use MicroProfile Health to enable and report microservice health checks, see link:https://openliberty.io/guides/microprofile-health.html[Adding health reports to microservices].
 

@@ -1,7 +1,15 @@
 <productname>Open Liberty</productname>
-<productnumber>19.0.0.9</productnumber>
-<subtitle>User guide for Red Hat Runtimes</subtitle>
+<productnumber>19.0.0.10</productnumber>
+<subtitle>Build and deploy cloud native applications with Open Liberty</subtitle>
 <abstract>
   <para>These topics provide a brief introduction to Open Liberty and links to in-depth documentation resources.</para>
 </abstract>
-<xi:include href="Common_Content/Legal_Notice.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+<legalnotice lang="en-US" version="5.0" xmlns="http://docbook.org/ns/docbook">
+  <para>                Copyright <trademark class="copyright"></trademark> Copyright 2019 IBM Corp  </para>
+  <para>Code and build scripts are licensed under the Eclipse Public License v1
+Documentation files (e.g. files with an adoc file extension) are licensed under
+Creative Commons Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)
+
+  </para>
+
+</legalnotice>
