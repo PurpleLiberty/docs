@@ -1,0 +1,20 @@
+// Module included in the following assemblies:
+//
+//
+
+[id="packaging-and-deploying-applications-{context}"]
+= Packaging and Deploying applications
+
+You can package everything you need to run your application in a container image and use containers to deploy it in different environments. When you run Open Liberty applications on OpenShift, you combine the most flexible server runtime available to Java developers with a streamlined DevOps process and an intuitive development pipeline.
+
+For more information, see link:https://www.openliberty.io/guides/cloud-openshift.html[Deploying microservices to OpenShift].
+
+To learn how to containerize and run your microservices with Open Liberty, see link:https://openliberty.io/guides/containerize.html[Containerizing microservices].
+
+Open Liberty supports all MicroProfile and Java EE APIs and deploys to every major cloud platform. To get started with Open Liberty, learn how to to run and update a simple REST microservice with link:https://openliberty.io/guides/getting-started.html[Packaging and deploying applications].
+
+
+
+
+.Additional resources
+* link:https://openliberty.io/guides/kubernetes-intro.html[Deploying microservices to Kubernetes]

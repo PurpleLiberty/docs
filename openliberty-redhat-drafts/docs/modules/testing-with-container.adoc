@@ -1,0 +1,60 @@
+// Module included in the following assemblies:
+//
+//
+
+[id="testing-with-container-{context}"]
+= Testing with a container
+
+
+You can use MicroShed Testing to develop integration tests for your Open Liberty application. You test your application from outside its container so that the tests run against the same image that you use in production.
+
+
+To write a test with MircoShed testing, first add `microshed-testing-testcontainers` and `junit-jupiter` artifact IDs as test-scoped dependencies, as shown in the following example:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.microshed</groupId>
+    <artifactId>microshed-testing-testcontainers</artifactId>
+    <version>0.4.1</version>
+    <scope>test</scope>
+</dependency>
+
+<!-- Any compatible version of JUnit Jupiter 5.X will work -->
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter</artifactId>
+    <version>5.4.2</version>
+    <scope>test</scope>
+</dependency>
+----
+
+Next, create a test class with the  `MicroShedTest` annotation. Then, create a public `static MicroProfileApplication` method and inject one or more `public static JAX-RS` resources, as shown in the following example:
+
+[source,xml]
+----
+@MicroShedTest
+public class MyTest {
+
+    @Container
+    public static MicroProfileApplication app = new MicroProfileApplication()
+                    .withAppContextRoot("/myservice");
+
+    @Inject
+    public static MyService mySvc;
+
+    // write @Test methods as normal
+----
+
+In cases where a Dockerfile or container image is not available, use the link:https://github.com/MicroShed/microshed-testing/tree/master/sample-apps/liberty-app[`microshed-testing-liberty` adapter]. This adapter produces a container image that is similar to the following Dockerfile:
+
+[source,xml]
+----
+FROM open-liberty:microProfile3
+ADD build/libs/$APP_FILE /config/dropins
+COPY src/main/liberty/config /config
+----
+For more information, see link:https://microshed.org/microshed-testing/[MicroShed Testing].
+
+.Additional resources
+* link:http://arquillian.org/modules/arquillian-liberty-managed-container-adapter/[Arquillian Liberty managed container adapter]

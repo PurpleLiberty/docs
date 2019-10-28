@@ -1,0 +1,12 @@
+// Module included in the following assemblies:
+//
+//
+
+[id="what-is-openliberty-{context}"]
+= What is Open Liberty
+
+Open Liberty is a lightweight Java runtime for building cloud-native applications and microservices.
+
+With Open Liberty, it's easy to add and remove modular features from the latest versions of Jakarta EE and Eclipse MicroProfile. This modular structure simplifies microservice development, enabling you to run Just enough Application Server to support the features that your application needs. Furthermore, with Open Liberty zero migration architecture, you can upgrade to the latest version with minimal impact to your current applications and configurations. Open Liberty is compatible with the Jakarta EE 8 Full Platform and Web Profile specifications and with MicroProfile 3.0. For more information, see the link:https://openliberty.io/[Open Liberty website]. For the latest updates about Open Liberty features and capabilities, see the link:https://openliberty.io/blog/[Open Liberty blog] and https://openliberty.io/docs/[Open Liberty docs].
+
+Open Liberty is one of the Java runtimes available on OpenShift, and support is provided as part of a Red Hat subscription. Run Open Liberty on OpenShift to build and deploy cloud-native applications with the benefits of the OpenShift platform. For more information about using Open Liberty with OpenShift, see link:https://openliberty.io/guides/cloud-openshift.html[Deploying microservices to OpenShift].

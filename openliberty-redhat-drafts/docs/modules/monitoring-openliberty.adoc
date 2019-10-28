@@ -1,0 +1,16 @@
+// Module included in the following assemblies:
+//
+// <monitoring-assembly>
+
+[id="monitoring-open-liberty-{context}"]
+= Monitoring Open Liberty
+
+Building observability into microservices externalizes the internal status of a system to enable operations teams to monitor microservice systems more effectively. It's important that microservices are written to produce metrics that can be used by operations teams when the microservices are running in production. 
+
+Metrics are emitted from a number of different places. You can obtain them from applications, the Open Liberty runtime, and the Java virtual machine (JVM). Microprofile Metrics provides a `/metrics` endpoint from which you can access all metrics that are emitted by the Open Liberty server and deployed applications. They can be gathered and stored in database tools, such as Prometheus, and displayed on dashboards, such as Grafana.
+
+For a list of all available Open Liberty metrics, see the link:https://openliberty.io/docs/ref/general/#metrics-catalog.html[metrics reference list]. 
+
+.Additional Resources
+* link:https://openliberty.io/docs/ref/general/#microservice_observability_metrics.html[Microservice observability with metrics]
+* link:https://openliberty.io/guides/microprofile-metrics.html[Providing metrics from a microservice]
