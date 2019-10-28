@@ -1,0 +1,46 @@
+// Module included in the following assemblies:
+//<debugging-assembly>
+//
+
+[id="dev-mode-{context}"]
+= Dev Mode
+
+
+With Liberty dev mode, you can rapidly code, deploy, and debug applications with Liberty. You enable dev mode through the Liberty Maven-plugin.
+
+To use dev mode, add the following code to your Maven pom.xml file and run the `mvn liberty:dev` command.
+
+
+[source,xml]
+----
+<plugin>
+    <groupId>io.openliberty.tools</groupId>
+    <artifactId>liberty-maven-plugin</artifactId>
+    <version>3.1.0</version>
+</plugin>
+----
+
+Dev mode provides three key features:
+
+- Your running server can detect, recompile, and pick up code changes.
+- You can run unit and integration tests on demand, by pressing `Enter` in the command window where dev mode is running.
+- You can attach a debugger to the running server to step through your code at any time.
+
+When you use dev mode, Liberty automatically detects the following changes to your application source:
+
+- Java source file changes and Java test file changes.
+- Dependencies that are added to your pom.xml file. Liberty detects the dependencies and adds them to your class path.
+- Resource file changes. Liberty detects them and copies them into your target directory.
+- Configuration directory and configuration file changes. Liberty detects them and copies them into your target directory.
+- Addition of new features in the Liberty server configuration. Liberty detects the new features, installs them, and starts them.
+
+Dev Mode does not detect some changes. These changes include the following ones:
+
+- The addition of a configuration directory or file.
+- Changes to the host and port for Liberty.
+
+
+If either of these changes are made, Liberty can detect them after you restart dev mode. To restart, first exit dev mode by typing `Control-C`, or by typing `q` and pressing `Enter`. Then, run the `mvn liberty:dev` command to restart.
+
+
+For more information, see link:https://github.com/OpenLiberty/ci.maven/blob/master/docs/dev.md[Liberty Dev mode].
