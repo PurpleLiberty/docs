@@ -189,7 +189,7 @@ If you specify a value of `false`, the date and time are formatted according to 
 |messageSource
 |com.ibm.ws.logging.message.source
 |WLP_LOGGING_MESSAGE_SOURCE
-|The list of comma-separated sources that route to the `messages.log` file. This property applies only when `messageFormat="json"`. Valid values are `message`, `trace`, `accessLog`, `ffdc`, and `audit`. By default, `messageSource` is set to `message`. To use the `audit` source, enable the Liberty link:https://www.openliberty.io/docs/ref/feature/#audit-1.0.html[audit-1.0]] feature. To use the `accessLog` source you need to have configured link:https://www.openliberty.io/docs/ref/config/#httpAccessLogging.html[httpAccessLogging].
+|The list of comma-separated sources that route to the `messages.log` file. This property applies only when `messageFormat="json"`. Valid values are `message`, `trace`, `accessLog`, `ffdc`, and `audit`. By default, `messageSource` is set to `message`. To use the `audit` source, enable the Liberty link:https://www.openliberty.io/docs/ref/feature/#audit-1.0.html[audit-1.0] feature. To use the `accessLog` source you need to have configured link:https://www.openliberty.io/docs/ref/config/#httpAccessLogging.html[httpAccessLogging].
 
 4+|Trace Config
 
