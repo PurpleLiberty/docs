@@ -6,8 +6,6 @@
 
 You can use MicroProfile Metrics and MicroProfile Health to monitor microservices and applications that run on Open Liberty. Enabling and reporting metric and health check data for your microservices helps you pinpoint issues, collect data for capacity planning, and decide when to scale a service up or down.
 
-include::modules/monitoring-openliberty.adoc[leveloffset=+1]
-
 include::modules/enabling-monitoring-microservices.adoc[leveloffset=+1]
 
 include::modules/enabling-health-checks.adoc[leveloffset=+1]
