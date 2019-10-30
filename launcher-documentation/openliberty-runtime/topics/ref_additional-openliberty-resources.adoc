@@ -1,0 +1,8 @@
+[id='additional-openliberty-resources_{context}']
+= Additional {OpenLiberty} resources
+
+* link:https://docs.openshift.org/latest/architecture/[OpenShift Architecture Overview]
+* link:https://openliberty.io[Open Liberty Project]
+* link:https://openliberty.io/docs/[Open Liberty Documentation ]
+* link:https://openliberty.io/guides/[Open Liberty Guides]
+* link:https://github.com/fabric8io/fabric8-maven-plugin/[Fabric8 Maven Plugin]

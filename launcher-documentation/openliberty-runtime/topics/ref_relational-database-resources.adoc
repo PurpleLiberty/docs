@@ -1,0 +1,36 @@
+
+[id='relational-database-resources_{context}']
+= Relational database resources
+
+More background and related information on running relational databases in OpenShift, CRUD, HTTP API and REST can be found here:
+
+* link:https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html[HTTP Verbs]
+
+* link:https://www.ics.uci.edu/~fielding/pubs/dissertation/fielding_dissertation.pdf[Architectural Styles and the Design of Network-based Software Architectures - Representational State Transfer (REST)]
+
+* link:https://speakerdeck.com/glaforge/the-never-ending-rest-api-design-debate[The never ending REST API design debase]
+
+* link:http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven[REST APIs must be Hypertext driven]
+
+* link:https://martinfowler.com/articles/richardsonMaturityModel.html[Richardson Maturity Model]
+
+ifndef::built-for-nodejs[* link:https://www.jcp.org/en/jsr/detail?id=311[JSR 311: JAX-RS: The JavaTM API for RESTful Web Services]]
+
+ifdef::built-for-nodejs[* link:https://expressjs.com/[Express Web Framework]]
+
+ifdef::built-for-spring-boot[* link:https://spring.io/guides/gs/rest-service/[Building a RESTful Service with Spring]]
+
+ifdef::built-for-vertx[]
+* link:http://vertx.io/blog/some-rest-with-vert-x/[Some Rest with {VertX}]
+* link:http://vertx.io/blog/using-the-asynchronous-sql-client/[Using the {VertX} asynchronous SQL client]
+endif::built-for-vertx[]
+
+ifdef::built-for-thorntail[* link:http://resteasy.jboss.org/docs.html[RESTEasy Documentation]]
+
+ifndef::built-for-spring-boot[* link:{link-example-crud-spring-boot}[{name-example-crud} for {SpringBoot}]]
+
+ifndef::built-for-vertx[* link:{link-example-crud-vertx}[{name-example-crud} for {VertX}]]
+
+ifndef::built-for-thorntail[* link:{link-example-crud-thorntail}[{name-example-crud} for {Thorntail}]]
+
+ifndef::built-for-nodejs[* link:{link-example-crud-nodejs}[{name-example-crud} for {Node}]]

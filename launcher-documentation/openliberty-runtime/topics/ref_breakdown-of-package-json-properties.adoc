@@ -1,0 +1,69 @@
+[id='breakdown-of-package-json-properties_{context}']
+= Breakdown of package.json properties
+
+.link:https://github.com/nodeshift-starters/nodejs-rest-http/blob/master/package.json[nodejs-rest-http/package.json]
+[source,json,options="nowrap",subs="attributes+"]
+----
+{
+  "name": "nodejs-rest-http",
+  "version": "1.1.1",
+  "author": "Red Hat, Inc.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "test": "tape test/*.js | tap-spec", <1>
+    "lint": "eslint test/*.js app.js bin/*",
+    "prepare": "nsp check",
+    "coverage": "nyc npm test",
+    "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
+    "ci": "npm run lint && npm run coveralls",
+    "dependencyCheck": "szero . --ci",
+    "release": "standard-version",
+    "openshift": "nodeshift --strictSSL=false --nodeVersion=8.x", <2>
+    "postinstall": "license-reporter report && license-reporter save --xml licenses.xml",
+    "start": "node ." <3>
+  },
+  "main": "./bin/www", <4>
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nodeshift-starters/nodejs-rest-http.git"
+  },
+  "files": [ <5>
+    "package.json",
+    "app.js",
+    "public",
+    "bin",
+    "LICENSE",
+    "licenses"
+  ],
+  "bugs": {
+    "url": "https://github.com/nodeshift-starters/nodejs-rest-http/issues"
+  },
+  "homepage": "https://github.com/nodeshift-starters/nodejs-rest-http",
+  "devDependencies": { <6>
+    "coveralls": "^3.0.0",
+    "nodeshift": "^1.3.0",
+    "nsp": "~3.1.0",
+    "nyc": "~11.4.1",
+    "standard-version": "^4.2.0",
+    "supertest": "^3.0.0",
+    "szero": "^1.0.0",
+    "tap-spec": "~4.1.1",
+    "tape": "~4.8.0",
+    "xo": "~0.20.3"
+  },
+  "dependencies": { <7>
+    "body-parser": "^1.18.2",
+    "debug": "^3.1.0",
+    "express": "^4.16.0",
+    "license-reporter": "^1.1.3"
+  }
+}
+----
+
+<1> A `npm` script for running unit tests.  Run with `npm run test`.
+<2> A `npm` script for deploying this application to {OpenShiftLocal}.  Run with `npm run openshift`.  The `strictSSL` option allows us to deploy to {OpenShiftLocal} instances with self-signed certificates.
+<3> A `npm` script for starting this application.  Run with `npm start`.
+<4> The primary entrypoint for the application when run with `npm start`.
+<5> Specifies the files to be included in the binary that is uploaded to {OpenShiftLocal}.
+<6> A list of development dependencies to be installed from the `npm` registry.  These are used for testing and deployment to {OpenShiftLocal}.
+<7> A list of dependencies to be installed from the `npm` registry.

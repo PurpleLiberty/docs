@@ -1,0 +1,124 @@
+[id='configuring-your-application-to-use-open-liberty_{context}']
+= Configuring your application to use {OpenLiberty}
+
+Reference the {OpenLiberty} BOM (Bill of Materials) artifact in the `pom.xml` file at the root directory of your application.
+
+.Prerequisites
+
+* A Maven-based application
+
+.Procedure
+. Open the `pom.xml` file and add dependencies for MicroProfile and JakartaEE:
++
+--
+----
+<dependencies>
+      <dependency>
+          <groupId>jakarta.platform</groupId>
+          <artifactId>jakarta.jakartaee-api</artifactId>
+          <version>8.0.0</version>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.eclipse.microprofile</groupId>
+          <artifactId>microprofile</artifactId>
+          <version>3.0</version>
+          <type>pom</type>
+          <scope>provided</scope>
+      </dependency>
+  
+  </dependencies>
+----
+--
+
+. Include the following properties to track the version of {OpenLiberty} and the {OpenLiberty} Maven Plugin you are using:
++
+--
+[source,xml,subs="attributes+",options="nowrap"]
+----
+<project>
+  ...
+  <properties>
+    <version.openliberty>19.0.0.9</version.openliberty>
+    <version.openliberty.maven.plugin>3.1</version.openliberty.maven.plugin>   
+  </properties>
+  ...
+</project>
+----
+--
+
+. Specify the repositories containing {ProductShortName} {OpenLiberty} Starters and the {OpenLiberty} Maven Plugin:
++
+--
+[source,xml,subs="attributes+",options="nowrap"]
+----
+  <!-- Specify the repositories containing RHOAR artifacts. -->
+  <repositories>
+    <repository>
+      <id>redhat-ga</id>
+      <name>Red Hat GA Repository</name>
+      <url>https://maven.repository.redhat.com/ga/</url>
+    </repository>
+  </repositories>
+
+  <!-- Specify the repositories containing the plugins used to execute the build of your application. -->
+  <pluginRepositories>
+    <pluginRepository>
+      <id>redhat-ga</id>
+      <name>Red Hat GA Repository</name>
+      <url>https://maven.repository.redhat.com/ga/</url>
+    </pluginRepository>
+  </pluginRepositories>
+----
+--
+
+. Reference `open-liberty-maven-plugin` as the plugin used to package your application:
++
+--
+[source,xml,options="nowrap",subs="attributes+"]
+----
+<project>
+  ...
+  <build>
+    <plugins>
+        ...
+                <!-- Enable liberty-maven plugin -->
+          
+        <plugin>
+            <groupId>io.openliberty.tools</groupId>
+            <artifactId>liberty-maven-plugin</artifactId>
+            <version>3.1</version>
+            <configuration>              
+                <packageName>runtime-openliberty</packageName>
+                <include>runnable</include>               
+              </configuration>
+            <executions>
+                <execution>
+                    <id>create</id>
+                    <phase>generate-test-resources</phase>
+                    <goals>
+                        <goal>create</goal>    
+                        <goal>install-feature</goal>                                     
+                        <goal>deploy</goal>                     
+                    </goals>                
+                </execution>
+                <execution>
+                    <id>package</id>
+                    <phase>package</phase>
+                    <goals>
+                      <goal>package</goal>
+                    </goals>
+                  </execution>
+            </executions>
+        </plugin>     
+        ...
+    </plugins>
+  </build>
+  ...
+</project>
+----
+--
+
+.Additional resources
+
+* For more information about packaging your {OpenLiberty} application, see the link:https://github.com/OpenLiberty/ci.maven[Open Liberty Maven Plugin] documentation.

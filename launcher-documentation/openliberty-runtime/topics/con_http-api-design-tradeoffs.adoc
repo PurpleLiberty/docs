@@ -1,0 +1,19 @@
+[id='http-api-design-tradeoffs_{context}']
+
+= {name-example-http-api} design tradeoffs
+
+.Design tradeoffs
+[width="100%",options="header"]
+|====================================================================
+|Pros           |Cons
+a|
+* The example application enables fast prototyping.
+* The API Design is flexible.
+* HTTP endpoints allow clients to be language-neutral.
+a|
+* As an application or service matures, the {name-example-http-api} approach might not scale well. It might not
+support a clean API design or use cases with database interactions.
+** Any operations involving shared, mutable state must be integrated with an appropriate backing datastore.
+** All requests handled by this API design are scoped only to the container servicing the request.
+Subsequent requests might not be served by the same container.
+|====================================================================

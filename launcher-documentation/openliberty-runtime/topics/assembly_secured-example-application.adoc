@@ -1,0 +1,57 @@
+// This is a parameterized assembly. Parameters used:
+//
+//  parameter-runtime-anchor: Which runtime this assembly is built for. Different from parameter-runtime for routing reasons
+//  parameter-runtime: Which runtime to include files for.
+//
+// Rationale: This assembly is nearly identical for all runtimes.
+
+// Do not change the anchor ID, it is set to this for URL routing reasons
+[id='mission-rest-http-secured-{parameter-runtime-anchor}']
+[id='example-rest-http-secured-{parameter-runtime-anchor}']
+= {name-example-secured} example application for {runtime}
+
+include::note-example-unavailable-oso.adoc[leveloffset=+1]
+
+// When changing this introduction, change also the secured-example-intro-paragraph.adoc file (used by the front-end).
+Example proficiency level:
+xref:proficiency_advanced[*{proficiency-advanced}*].
+
+The {name-example-secured} example application secures a REST endpoint using link:https://access.redhat.com/products/red-hat-single-sign-on[{RHSSO}^]. (This example expands on the {name-example-http-api} example).
+
+{RHSSO}:
+
+* Implements the link:https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.1/html/securing_applications_and_services_guide/openid_connect_3[Open ID Connect] protocol which is an extension of the OAuth 2.0 specification.
+* Issues access tokens to provide clients with various access rights to secured resources.
+
+Securing an application with SSO enables you to add security to your applications while centralizing the security configuration.
+
+IMPORTANT:  This example comes with {RHSSO} pre-configured for demonstration purposes, it does not explain its principles, usage, or configuration.
+Before using this example, ensure that you are familiar with the basic concepts related to link:https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.1/html-single/getting_started_guide/[{RHSSO}^].
+
+include::con_the-secured-project-structure.adoc[leveloffset=+1]
+
+include::ref_rhsso-deployment-configuration.adoc[leveloffset=+1]
+
+include::con_rhsso-realm-model.adoc[leveloffset=+1]
+
+include::con_{parameter-runtime}-sso-adapter-configuration.adoc[leveloffset=+1]
+
+include::assembly_deploying-the-secured-example-application-to-openshiftlocal.adoc[leveloffset=+1]
+
+include::assembly_deploying-the-secured-example-application-to-openshiftcontainerplatform.adoc[leveloffset=+1]
+
+include::assembly_authenticating-to-the-secured-example-application-api-endpoint.adoc[leveloffset=+1]
+
+ifdef::built-for-vertx[]
+include::proc_running-the-vertx-secured-example-application-integration-tests.adoc[leveloffset=+1]
+endif::[]
+
+ifdef::built-for-spring-boot[]
+include::proc_running-the-springboot-secured-example-application-integration-tests.adoc[leveloffset=+1]
+endif::[]
+
+ifdef::built-for-thorntail[]
+include::proc_running-the-wildflyswarm-secured-example-application-integration-tests.adoc[leveloffset=+1]
+endif::[]
+
+include::ref_secured-sso-resources.adoc[leveloffset=+1]

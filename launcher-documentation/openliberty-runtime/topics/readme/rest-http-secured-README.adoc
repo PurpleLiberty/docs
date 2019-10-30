@@ -1,0 +1,126 @@
+= ${mission} - ${runtime} Example Application
+
+IMPORTANT: This example application requires that you use link:https://access.redhat.com/products/red-hat-single-sign-on[Red Hat SSO] to issue access tokens for interacting with this example application and runs best when deployed on OpenShift. For more details on using this example application with a single-node OpenShift cluster as well as the rest of the runtime details, see the link:${guideURL}[${runtime} Runtime Guide].
+
+${prerequisite}
+
+== Running the Example Application on a Single-node OpenShift Cluster
+If you have a single-node OpenShift cluster, such as Minishift or Red Hat Container Development Kit, link:http://launcher.fabric8.io/docs/minishift-installation.html[installed and running], you can deploy your example application there. A single-node OpenShift cluster provides you with access to a local cloud environment.
+
+To deploy your example application to a running single-node OpenShift cluster:
+
+. Log in and create your project.
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ ${gitCMD}
+
+$ cd ${targetRepository}
+
+$ oc login -u developer -p developer
+
+$ oc new-project MY_PROJECT_NAME
+
+$ oc create -f service.sso.yaml
+
+$ ${localRunCMD}
+----
+
+== Interacting with the Example Application on a Single-node OpenShift Cluster
+
+To interact with your example application while it's running on a Single-node OpenShift Cluster, you first need to obtain the secured example application endpoint URL, which is the _${value-name-app}_ service:
+
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ oc get routes
+----
+
+A sample output is shown in the following table:
+
+.List of Endpoints
+====
+[width="100%",options="header"]
+|===
+| Name | Host/Port | Path | Services | Port | Termination
+| secure-sso
+| secure-sso-myproject.LOCAL_OPENSHIFT_HOSTNAME
+|
+| secure-sso
+| <all>
+| passthrough
+
+| ${value-name-app}
+| ${value-name-app}-myproject.LOCAL_OPENSHIFT_HOSTNAME
+|
+| secured-${value-name-app}-http
+| <all>
+|
+
+| sso
+| sso-myproject.LOCAL_OPENSHIFT_HOSTNAME
+|
+| sso
+| <all>
+|
+|===
+====
+
+In the above example, the example application endpoint would be `\http://${value-name-app}-myproject.LOCAL_OPENSHIFT_HOSTNAME`.
+
+You can interact with the example application using the form at the secured endpoint URL and the link:${guideURL}#rhsso-realm-model_secured[provided users].
+
+You can also interact with the example application using the CLI with `curl` and link:https://stedolan.github.io/jq/[`jq`]:
+
+. Request an access token with `curl`, the credentials, and `<SSO_AUTH_SERVER_URL>` and extract the token from the response with the `jq` command:
++
+[source,bash,subs="attributes+"]
+----
+curl -sk -X POST https://<SSO_AUTH_SERVER_URL>/auth/realms/master/protocol/openid-connect/token \
+  -d grant_type=password \
+  -d username=alice\
+  -d password=password \
+  -d client_id=demoapp \
+  -d client_secret=1daa57a2-b60e-468b-a3ac-25bd2dc2eadc \
+  | jq -r '.access_token'
+
+eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJRek1nbXhZMUhrQnpxTnR0SnkwMm5jNTNtMGNiWDQxV1hNSTU1MFo4MGVBIn0.eyJqdGkiOiI0NDA3YTliNC04YWRhLTRlMTctODQ2ZS03YjI5MjMyN2RmYTIiLCJleHAiOjE1MDc3OTM3ODcsIm5iZiI6MCwiaWF0IjoxNTA3NzkzNzI3LCJpc3MiOiJodHRwczovL3NlY3VyZS1zc28tc3NvLWRlbW8uYXBwcy5jYWZlLWJhYmUub3JnL2F1dGgvcmVhbG1zL21hc3RlciIsImF1ZCI6ImRlbW9hcHAiLCJzdWIiOiJjMDE3NWNjYi0wODkyLTRiMzEtODI5Zi1kZGE4NzM4MTVmZTgiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJkZW1vYXBwIiwiYXV0aF90aW1lIjowLCJzZXNzaW9uX3N0YXRlIjoiMDFjOTkzNGQtNmZmOS00NWYzLWJkNWUtMTU4NDI5ZDZjNDczIiwiYWNyIjoiMSIsImNsaWVudF9zZXNzaW9uIjoiMzM3Yzk0MTYtYTdlZS00ZWUzLThjZWQtODhlODI0MGJjNTAyIiwiYWxsb3dlZC1vcmlnaW5zIjpbIioiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImJvb3N0ZXItYWRtaW4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJzZWN1cmVkLWJvb3N0ZXItZW5kcG9pbnQiOnsicm9sZXMiOlsiYm9vc3Rlci1hZG1pbiJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsInZpZXctcHJvZmlsZSJdfX0sIm5hbWUiOiJBbGljZSBJbkNoYWlucyIsInByZWZlcnJlZF91c2VybmFtZSI6ImFsaWNlIiwiZ2l2ZW5fbmFtZSI6IkFsaWNlIiwiZmFtaWx5X25hbWUiOiJJbkNoYWlucyIsImVtYWlsIjoiYWxpY2VAa2V5Y2xvYWsub3JnIn0.mjmZe37enHpigJv0BGuIitOj-kfMLPNwYzNd3n0Ax4Nga7KpnfytGyuPSvR4KAG8rzkfBNN9klPYdy7pJEeYlfmnFUkM4EDrZYgn4qZAznP1Wzy1RfVRdUFi0-GqFTMPb37o5HRldZZ09QljX_j3GHnoMGXRtYW9RZN4eKkYkcz9hRwgfJoTy2CuwFqeJwZYUyXifrfA-JoTr0UmSUed-0NMksGrtJjjPggUGS-qOn6OgKcmN2vaVAQlxW32y53JqUXctfLQ6DhJzIMYTmOflIPy0sgG1mG7sovQhw1xTg0vTjdx8zQ-EJcexkj7IivRevRZsslKgqRFWs67jQAFQA
+----
+`<SSO_AUTH_SERVER_URL>` is the url of the `secure-sso` service.
++
+The attributes, such as `username`, `password`, and `client_secret` are usually kept secret, but the above command uses the default provided credentials with this example application for demonstration purpose.
++
+If you do not want to use `jq` to extract the token, you can run the `curl` command and manually extract the access token.
++
+NOTE: The `-sk` option tells curl to ignore failures resulting from self-signed certificates. Do not use this option in a production environment. On macOS, you must have `curl` version `7.56.1` or greater installed. It must also be built with OpenSSL.
+
+. Invoke the service and attach the access (bearer) token to the HTTP headers:
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ curl -v -H "Authorization: Bearer <TOKEN>" http://<SERVICE_HOST>/api/greeting
+
+{
+    "content": "Hello, World!",
+    "id": 2
+}
+----
++
+.A sample `GET` Request Headers with an Access (Bearer) Token
+====
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ > GET /api/greeting HTTP/1.1
+> Host: <SERVICE_HOST>
+> User-Agent: curl/7.51.0
+> Accept: */*
+> Authorization: Bearer <TOKEN>
+----
+====
++
+`<SERVICE_HOST>` is the URL of the secured example application endpoint.
+
+
+== More Information
+You can learn more about this example application and rest of the ${runtime} runtime in the link:${guideURL}[${runtime} Runtime Guide].
+
+${integrationTestSection}

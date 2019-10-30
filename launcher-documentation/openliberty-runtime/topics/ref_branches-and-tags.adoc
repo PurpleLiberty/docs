@@ -1,0 +1,22 @@
+[id='branches-and-tags_{context}']
+
+= Branches and tags
+
+The following branches and tags are used in the _{name-repo-docs}_ repository:
+
+.Branch Names and Contents
+[options="header",cols="1,3"]
+|===
+| Branch | Content
+
+| master | The latest version of the documentation in development.
+|===
+
+.Tag Format and Contents
+[options="header",cols="2,3"]
+|===
+| Branch | Content
+
+| Date in the `YYYY-MM-DD` format | The documentation as released on the particular date.
+| Date in the `YYYY-MM-DD_$NUMBER` format | A subsequent release of the documentation on that date.
+|===

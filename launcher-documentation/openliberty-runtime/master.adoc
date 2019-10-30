@@ -1,0 +1,154 @@
+include::topics/templates/document-attributes.adoc[]
+//override for a cleaner TOC
+:toclevels: 2
+:built-for-openliberty:
+
+= {name-guide-openliberty}
+:runtime: {OpenLiberty}
+//var for front-end topics, if below is defined in topic, its used in docs, if not its used in the front end
+:docs-topic:
+
+:context: open-liberty
+
+This guide covers concepts as well as practical details needed by developers to use the {OpenLiberty} runtime. It provides information governing the design of a {OpenLiberty} application deployed as a Linux container on OpenShift.
+
+include::topics/con_what-is-openliberty.adoc[leveloffset=+1]
+
+include::topics/proc_configuring-your-application-to-use-open-liberty.adoc[leveloffset=+1]
+
+// EXAMPLES
+include::topics/con_examples-and-cloud-native-development-on-openshift.adoc[leveloffset=+1]
+
+[[open-liberty-available-examples]]
+== Available examples {OpenLiberty}
+
+The following example applications are available for {OpenLiberty}.
+
+
+// REST API
+:context: http-api
+:parameter-runtime: openliberty
+:parameter-runtime-anchor: open-liberty
+include::topics/assembly_http-api-example-application.adoc[leveloffset=+2]
+:parameter-runtime-anchor!:
+:parameter-runtime!:
+
+
+// CONFIGMAP
+:context: configmap
+:parameter-runtime: openliberty
+:parameter-runtime-anchor: open-liberty
+include::topics/assembly_configmap-example-application.adoc[leveloffset=+2]
+:parameter-runtime-anchor!:
+:parameter-runtime!:
+
+
+// CRUD
+:context: crud
+:parameter-runtime-anchor: open-liberty
+include::topics/assembly_crud-example-application.adoc[leveloffset=+2]
+:parameter-runtime-anchor!:
+
+
+// HEALTH CHECK
+:context: health-check
+:parameter-runtime-anchor: open-liberty
+include::topics/assembly_health-check-example-application.adoc[leveloffset=+2]
+:parameter-runtime-anchor!:
+
+
+// CIRCUIT BREAKER
+:context: circuit-breaker
+:parameter-runtime-anchor: open-liberty
+include::topics/assembly_circuit-breaker-example-application.adoc[leveloffset=+2]
+:parameter-runtime-anchor!:
+
+
+// SECURED
+:context: secured
+:parameter-runtime: openliberty
+:parameter-runtime-anchor: open-liberty
+include::topics/assembly_secured-example-application.adoc[leveloffset=+2]
+:parameter-runtime-anchor!:
+:parameter-runtime!:
+
+
+// CACHING
+:context: cache
+:parameter-runtime-anchor: open-liberty
+include::topics/assembly_cache-example-application.adoc[leveloffset=+2]
+:parameter-runtime-anchor!:
+
+
+:context: open-liberty
+
+//== Developing an application for the {OpenLiberty} runtime
+
+//creating an app from scratch
+include::topics/assembly_developing-and-deploying-openliberty-application.adoc[leveloffset=+1]
+
+
+== Debugging
+
+This sections contains information about debugging your {OpenLiberty}{ndash}based application both in local and remote deployments.
+
+=== Remote debugging
+
+To remotely debug an application, you must first configure it to start in a debugging mode, and then attach a debugger to it.
+
+:parameter-debug-property: WLP_DEBUG_ADDRESS
+:parameter-maven-goal: liberty:debug
+include::topics/proc_starting-your-application-locally-in-debugging-mode.adoc[leveloffset=+3]
+:parameter-debug-property!:
+:parameter-maven-goal!:
+
+include::topics/proc_starting-an-uberjar-in-debugging-mode.adoc[leveloffset=+3]
+
+:parameter-env-var-name: JAVA_DEBUG
+:parameter-env-var-value: true
+:parameter-port: 7777
+include::topics/proc_starting-your-application-on-openshift-in-debugging-mode.adoc[leveloffset=+3]
+
+include::topics/proc_attaching-a-remote-debugger-to-the-application.adoc[leveloffset=+3]
+
+
+=== Debug logging
+
+include::topics/proc_add-debug-logging.adoc[leveloffset=+3]
+
+include::topics/proc_accessing-debug-logs-on-localhost.adoc[leveloffset=+3]
+
+include::topics/proc_accessing-debug-logs-on-openshift.adoc[leveloffset=+3]
+
+== Monitoring your application
+
+This section contains information about monitoring your {OpenLiberty}{ndash}based application running on OpenShift.
+
+=== Accessing JVM metrics for your application on OpenShift
+
+include::topics/proc_accessing-jvm-metrics-using-the-hawtio-console-on-openshift.adoc[leveloffset=+3]
+
+ifdef::launcher-docs-only[]
+include::topics/proc_exposing-application-metrics-using-prometheus-with-openliberty.adoc[leveloffset=+2]
+endif::[]
+
+[appendix]
+include::topics/ref_the-source-to-image-s2i-build-process.adoc[leveloffset=+1]
+
+[appendix]
+include::topics/proc_updating-the-deployment-configuration-of-an-example-application.adoc[leveloffset=+1]
+
+[appendix]
+include::topics/proc_configuring-jenkins-freestyle-project-to-deploy-an-application-with-fmp.adoc[leveloffset=+1]
+
+[appendix]
+include::topics/ref_additional-openliberty-resources.adoc[leveloffset=+1]
+
+[appendix]
+include::topics/ref_application-development-resources.adoc[leveloffset=+1]
+
+[appendix]
+include::topics/ref_proficiency-levels.adoc[leveloffset=+1]
+
+[appendix]
+include::topics/ref_glossary.adoc[leveloffset=+1]

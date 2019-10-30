@@ -1,0 +1,35 @@
+
+[id='attaching-a-remote-debugger-to-the-application_{context}']
+= Attaching a remote debugger to the application
+
+When your application is configured for debugging, attach a remote debugger of your choice to it.
+In this guide, link:https://www.redhat.com/en/technologies/jboss-middleware/developer-studio[{DevStudio}] is covered, but the procedure is similar when using other programs.
+
+.Prerequisites
+
+* The application running either locally or on OpenShift, and configured for debugging.
+* The port number that your application is listening on for debugging.
+* {DevStudio} installed on your machine. You can download it from the link:https://developers.redhat.com/products/devstudio/download/[{DevStudio} download page].
+
+.Procedure
+
+. Start {DevStudio}.
+. Create a new debug configuration for your application:
+.. Click *Run->Debug Configurations*.
+.. In the list of configurations, double-click *Remote Java application.*
+This creates a new remote debugging configuration.
+.. Enter a suitable name for the configuration in the *Name* field.
+.. Enter the path to the directory with your application into the *Project* field. You can use the *Browse...* button for convenience.
+.. Set the *Connection Type* field to _Standard (Socket Attach)_ if it is not already.
+.. Set the *Port* field to the port number that your application is listening on for debugging.
+.. Click *Apply.*
+. Start debugging by clicking the *Debug* button in the Debug Configurations window.
++
+To quickly launch your debug configuration after the first time, click *Run->Debug History* and select the configuration from the list.
+
+.Additional resources
+
+* link:https://access.redhat.com/articles/1290703[Debug an OpenShift Java Application with JBoss Developer Studio] on Red Hat Knowledgebase.
++
+{DevStudio} was previously called JBoss Developer Studio.
+* A https://blog.openshift.com/debugging-java-applications-on-openshift-kubernetes/[Debugging Java Applications On OpenShift and Kubernetes] article on OpenShift Blog.
