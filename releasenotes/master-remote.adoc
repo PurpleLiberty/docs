@@ -1,6 +1,6 @@
 :context: online
 
-= Release notes for Open Liberty 19.0.0.10 on Red Hat OpenShift Container Platform
+= Release Notes for Open Liberty 19.0.0.10 on Red Hat OpenShift Container Platform
 
 == Features
 
