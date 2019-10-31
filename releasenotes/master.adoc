@@ -6,7 +6,7 @@
 
 :leveloffset: +1
 
-Open Liberty 19.0.0.10 provides the useful option to configure `JSON` field names so they can best match with other data and can all be viewed in the same visualisation in the logs. The update also allows custom login modules for JCA and JMS connection factories. Give it a try in link:/about/[Open Liberty] 19.0.0.10.
+Open Liberty 19.0.0.10 provides the useful option to configure `JSON` field names so they can best match with other data and can all be viewed in the same visualisation in the logs. The update also allows custom login modules for JCA and JMS connection factories. Give it a try in link:https://openliberty.io/about/[Open Liberty] 19.0.0.10.
 
 In Open Liberty 19.0.0.10:
 
@@ -17,7 +17,7 @@ In Open Liberty 19.0.0.10:
 [#run]
 == Run your apps using 19.0.0.10
 
-If you're using link:/guides/maven-intro.html[Maven], here are the coordinates:
+If you're using link:https://openliberty.io/guides/maven-intro.html[Maven], here are the coordinates:
 
 [source,xml]
 ----
@@ -29,7 +29,7 @@ If you're using link:/guides/maven-intro.html[Maven], here are the coordinates:
 </dependency>
 ----
 
-Or for link:/guides/gradle-intro.html[Gradle]:
+Or for link:https://openliberty.io/guides/gradle-intro.html[Gradle]:
 
 [source,gradle]
 ----
@@ -45,6 +45,70 @@ Or if you're using Docker:
 docker pull open-liberty
 ----
 
+[#jlog]
+== Configurable JSON log field names
+
+Logging configuration in Open Liberty has been updated. Server logs can now be formatted in `basic` or `JSON` format. When logs are in `JSON` format, the sources (message, trace, accessLog, ffdc, audit) to send to `messages.log` or `console.log`/`standard-out` must be specified.
+
+The option to configure `JSON` field names in Open Liberty is extremely useful, since Open Liberty field names may differ from other container field names. For example, an Open Liberty message is referred to by the field name `message`, while another container's message ends up in a field called `log`. Previously, two different visualisations of the messages would show in the logs on a dashboard; however, you can now modify the Open Liberty output field names. This means that they can best match with other data and can all be viewed in the same visualisation.
+
+When logs are in `JSON` format, you can use the `jsonFieldMappings` attribute to replace default field names with new field names. To configure the new field name for all sources, use the following format:
+[source]
+----
+defaultFieldName:newFieldName
+----
+To configure the new field name for a specific source, use the following format:
+[source]
+----
+source:defaultFieldName:newFieldName
+----
+where `source` is the source you want to specify (such as message, trace, accessLog, ffdc, audit).
+
+An example of configuring JSON field name by adding the following to bootstrap.properties:
+[source]
+----
+com.ibm.ws.logging.json.field.mappings=trace:message:log,ibm_datetime:datetime
+----
+For more information on logging:
+
+* link:https://openliberty.io/docs/ref/general/#logging.html[Logging and tracing]
+
+[#jca]
+== Custom login modules for JCA and JMS connection factories (jca-1.7 and jms-2.0)
+
+An update to the Java Connector Architecture (JCA) and Java Message Service (JMS) features allows you to specify, within the server configuration, a default JAAS custom login module to use for container managed authentication to JCA and JMS connection factories.
+
+Prior to this release, a JAAS custom login module could only be specified within the application itself for JCA and JMS connection factories. With this release, the following server configuration elements have added the ability to specify a default JAAS custom login module:
+
+* link:https://openliberty.io/docs/ref/config/#connectionFactory.html[`connectionFactory`]
+* link:https://openliberty.io/docs/ref/config/#jmsConnectionFactory.html[`jmsConnectionFactory`]
+* link:https://openliberty.io/docs/ref/config/#jmsQueueConnectionFactory.html[`jmsQueueConnectionFactory`]
+* link:https://openliberty.io/docs/ref/config/#jmsTopicConnectionFactory.html[`jmsTopicConnectionFactory`]
+
+Beside these, `dataSource` element already had this capability prior to this release.
+
+To enable the feature in the `server.xml` file:
+[source,xml]
+----
+  <featureManager>
+    <feature>appSecurity-2.0</feature>
+    <feature>jca-1.7</feature>
+    ... other features
+  </featureManager>
+  <resourceAdapter id="myAdapter" location="${server.config.dir}/resourceadapters/example-adapter.rar"/>
+  <connectionFactory jndiName="eis/cf" jaasLoginContextEntryRef="customLoginEntry">
+    <properties.myAdapter hostName="myhost.openliberty.io" portNumber="8765"/>
+  </connectionFactory>
+  <jaasLoginContextEntry id="customLoginEntry" name="customLoginEntry" loginModuleRef="customLoginModule"/>
+  <jaasLoginModule id="customLoginModule" className="org.example.MyLoginModule" controlFlag="REQUIRED">
+    <library>
+      <file name="${server.config.dir}/myCustomLoginModule.jar"/>
+    </library>
+  </jaasLoginModule>
+----
+For more information:
+
+* link:https://www.ibm.com/support/knowledgecenter/en/SSEQTP_liberty/com.ibm.websphere.wlp.doc/ae/twlp_config_jaas_db_auth.html[Configuring JAAS for database authentication]
 
 :leveloffset!:
 

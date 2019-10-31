@@ -1,10 +1,10 @@
 <productname>Open Liberty</productname>
-<productnumber>19.0.0.10</productnumber>
-<subtitle>Release Notes for Open Liberty 19.0.0.10 on Red Hat OpenShift Container Platform</subtitle>
+<productnumber>2019</productnumber>
+<subtitle>Release Notes for Open Liberty 2019 on Red Hat OpenShift Container Platform</subtitle>
 <abstract>
   <para>These release notes contain the latest information about new
   features, enhancements, fixes, and issues contained in 
-  Open Liberty 19.0.0.10 on Red Hat OpenShift Container Platform release.</para>
+  Open Liberty 2019 on Red Hat OpenShift Container Platform release.</para>
 </abstract>
 <legalnotice lang="en-US" version="5.0" xmlns="http://docbook.org/ns/docbook">
   <para>                Copyright <trademark class="copyright"></trademark> 2019 IBM Corp  </para>
