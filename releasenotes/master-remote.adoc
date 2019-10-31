@@ -4,7 +4,7 @@
 
 == Features
 
-include::https://raw.githubusercontent.com/OpenLiberty/blogs/master/publish/2019-10-11-configure-logs-JSON-format-190010.adoc[leveloffset=+1,lines=18..24;26..57,63..126]
+include::https://raw.githubusercontent.com/OpenLiberty/blogs/master/publish/2019-10-11-configure-logs-JSON-format-190010.adoc[leveloffset=+1,lines=18..24;26..57;63..126]
 
 == Resolved issues
 
