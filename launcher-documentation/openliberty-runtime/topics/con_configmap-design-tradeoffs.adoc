@@ -1,0 +1,17 @@
+[id='configmap-design-tradeoffs_{context}']
+
+= {name-example-configmap} design tradeoffs
+
+.Design Tradeoffs
+[width="100%",options="header"]
+|====================================================================
+|Pros           |Cons
+a|
+* Configuration is separate from deployments
+* Can be updated independently
+* Can be shared across services
+a|
+* Adding configuration to environment requires additional step
+* Has to be maintained separately
+* Requires coordination beyond the scope of a service
+|====================================================================

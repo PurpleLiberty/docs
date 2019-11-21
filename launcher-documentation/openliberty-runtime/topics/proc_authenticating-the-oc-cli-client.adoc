@@ -1,0 +1,34 @@
+// This is a parameterized module. Parameters used:
+//
+//   parameter-openshiftlocal: A local OpenShift installation is used, so a URL is required for proceeding.
+//   parameter-deployment: A string containing the deployment to use, possibly in the form of a link
+//   context: context of usage, e.g. "osl", "oso", "ocp", "rest-api", etc. This can also be a composite, e.g. "rest-api-oso"
+//
+// Rationale: This procedure is identical in all deployments
+
+
+[id='authenticating-the-oc-cli-client_{context}']
+= Authenticating the `oc` CLI client
+
+To work with example applications on {parameter-deployment} using the `oc` command-line client, you must authenticate the client using the token provided by the {parameter-deployment} web interface.
+
+.Prerequisites
+
+ifdef::parameter-openshiftlocal[]
+* The URL of your running {name-launcher} instance and the user credentials of your {OpenShiftLocal}. For more information, see xref:getting-the-launcher-tool-url-and-credentials_{context}[].
+endif::[]
+ifndef::parameter-openshiftlocal[]
+* An account at {parameter-deployment}.
+endif::[]
+
+.Procedure
+. Navigate to the {parameter-deployment} URL in a browser.
+. Click on the question mark icon in the top right-hand corner of the Web console, next to your user name.
+. Select _Command Line Tools_ in the drop-down menu.
+. Find the text box that contains the `oc login ...` command with the hidden token, and click the button next to it to copy its content to your clipboard.
+. Paste the command into a terminal application. The command uses your authentication token to authenticate your `oc` CLI client with your {parameter-deployment} account.
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ oc login {value-url-oso-auth} --token=MYTOKEN
+----

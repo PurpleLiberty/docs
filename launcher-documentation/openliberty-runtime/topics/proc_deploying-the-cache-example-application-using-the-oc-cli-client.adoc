@@ -1,0 +1,91 @@
+
+[id='deploying-the-cache-example-application-using-the-oc-cli-client_{context}']
+= Deploying the {name-example-cache} example application using the `oc` CLI client
+
+.Prerequisites
+
+* The example application created using {parameter-deployment}.
+ifndef::parameter-openshiftlocal[For more information, see xref:deploying-the-example-application-using-launcher-oso_{context}[].]
+ifdef::parameter-openshiftlocal[]
+For more information, see xref:deploying-the-example-application-using-the-launcher-tool_{context}[].
+* Your {name-launcher} tool URL.
+endif::[]
+
+* The `oc` client authenticated. For more information, see xref:authenticating-the-oc-cli-client_{context}[].
+
+.Procedure
+. Clone your project from GitHub.
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ git clone git@github.com:USERNAME/{value-name-project}.git
+----
++
+Alternatively, if you downloaded a ZIP file of your project, extract it.
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ unzip {value-name-project}.zip
+----
+
+. Create a new project.
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ oc new-project {value-name-project}
+----
+
+. Navigate to the root directory of your application.
+
+. Deploy the cache service.
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ oc apply -f service.cache.yml
+----
+
+ifdef::built-for-nodejs[]
+. Use `start-openshift.sh` to start the deployment to OpenShift.
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ ./start-openshift.sh
+----
+endif::built-for-nodejs[]
+
+ifndef::built-for-nodejs[]
+. Use Maven to start the deployment to OpenShift.
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ mvn clean fabric8:deploy -Popenshift
+----
+endif::built-for-nodejs[]
+
+. Check the status of your application and ensure your pod is running.
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ oc get pods -w
+NAME                             READY     STATUS      RESTARTS   AGE
+cache-server-123456789-aaaaa             1/1       Running     0          8m
+{value-name-app}-cutename-1-bbbbb       1/1       Running     0          4m
+{value-name-app}-cutename-s2i-1-build   0/1       Completed   0          7m
+{value-name-app}-greeting-1-ccccc       1/1       Running     0          3m
+{value-name-app}-greeting-s2i-1-build   0/1       Completed   0          3m
+----
++
+Your 3 pods should have a status of `Running` once they are fully deployed and started.
+
+. After your example application is deployed and started, determine its route.
++
+.Example Route Information
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ oc get routes
+NAME                 HOST/PORT                                                     PATH      SERVICES        PORT      TERMINATION
+{value-name-app}-cutename   {value-name-app}-cutename-{value-name-project}.{value-route-openshift-hostname}             {value-name-app}-cutename   8080                    None
+{value-name-app}-greeting   {value-name-app}-greeting-{value-name-project}.{value-route-openshift-hostname}             {value-name-app}-greeting   8080                    None
+----
++
+The route information of a pod gives you the base URL which you use to access it. In the example above, you would use `\http://{value-name-app}-greeting-{value-name-project}.{value-route-openshift-hostname}` as the base URL to access the greeting service.

@@ -1,0 +1,45 @@
+
+[id='reviewing-changes_{context}']
+= Reviewing changes
+
+Ensure you perform all the following actions when reviewing a pull request:
+
+.Prerequisites
+
+* GitHub account with administration privileges to Jenkins builds. For more information, see xref:reviewing_changes_related_information[] in this chapter.
+
+.Procedure
+
+.Reviewing Pull Request
+. If there is a comment from the `centos-ci` user asking _Can one of the admins verify this patch?,_ the pull request comes from an external contributor.
+
+Approve the build or add the author to the list of trusted contributors.
+For more information, see xref:jenkins-ci-commands_{context}[].
+
+. Check if the build passed.
++
+If it failed, review the build log by clicking *Show all checks* -> *Details* in the box at the bottom of the comment section. In the page that opens, click *Console Output*. Search for the string _Running tests..._ and diagnose the problem.
+. Click the *Files Changed* tab and review the changes. Pay special attention to the following matters:
++
+--
+// TODO link to the Requirements part once written
+** Correct use of attributes.
+** Correct file placement in the repository layout.
+** Correct naming of products.
+
+If you are unsure if the changes render correctly, build the contribution locally:
+
+. Add the contributor's repository as a new remote and fetch it.
+. Checkout the source branch of the pull request. You can find it below the pull request title in the *from* field.
+. Run the preview server locally and review the built documentation.
+--
+
+[[reviewing_changes_related_information]]
+.Additional resources
+
+* The Jenkins build configuration file is in the link:https://github.com/almighty/almighty-jobs/blob/master/devtools-ci-index.yaml#L11[devtools-ci-index.adoc] file in the _almighty/almighty-jobs_ repository.
++
+You can find the list of administrators under the `admin_list_defaults` -> `admin-list` element.
+* xref:repository-filesystem-layout_{context}[]
+* xref:starting-preview-server_{context}[]
+

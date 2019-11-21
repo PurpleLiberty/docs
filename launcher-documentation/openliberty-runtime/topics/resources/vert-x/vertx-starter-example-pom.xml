@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.example</groupId>
+  <artifactId>my-app</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>My Application</name>
+  <description>Example application using RHOAR Vert.x</description>
+
+  <properties>
+    <vertx.version>{version-vertx}</vertx.version>
+    <vertx-maven-plugin.version>{version-vertx-maven-plugin}</vertx-maven-plugin.version>
+    <vertx.verticle>com.example.MyApp</vertx.verticle>
+
+    <!-- Specify the JDK builder image used to build your application. -->
+    <fabric8.generator.from>{name-s2i-image-openjdk}</fabric8.generator.from>
+
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
+
+  <!-- Import dependencies from the RHOAR Vert.x BOM. -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-dependencies</artifactId>
+        <version>${vertx.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <!-- Specify the RHOAR Vert.x artifacts that your application depends on. -->
+  <dependencies>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-web</artifactId>
+    </dependency>
+  </dependencies>
+
+  <!-- Specify the repositories containing RHOAR artifacts. -->
+  <repositories>
+    <repository>
+      <id>{red-hat-ga-repo-id}</id>
+      <name>{red-hat-ga-repo-name}</name>
+      <url>{red-hat-ga-repo-url}</url>
+    </repository>
+  </repositories>
+
+  <!-- Specify the repositories containing the plugins used to execute the build of your application. -->
+  <pluginRepositories>
+    <pluginRepository>
+      <id>{red-hat-ga-repo-id}</id>
+      <name>{red-hat-ga-repo-name}</name>
+      <url>{red-hat-ga-repo-url}</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <!-- Configure your application to be packaged using the Vert.x Maven Plugin. -->
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.reactiverse</groupId>
+        <artifactId>vertx-maven-plugin</artifactId>
+        <version>${vertx-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>vmp</id>
+            <goals>
+              <goal>initialize</goal>
+              <goal>package</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
