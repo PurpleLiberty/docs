@@ -1,21 +1,25 @@
 :context: online
 
-= Release Notes for Open Liberty 19.0.0.10 on Red Hat OpenShift Container Platform
+= Release Notes for Open Liberty 19.0.0.12 on Red Hat OpenShift Container Platform
 
 == Features
 
 :leveloffset: +1
 
-Open Liberty 19.0.0.10 provides the useful option to configure `JSON` field names so they can best match with other data and can all be viewed in the same visualisation in the logs. The update also allows custom login modules for JCA and JMS connection factories. Give it a try in link:https://openliberty.io/about/[Open Liberty] 19.0.0.10.
+link:https://openliberty.io/about/[Open Liberty] 19.0.0.12 provides support for MicroProfile 3.2, allowing users to provide their own health check procedures and monitor microservice applications easily with metrics. In addition, updates allow trust to be established using the JDK's default truststore or a certificate through an environment variable.
 
-In Open Liberty 19.0.0.10:
+In Open Liberty 19.0.0.12:
 
-* <<jlog,Configurable JSON log field names>>
-* <<jca, Custom login modules for JCA and JMS connection factories>>
-
+* <<mp32, MicroProfile 3.2 support>>
+** <<hc21, Provide your own health check procedures (MicroProfile Health Check 2.1)>>
+** <<hm22, Monitor microservice applications easily wth metrics (MicroProfile Metrics 2.2)>>
+* <<jmo, Jaeger support in MicroProfile Open Tracing >>
+* <<ssl, Trusted certificate enhancements (Transport Security 1.0)>>
+* <<rrs, Liberty reader role support>>
 
 [#run]
-== Run your apps using 19.0.0.10
+
+== Run your apps using 19.0.0.12
 
 If you're using link:https://openliberty.io/guides/maven-intro.html[Maven], here are the coordinates:
 
@@ -24,7 +28,7 @@ If you're using link:https://openliberty.io/guides/maven-intro.html[Maven], here
 <dependency>
     <groupId>io.openliberty</groupId>
     <artifactId>openliberty-runtime</artifactId>
-    <version>19.0.0.10</version>
+    <version>19.0.0.12</version>
     <type>zip</type>
 </dependency>
 ----
@@ -34,92 +38,231 @@ Or for link:https://openliberty.io/guides/gradle-intro.html[Gradle]:
 [source,gradle]
 ----
 dependencies {
-    libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version: '[19.0.0.10,)'
+    libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version: '[19.0.0.12,)'
 }
 ----
 
-Or if you're using Docker:
+Or if you're using link:https://openliberty.io/guides/containerize.html[Docker]:
 
 [source]
 ----
-docker pull open-liberty
+FROM open-liberty
+----
+[#mp32]
+== MicroProfile 3.2 support
+Add the whole of MicroProfile 3.2 to your application with this convenience feature in your `server.xml`:
+[source, xml]
+----
+<featureManager>
+  <feature>microProfile-3.2</feature>
+<featureManager>
 ----
 
-[#jlog]
-== Configurable JSON log field names
+The `microProfile-3.2` feature automatically includes the following features in your app: JAX-RS 2.1, CDI 2.0, JSON-P 1.1, JSON-B 1.0, MicroProfile Config 1.3, MicroProfile Fault Tolerance 2.0, MicroProfile Health Check 2.1, MicroProfile JWT 1.1, MicroProfile Metrics 2.2, MicroProfile OpenAPI 1.1, MicroProfile OpenTracing 1.3, and MicroProfile Rest Client 1.3.
 
-Logging configuration in Open Liberty has been updated. Server logs can now be formatted in `basic` or `JSON` format. When logs are in `JSON` format, the sources (message, trace, accessLog, ffdc, audit) to send to `messages.log` or `console.log`/`standard-out` must be specified.
+The MicroProfile Health Check and Metrics features contain updates.
 
-The option to configure `JSON` field names in Open Liberty is extremely useful, since Open Liberty field names may differ from other container field names. For example, an Open Liberty message is referred to by the field name `message`, while another container's message ends up in a field called `log`. Previously, two different visualisations of the messages would show in the logs on a dashboard; however, you can now modify the Open Liberty output field names. This means that they can best match with other data and can all be viewed in the same visualisation.
+=== Provide your own health check procedures (MicroProfile Health Check 2.1)
 
-When logs are in `JSON` format, you can use the `jsonFieldMappings` attribute to replace default field names with new field names. To configure the new field name for all sources, use the following format:
-[source]
+MicroProfile Health Check 2.1 enables you to provide your own health check procedures to be invoked by Liberty, to verify the health of your microservice:
+
+[source,java]
 ----
-defaultFieldName:newFieldName
+HealthCheckResponse.up("myCheck");
 ----
-To configure the new field name for a specific source, use the following format:
-[source]
+
+In previous versions, to define a simple successful/failed named health check response, the application level code is always expected to use several static methods together from the HealthCheckResponse API to retrieve a HealthCheckResponseBuilder used to construct a HealthCheck response.
+
+In the `mpHealth-2.1` feature for OpenLiberty, you can now use convenient and simpler methods from standard Java APIs, to construct UP/DOWN named health check responses, in your applications, such as;
+
+`HealthCheckResponse.named(“myCheck”).up().build();`
+
+To make it work include the following line in the `server.xml` file:
+
+[source, xml]
 ----
-source:defaultFieldName:newFieldName
+<feature>mpHealth-2.1</feature>
 ----
-where `source` is the source you want to specify (such as message, trace, accessLog, ffdc, audit).
 
-An example of configuring JSON field name by adding the following to bootstrap.properties:
-[source]
+Applications are expected to provide health check procedures by implementing the HealthCheck interface with the `@Liveness` or `@Readiness` annotations, which are used by Liberty to verify the Liveness or Readiness of the application, respectively. Add the logic of your health check in the `call()` method, and return the HealthCheckResponse object by constructing using the simple `up()` and `down()` methods from the API. To view the status of each health check, access either the `+http://<hostname>:<port>/health/live+` or `+http://<hostname>:<port>/health/ready+` endpoints.
+
+[source, java]
 ----
-com.ibm.ws.logging.json.field.mappings=trace:message:log,ibm_datetime:datetime
+**Liveness Check**
+@Liveness
+@ApplicationScoped
+public class AppLiveCheck implements HealthCheck {
+...
+    @Override
+     public HealthCheckResponse call() {
+       ...
+       HealthCheckResponse.up("myCheck");
+       ...
+     }
+}
 ----
-For more information on logging:
 
-* link:https://openliberty.io/docs/ref/general/#logging.html[Logging and tracing]
-
-[#jca]
-== Custom login modules for JCA and JMS connection factories (jca-1.7 and jms-2.0)
-
-An update to the Java Connector Architecture (JCA) and Java Message Service (JMS) features allows you to specify, within the server configuration, a default JAAS custom login module to use for container managed authentication to JCA and JMS connection factories.
-
-Prior to this release, a JAAS custom login module could only be specified within the application itself for JCA and JMS connection factories. With this release, the following server configuration elements have added the ability to specify a default JAAS custom login module:
-
-* link:https://openliberty.io/docs/ref/config/#connectionFactory.html[`connectionFactory`]
-* link:https://openliberty.io/docs/ref/config/#jmsConnectionFactory.html[`jmsConnectionFactory`]
-* link:https://openliberty.io/docs/ref/config/#jmsQueueConnectionFactory.html[`jmsQueueConnectionFactory`]
-* link:https://openliberty.io/docs/ref/config/#jmsTopicConnectionFactory.html[`jmsTopicConnectionFactory`]
-
-Beside these, `dataSource` element already had this capability prior to this release.
-
-To enable the feature in the `server.xml` file:
-[source,xml]
-----
-  <featureManager>
-    <feature>appSecurity-2.0</feature>
-    <feature>jca-1.7</feature>
-    ... other features
-  </featureManager>
-  <resourceAdapter id="myAdapter" location="${server.config.dir}/resourceadapters/example-adapter.rar"/>
-  <connectionFactory jndiName="eis/cf" jaasLoginContextEntryRef="customLoginEntry">
-    <properties.myAdapter hostName="myhost.openliberty.io" portNumber="8765"/>
-  </connectionFactory>
-  <jaasLoginContextEntry id="customLoginEntry" name="customLoginEntry" loginModuleRef="customLoginModule"/>
-  <jaasLoginModule id="customLoginModule" className="org.example.MyLoginModule" controlFlag="REQUIRED">
-    <library>
-      <file name="${server.config.dir}/myCustomLoginModule.jar"/>
-    </library>
-  </jaasLoginModule>
-----
 For more information:
 
-* link:https://www.ibm.com/support/knowledgecenter/en/SSEQTP_liberty/com.ibm.websphere.wlp.doc/ae/twlp_config_jaas_db_auth.html[Configuring JAAS for database authentication]
+* link:https://github.com/eclipse/microprofile-health/releases/tag/2.1[MicroProfile Health Check 2.1 Release Page]
+* link:http://download.eclipse.org/microprofile/microprofile-health-2.1/apidocs/[Javadocs]
+* link:https://download.eclipse.org/microprofile/microprofile-health-2.1/microprofile-health-spec.html[Specification document]
+
+
+[#hm22]
+=== Monitor microservice applications easily wth metrics (MicroProfile Metrics 2.2 )
+
+MicroProfile Metrics 2.2 enables developers to instrument metrics in their (microservice) applications for easy monitoring by their operations team.
+
+Previously, the MetadataBuilder API had `reusable()` and `notReusable()` method to set the reusable field to `true` or `false`. The MetadataBuilder API has been changed to include a new setter method for the reusable attribute. This change is implemented so the MetadataBuilder API follows the builder pattern.
+
+To enable the feature in the `server.xml` file:
+[source, xml]
+----
+<feature>mpMetrics-2.2</feature>
+----
+
+The example shows how to set the reusable field with the MetadataBuilder API:
+
+[source, java]
+----
+MetadataBuilder mdb = Metadata.builder();
+----
+
+[source, java]
+----
+mdb = mdb.withName("metricName").withType(MetricType.COUNTER)
+  .reusable(resolveIsReusable());
+----
+
+For more information:
+
+* link:https://github.com/eclipse/microprofile-metrics/releases[Changes to MicroProfile metrics]
+* link:/docs/ref/general/#microservice_observability_metrics.html[Microserice observability metrics]
+
+[#JMO]
+== Jaeger support added for tracing (MicroProfile OpenTracing 1.3)
+
+Open Liberty has added support for Jaeger in MicroProfile OpenTracing. A sample tracer is available link:https://github.com/WASdev/sample.opentracing.zipkintracer[here] for using Zipkin as a tracing backend. With the addition of Jaeger support, developers can also use Jaeger as a tracing backend.
+
+You can download the Jaeger client version 0.34.0 library and its dependencies from link:https://mvnrepository.com/artifact/io.jaegertracing/jaeger-client/0.34.0[Maven repository].
+
+In the `server.xml:`
+
+Add `<feature>mpOpenTracing-1.3</feature>` under `<featureManager>` section.
+
+[source, xml]
+----
+    <library id="jaegerLib" apiTypeVisibility="+third-party" >
+        <file name="<path>/jaegerLib_0.34/gson-2.8.2.jar" />
+        <file name="<path>/jaegerLib_0.34/jaeger-client-0.34.0.jar" />
+        <file name="<path>/jaegerLib_0.34/jaeger-core-0.34.0.jar" />
+        <file name="<path>/jaegerLib_0.34/jaeger-thrift-0.34.0.jar" />
+        <file name="<path>/jaegerLib_0.34/jaeger-tracerresolver-0.34.0.jar" />
+        <file name="<path>/jaegerLib_0.34/libthrift-0.12.0.jar" />
+        <file name="<path>/jaegerLib_0.34/slf4j-api-1.7.25.jar" />
+        <file name="<path>/jaegerLib_0.34/slf4j-jdk14-1.7.25.jar" />
+        <file name="<path>/jaegerLib_0.34/opentracing-util-0.31.0.jar" />
+        <file name="<path>/jaegerLib_0.34/opentracing-noop-0.31.0.jar" />
+    </library>
+----
+
+Define your appplication:
+
+[source, xml]
+
+  <webApplication location="yourapp.war" contextRoot="/yourapp">
+        <!-- enable visibility to third party apis -->
+        <classloader commonLibraryRef="jaegerLib"
+            apiTypeVisibility="+third-party" />
+  </webApplication>
+
+You can find out more about about Jaeger settings set up using environment variables by looking at link:https://github.com/jaegertracing/jaeger-client-java/blob/10c641f8df6316f1eac4d5b1715513275bcd724e/jaeger-core/README.md[jaeger-client-java readme.]
+
+** For the `JAEGER_PASSWORD` environment variable, the password can be encoded using the `securityUtility command.`
+** Depending on Jaeger's sampling settings `JAEGER_SAMPLER_TYPE` and `JAEGER_SAMPLER_PARAM`, Jaeger may not report every spans created by the applications.
+
+[#ssl]
+
+== Trusted certificate enhancements (Transport Security 1.0)
+Open Liberty now offers new options to help establish trust for TLS connections. An easy way to use the JDK's default truststore for trust and a way to pass the certificate needed to establish trust to a truststore through an environment variable is now provided.
+
+=== Establishing trust using the JDK's default truststore
+
+By default, the JDK default truststore is the `cacerts` file. The default truststore may be set by the `javax.net.ssl.truststore` system property or the `jssecacerts` file if users have one configured. For Open Liberty to use what is configured as the JDK default truststore the `useDefaultCerts` attribute needs to be set to `true` on the `ssl` element. It is set to `false` by default. For example:
+
+[source,xml]
+----
+<ssl id="defaultSSLConfig" keyStoreRef="defaultKeyStore" trustStoreRef="defaultTrustStore" trustDefaultCerts="true" />
+<keyStore id="defaultKeyStore" location="key.p12" type="PKCS12" password=<your password>  />
+<keyStore id="defaultTrustStore" location="trust.p12" type="PKCS12" password=<your password> />
+----
+
+With `trustDefaultCerts` set to `true`, the server will try to establish trust with the configured truststore, in this case `defaultTrustStore`, first. If trust is not establish with the configured truststore then it will try to use the JDK's default truststore to establish trust.
+
+=== Providing a certificate through an environment variable to establish trust
+
+Open Liberty will read a certificate from an environment variable and add it to a keystore or truststore so it can be used for trust. The certificate will be added to the runtime copy of the keystore or truststore and will not be stored to the file system. If the keystore configuration includes the `readOnly` attribute set to `true` then the certificate will not be included.
+
+The environment variable key must be in the format `cert_ + keystore id`. For example:
+
+[source,xml]
+----
+<keyStore id="myKeyStore" location="myKey.p12" type="PKCS12" password=<your password> />
+----
+
+The key of the environment variable should be `cert_myKeyStore` (it is case sensitive).
+
+The value of the environment variable can either be a certificate in the base 64-bit format or the path to a file containing a base 64-bit encode certificate or DER encoded certificate. If using the base 64-bit encode certificate directly on the environment variable, it must contain the `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` tags. For example:
+[source,xml]
+----
+cert_myKeyStore="-----BEGIN CERTIFICATE-----
+....
+-----END CERTIFICATE-----"
+----
+The environment variable for a file will look similar to:
+
+`cert_myKeyStore=/Users/me/servercert.crt`
+
+Any value not starting with the `-----BEGIN CERTIFICATE-----`` tag will be treated like a file.
+
+[#rrs]
+
+== Liberty reader role support (Application Security 2.0 and Application Security 3.0)
+
+The reader role is a management role that allows read-only access to select administrative REST APIs as well as the Admin Center UI (`adminCenter-1.0`).
+
+Prior to this release, the Administrator management role was the only management role within Open Liberty and it provided read and write access. The new Reader management role provides the ability to assign a read-only role to users and groups. This will allow those users and groups to monitor the server without granting those users the ability to modify the server in anyway.
+
+Using the new Reader management role is nearly identical to using the Administrator management role. In the `server.xml` include the `appSecurity-2.0` or `appSecurity-3.0` feature and also add the new `reader-role` configuration element, that specifies the group(s), user(s), and/or the access ID of the group(s) or user(s) that should be granted the Reader management role.
+
+[source, xml]
+----
+<server>
+    <featureManager>
+        <feature>appSecurity-3.0</feature>
+    </featureManager>
+
+    <reader-role>
+        <group>group</group>
+        <group-access-id>group:realmName/groupUniqueId</group-access-id>
+        <user>user</user>
+        <user-access-id>user:realmName/userUniqueId</user-access-id>
+    </reader-role>
+</server>
+----
+
 
 :leveloffset!:
 
 == Resolved issues
 
-See the https://github.com/OpenLiberty/open-liberty/issues?q=label%3A%22release+bug%22+label%3Arelease%3A190010+is%3Aclosed[Open Liberty 19.0.0.10 issues that were resolved for this release].
+See the https://github.com/OpenLiberty/open-liberty/issues?q=label%3A%22release+bug%22+label%3Arelease%3A190010+is%3Aclosed[Open Liberty 19.0.0.12 issues that were resolved for this release].
 
 == Fixed CVEs
 
-For a list of CVEs that were fixed in Open Liberty 19.0.0.10, see https://openliberty.io/docs/ref/general/#security-vulnerabilities.html[security vulnerabilities].
+For a list of CVEs that were fixed in Open Liberty 19.0.0.12, see https://openliberty.io/docs/ref/general/#security-vulnerabilities.html[security vulnerabilities].
 
 == Known issues
 
-See the https://github.com/OpenLiberty/open-liberty/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3A%22release+bug%22+created%3A2019-09-06..2019-10-04+-label%3Arelease%3A190010+[list of issues that were found but not fixed during the development of 19.0.0.10].
+See the https://github.com/OpenLiberty/open-liberty/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3A%22release+bug%22+created%3A2019-11-08..2019-12-06+-label%3Arelease%3A190012+[list of issues that were found but not fixed during the development of 19.0.0.12].
