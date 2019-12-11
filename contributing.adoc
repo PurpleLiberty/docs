@@ -1,0 +1,86 @@
+:toc:
+:context: open-liberty
+
+= Open Liberty Documentation Instructions
+
+== Contacts
+
+* Atosa Khoddamhazrati <atosak@ca.ibm.com> - Project Management
+* Alasdair Nottingham <alasdair@us.ibm.com> - Technical Writer
+* Charlotte Holt <charlotte.holt@ibm.com> - Technical Writer
+* David Mueller <david.mueller1@ibm.com> - Technical Writer
+* Karen Deen <kldeen@us.ibm.com> - Technical Writer
+* Laura Cowen <laura_cowen@uk.ibm.com> - Technical Writer
+
+== Getting the content
+
+IBM writers will commit their additions to the link:https://github.com/PurpleLiberty/docs[Purple Liberty] repository for review.
+
+.Prequisites
+* link:git-setup.adoc[Set up Git]
+
+.Procedure
+. Visit https://github.com/PurpleLiberty/docs
+. Use the Download zip button to download the content
+. Unzip and extract the docs folder to your computer
+. Open your Terminal
+. Refresh your local copy of the repository
++
+[source]
+----
+cd openliberty/docs/
+git checkout master
+git pull upstream master
+git push origin HEAD
+----
++
+. Checkout a new branch
++
+[source]
+----
+git checkout -b NEWBRANCH
+----
++
+. Copy the updated files from the extracted repository to your local `openliberty/docs` directory
+. Grab content from the remote includes
++
+[source]
+----
+./bin/fetch-upstream.sh
+----
++
+. Confirm that the guides build without error
++
+[source]
+----
+ccutil compile --lang en_US --type asciidoc
+----
++
+. Commit the changes
++
+[source]
+----
+git add --all
+git commit -a -m "COMMIT MESSAGE"
+----
+
+== Build tips
+
+=== Symlinks
+
+IBM Guides use the main filename of `README` instead of `master`.  This can cause build issues when brought into our system. To resolve this without forcing IBM to rename the files we can create symlinks.
+
+For example
+
+`ln -s README-docinfo.xml master-docinfo.xml`
+
+Will basically redirect the `README-docinfo.xml` file to `master-docinfo.xml` for the purposes of building the documentation with ccutil.
+
+=== Build guides without master.adoc
+
+When building IBM guides you may have to alter the call to ccutil to point the tool to the `README` file instead of the traditional `master.adoc`.
+
+[source]
+----
+ccutil compile --lang en_US --type asciidoc --main-file '/home/nengard/openliberty/guide-cloud-openshift/README.adoc'
+----
