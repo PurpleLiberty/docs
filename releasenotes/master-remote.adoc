@@ -4,7 +4,7 @@
 
 == Features
 
-include::https://raw.githubusercontent.com/OpenLiberty/blogs/master/publish/2019-12-06-microprofile-32-health-metrics-190012.adoc[leveloffset=+1,tags=intro;run;features]
+include::https://raw.githubusercontent.com/OpenLiberty/blogs/master/publish/2020-01-17-openshift-oauth-server-social-login-liberty-20001.adoc[leveloffset=+1,tags=intro;run;features]
 
 == Resolved issues
 
