@@ -1,269 +1,196 @@
 :context: online
 
-= Release Notes for Open Liberty 19.0.0.12 on Red Hat OpenShift Container Platform
+= Release Notes for Open Liberty 20.0.0.1 on Red Hat OpenShift Container Platform
 
 == Features
 
 :leveloffset: +1
 
-link:https://openliberty.io/about/[Open Liberty] 19.0.0.12 provides support for MicroProfile 3.2, allowing users to provide their own health check procedures and monitor microservice applications easily with metrics. In addition, updates allow trust to be established using the JDK's default truststore or a certificate through an environment variable.
+In Open Liberty 20.0.0.1, you can configure the Social Login feature to use Red Hat OpenShift's OAuth server for authentication. In addition, there is a new MicroProfile Metric to measure CPU time, memory heap and response time.
 
-In Open Liberty 19.0.0.12:
+Give it a try in link:/about/[Open Liberty] 20.0.0.1
 
-* <<mp32, MicroProfile 3.2 support>>
-** <<hc21, Provide your own health check procedures (MicroProfile Health Check 2.1)>>
-** <<hm22, Monitor microservice applications easily wth metrics (MicroProfile Metrics 2.2)>>
-* <<jmo, Jaeger support in MicroProfile Open Tracing >>
-* <<ssl, Trusted certificate enhancements (Transport Security 1.0)>>
-* <<rrs, Liberty reader role support>>
+If you're interested in what's coming soon in Open Liberty, take a look at our <<previews,current development builds>>. Performance improvements through faster startups with annotation caching, and GraphQL support.
 
+In Open Liberty 20.0.0.1:
+
+* <<SSAA,Support OpenShift OAuth server for authentication and authorization>>
+* <<NMM, Monitor the process CPU time (MicroProfile Metrics 2.0)>>
+* <<ACC, Faster application startups with Liberty annotation caching>>
+* <<JSS, Updated JavaServer Face>>
+
+
+
+View the list of fixed bugs in https://github.com/OpenLiberty/open-liberty/issues?utf8=%E2%9C%93&q=label%3Arelease%3A20001+label%3A%22release+bug%22[20.0.0.1]
 [#run]
 
-== Run your apps using 19.0.0.12
+== Run your apps using 20.0.0.1
 
-If you're using link:https://openliberty.io/guides/maven-intro.html[Maven], here are the coordinates:
+If you're using link:/guides/maven-intro.html[Maven], here are the coordinates:
 
 [source,xml]
 ----
 <dependency>
     <groupId>io.openliberty</groupId>
     <artifactId>openliberty-runtime</artifactId>
-    <version>19.0.0.12</version>
+    <version>20.0.0.1</version>
     <type>zip</type>
 </dependency>
 ----
 
-Or for link:https://openliberty.io/guides/gradle-intro.html[Gradle]:
+Or for link:/guides/gradle-intro.html[Gradle]:
 
 [source,gradle]
 ----
 dependencies {
-    libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version: '[19.0.0.12,)'
+    libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version: '[20.0.0.1,)'
 }
 ----
 
-Or if you're using link:https://openliberty.io/guides/containerize.html[Docker]:
+Or if you're using Docker:
 
 [source]
 ----
-FROM open-liberty
+docker pull open-liberty
 ----
-[#mp32]
-== MicroProfile 3.2 support
-Add the whole of MicroProfile 3.2 to your application with this convenience feature in your `server.xml`:
-[source, xml]
-----
-<featureManager>
-  <feature>microProfile-3.2</feature>
-<featureManager>
-----
+[#SSAA]
+== Using Liberty Social Login with Red Hat OpenShift
 
-The `microProfile-3.2` feature automatically includes the following features in your app: JAX-RS 2.1, CDI 2.0, JSON-P 1.1, JSON-B 1.0, MicroProfile Config 1.3, MicroProfile Fault Tolerance 2.0, MicroProfile Health Check 2.1, MicroProfile JWT 1.1, MicroProfile Metrics 2.2, MicroProfile OpenAPI 1.1, MicroProfile OpenTracing 1.3, and MicroProfile Rest Client 1.3.
+The Social Login feature `socialLogin-1.0` can now be configured to use OpenShift’s built-in OAuth server and OAuth Proxy sidecar as authentication providers. The Social Login feature has several pre-configured providers (e.g. Google, GitHub, Facebook) but you can also configure additional providers (e.g. Instagram). OpenShift's OAuth server and OAuth Proxy sidecar can now be configured as additional providers too. The first is a standard OAuth Authorization Code flow, where a web browser accessing an app running in Liberty is redirected to the OpenShift OAuth server to authenticate.
+The second is accepting an inbound token from the OpenShift OAuth Proxy sidecar or obtained from an OpenShift API call. This approach requires less cluster-specific configuration.
 
-The MicroProfile Health Check and Metrics features contain updates.
+Most users of this will run Liberty in a pod; however, in the Authorization Code flow, Liberty can run outside the OpenShift cluster. In either mode, an optional JWT can be created for propagation to downstream services.
 
-[#hc21]
-=== Provide your own health check procedures (MicroProfile Health Check 2.1)
+Using OpenShift as a provider differs slightly from other OAuth providers, it requires a service account token to obtain information about the OAuth tokens.
+Once the: client ID, secret, and token have been obtained from OpenShift, Liberty can be configured as shown below.
 
-MicroProfile Health Check 2.1 enables you to provide your own health check procedures to be invoked by Liberty, to verify the health of your microservice:
+To enable the feature add it to the `server.xml`
 
-[source,java]
-----
-HealthCheckResponse.up("myCheck");
-----
-
-In previous versions, to define a simple successful/failed named health check response, the application level code is always expected to use several static methods together from the HealthCheckResponse API to retrieve a HealthCheckResponseBuilder used to construct a HealthCheck response.
-
-In the `mpHealth-2.1` feature for OpenLiberty, you can now use convenient and simpler methods from standard Java APIs, to construct UP/DOWN named health check responses, in your applications, such as;
-
-`HealthCheckResponse.named(“myCheck”).up().build();`
-
-To make it work include the following line in the `server.xml` file:
+Server configuration to use OpenShift OAuth server:
 
 [source, xml]
 ----
-<feature>mpHealth-2.1</feature>
-----
+<server description="social">
 
-Applications are expected to provide health check procedures by implementing the HealthCheck interface with the `@Liveness` or `@Readiness` annotations, which are used by Liberty to verify the Liveness or Readiness of the application, respectively. Add the logic of your health check in the `call()` method, and return the HealthCheckResponse object by constructing using the simple `up()` and `down()` methods from the API. To view the status of each health check, access either the `+http://<hostname>:<port>/health/live+` or `+http://<hostname>:<port>/health/ready+` endpoints.
+  <!-- Enable features -->
+  <featureManager>
+    <feature>appSecurity-3.0</feature>
+    <feature>socialLogin-1.0</feature>
+  </featureManager>
 
-[source, java]
-----
-**Liveness Check**
-@Liveness
-@ApplicationScoped
-public class AppLiveCheck implements HealthCheck {
-...
-    @Override
-     public HealthCheckResponse call() {
-       ...
-       HealthCheckResponse.up("myCheck");
-       ...
-     }
-}
-----
+<logging traceSpecification="com.ibm.ws.security.*=all=enabled" maxFiles="8" maxFileSize="200"/>
 
-For more information:
-
-* link:https://github.com/eclipse/microprofile-health/releases/tag/2.1[MicroProfile Health Check 2.1 Release Page]
-* link:http://download.eclipse.org/microprofile/microprofile-health-2.1/apidocs/[Javadocs]
-* link:https://download.eclipse.org/microprofile/microprofile-health-2.1/microprofile-health-spec.html[Specification document]
+<httpEndpoint  id="defaultHttpEndpoint" host="*" httpPort="8941" httpsPort="8946" > <tcpOptions soReuseAddr="true" /> </httpEndpoint>
 
 
-[#hm22]
-=== Monitor microservice applications easily wth metrics (MicroProfile Metrics 2.2 )
+  <!-- specify your clientId, clientSecret and userApiToken as liberty variables or environment variables -->
+  <oauth2Login id="openshiftLogin"
+    scope="user:full"
+    clientId="${myclientId}"
+    clientSecret="${myclientSecret}"
+    authorizationEndpoint="https://oauth-openshift.apps.papains.os.fyre.ibm.com/oauth/authorize"
+    tokenEndpoint="https://oauth-openshift.apps.papains.os.fyre.ibm.com/oauth/token"
+    userNameAttribute="username"
+    groupNameAttribute="groups"
+    userApiToken="${serviceAccountToken}"
+    userApiType="kube"
+    userApi="https://api.papains.os.fyre.ibm.com:6443/apis/authentication.k8s.io/v1/tokenreviews">
+  </oauth2Login>
 
-MicroProfile Metrics 2.2 enables developers to instrument metrics in their (microservice) applications for easy monitoring by their operations team.
+  <keyStore id="defaultKeyStore" password="keyspass" />
 
-Previously, the MetadataBuilder API had `reusable()` and `notReusable()` method to set the reusable field to `true` or `false`. The MetadataBuilder API has been changed to include a new setter method for the reusable attribute. This change is implemented so the MetadataBuilder API follows the builder pattern.
+  <!-- more application config would go here -->
 
-To enable the feature in the `server.xml` file:
-[source, xml]
-----
-<feature>mpMetrics-2.2</feature>
-----
-
-The example shows how to set the reusable field with the MetadataBuilder API:
-
-[source, java]
-----
-MetadataBuilder mdb = Metadata.builder();
-----
-
-[source, java]
-----
-mdb = mdb.withName("metricName").withType(MetricType.COUNTER)
-  .reusable(resolveIsReusable());
-----
-
-For more information:
-
-* link:https://github.com/eclipse/microprofile-metrics/releases[Changes to MicroProfile metrics]
-* link:/docs/ref/general/#microservice_observability_metrics.html[Microserice observability metrics]
-
-[#jmo]
-== Jaeger support added for tracing (MicroProfile OpenTracing 1.3)
-
-Open Liberty has added support for Jaeger in MicroProfile OpenTracing. A sample tracer is available link:https://github.com/WASdev/sample.opentracing.zipkintracer[here] for using Zipkin as a tracing backend. With the addition of Jaeger support, developers can also use Jaeger as a tracing backend.
-
-You can download the Jaeger client version 0.34.0 library and its dependencies from link:https://mvnrepository.com/artifact/io.jaegertracing/jaeger-client/0.34.0[Maven repository].
-
-In the `server.xml:`
-
-Add `<feature>mpOpenTracing-1.3</feature>` under `<featureManager>` section.
-
-[source, xml]
-----
-    <library id="jaegerLib" apiTypeVisibility="+third-party" >
-        <file name="<path>/jaegerLib_0.34/gson-2.8.2.jar" />
-        <file name="<path>/jaegerLib_0.34/jaeger-client-0.34.0.jar" />
-        <file name="<path>/jaegerLib_0.34/jaeger-core-0.34.0.jar" />
-        <file name="<path>/jaegerLib_0.34/jaeger-thrift-0.34.0.jar" />
-        <file name="<path>/jaegerLib_0.34/jaeger-tracerresolver-0.34.0.jar" />
-        <file name="<path>/jaegerLib_0.34/libthrift-0.12.0.jar" />
-        <file name="<path>/jaegerLib_0.34/slf4j-api-1.7.25.jar" />
-        <file name="<path>/jaegerLib_0.34/slf4j-jdk14-1.7.25.jar" />
-        <file name="<path>/jaegerLib_0.34/opentracing-util-0.31.0.jar" />
-        <file name="<path>/jaegerLib_0.34/opentracing-noop-0.31.0.jar" />
-    </library>
-----
-
-Define your appplication:
-
-[source, xml]
-
-  <webApplication location="yourapp.war" contextRoot="/yourapp">
-        <!-- enable visibility to third party apis -->
-        <classloader commonLibraryRef="jaegerLib"
-            apiTypeVisibility="+third-party" />
-  </webApplication>
-
-You can find out more about about Jaeger settings set up using environment variables by looking at link:https://github.com/jaegertracing/jaeger-client-java/blob/10c641f8df6316f1eac4d5b1715513275bcd724e/jaeger-core/README.md[jaeger-client-java readme.]
-
-** For the `JAEGER_PASSWORD` environment variable, the password can be encoded using the `securityUtility command.`
-** Depending on Jaeger's sampling settings `JAEGER_SAMPLER_TYPE` and `JAEGER_SAMPLER_PARAM`, Jaeger may not report every spans created by the applications.
-
-[#ssl]
-
-== Trusted certificate enhancements (Transport Security 1.0)
-Open Liberty now offers new options to help establish trust for TLS connections. An easy way to use the JDK's default truststore for trust and a way to pass the certificate needed to establish trust to a truststore through an environment variable is now provided.
-
-=== Establishing trust using the JDK's default truststore
-
-By default, the JDK default truststore is the `cacerts` file. The default truststore may be set by the `javax.net.ssl.truststore` system property or the `jssecacerts` file if users have one configured. For Open Liberty to use what is configured as the JDK default truststore the `useDefaultCerts` attribute needs to be set to `true` on the `ssl` element. It is set to `false` by default. For example:
-
-[source,xml]
-----
-<ssl id="defaultSSLConfig" keyStoreRef="defaultKeyStore" trustStoreRef="defaultTrustStore" trustDefaultCerts="true" />
-<keyStore id="defaultKeyStore" location="key.p12" type="PKCS12" password=<your password>  />
-<keyStore id="defaultTrustStore" location="trust.p12" type="PKCS12" password=<your password> />
-----
-
-With `trustDefaultCerts` set to `true`, the server will try to establish trust with the configured truststore, in this case `defaultTrustStore`, first. If trust is not establish with the configured truststore then it will try to use the JDK's default truststore to establish trust.
-
-=== Providing a certificate through an environment variable to establish trust
-
-Open Liberty will read a certificate from an environment variable and add it to a keystore or truststore so it can be used for trust. The certificate will be added to the runtime copy of the keystore or truststore and will not be stored to the file system. If the keystore configuration includes the `readOnly` attribute set to `true` then the certificate will not be included.
-
-The environment variable key must be in the format `cert_ + keystore id`. For example:
-
-[source,xml]
-----
-<keyStore id="myKeyStore" location="myKey.p12" type="PKCS12" password=<your password> />
-----
-
-The key of the environment variable should be `cert_myKeyStore` (it is case sensitive).
-
-The value of the environment variable can either be a certificate in the base 64-bit format or the path to a file containing a base 64-bit encode certificate or DER encoded certificate. If using the base 64-bit encode certificate directly on the environment variable, it must contain the `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` tags. For example:
-[source,xml]
-----
-cert_myKeyStore="-----BEGIN CERTIFICATE-----
-....
------END CERTIFICATE-----"
-----
-The environment variable for a file will look similar to:
-
-`cert_myKeyStore=/Users/me/servercert.crt`
-
-Any value not starting with the `-----BEGIN CERTIFICATE-----`` tag will be treated like a file.
-
-[#rrs]
-
-== Liberty reader role support (Application Security 2.0 and Application Security 3.0)
-
-The reader role is a management role that allows read-only access to select administrative REST APIs as well as the Admin Center UI (`adminCenter-1.0`).
-
-Prior to this release, the Administrator management role was the only management role within Open Liberty and it provided read and write access. The new Reader management role provides the ability to assign a read-only role to users and groups. This will allow those users and groups to monitor the server without granting those users the ability to modify the server in anyway.
-
-Using the new Reader management role is nearly identical to using the Administrator management role. In the `server.xml` include the `appSecurity-2.0` or `appSecurity-3.0` feature and also add the new `reader-role` configuration element, that specifies the group(s), user(s), and/or the access ID of the group(s) or user(s) that should be granted the Reader management role.
-
-[source, xml]
-----
-<server>
-    <featureManager>
-        <feature>appSecurity-3.0</feature>
-    </featureManager>
-
-    <reader-role>
-        <group>group</group>
-        <group-access-id>group:realmName/groupUniqueId</group-access-id>
-        <user>user</user>
-        <user-access-id>user:realmName/userUniqueId</user-access-id>
-    </reader-role>
 </server>
 ----
+
+In the sidecar scenario, the configuration changes to accept an inbound token from the sidecar.
+Server configuration to use OAuth proxy sidecar:
+
+[source, xml]
+----
+<!-- specify your userApiToken as a liberty variable or environment variable -->
+  <!-- note that no clientId or clientSecret are needed -->
+  <oauth2Login id="openshiftLogin"
+    scope="user:full"
+    userNameAttribute="username"
+    groupNameAttribute="groups"
+    userApiToken="${serviceAccountToken}"
+    userApiType="kube"
+    accessTokenHeaderName="X-Forwarded-Access-Token"
+    accessTokenRequired="true"
+    userApi="https://kubernetes.default.svc/apis/authentication.k8s.io/v1/tokenreviews">
+  </oauth2Login>
+----
+
+Use of HTTPS communication requires that the server either have a key signed by a well-known certificate authority, which Liberty can trust automatically or that the server's public key be added to the Liberty trust store. OpenShift does not come with CA-signed keys by default, so the Red Hat OpenShift OAuth server's public key will need to be added. The most convenient way to do this is to specify an environment variable in `server.env`. That identifies the file containing the public key in PEM format. Liberty will read the file and add the key to its trust store.
+
+[source, xml]
+----
+# server.env
+
+# OAuth sidecar scenario: causes the Kubernetes default certificate that is pre-installed in pods to be added to Liberty trust store.
+cert_defaultKeyStore=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+
+# OAuth server scenario: causes the public keys from /tmp/trustedcert.pem (obtained seperetly) to be added to Liberty trust store.
+cert_defaultKeyStore=/tmp/trustedcert.pem
+
+----
+
+[#NMM]
+== Monitor the process CPU time (MicroProfile Metrics 2.0)
+
+A new metric, `processCpuTime,` which returns the CPU time used by the process on which the JVM is running. The MicroProfile Metrics feature provides information monitoring an application, such as CPU time used, memory heap, response time of servlets.
+
+The new `processCpuTime` metric provides a more accurate CPU load percentage on cloud platforms via Grafana. Previously, the CPU load percentage was shown with the metric `processCpuLoad`. However, the load percentage was calculated using the total number of cores allocated to the deployment. If the deployment has a restricted number of cores, the `processCpuLoad` ends up showing a plateau on Grafana when the maximum number of cores is reached. For example, on a deployment with 32 cores allocated but restricted to four cores, the `processCpuLoad` graph shows a plateau at 12.5% when all four cores are used.
+
+The new metric, `processCpuTime,` can be manipulated on Grafana to create a more accurate representation of the CPU being used. `rate(processCpuTime)[1m]` shows the average rate of increase in CPU time over one minute. Dividing this by the total number of CPU cores, we can see a more accurate percentage of the CPU used, taking into account the constraints.
+
+The new `processCpuTime` metric is displayed on the `/metrics` endpoint with the MicroProfile Metrics 2.0 and 2.2 features. On the dashboard, a new panel can be created with the following PromQL query: `(rate(base:cpu_process_cpu_time[2m])/1e9) / base:cpu_available_processors{app=~[[app]]}.` link:https://github.com/OpenLiberty/open-liberty-operator/tree/master/deploy/dashboards/metrics[View full dashboard.]
+
+
+The following images show that the old metric, `processCpuLoad`, plateaus at 12.5% (4/23), while the new metric, `processCpuTime`, more accurately represents the percentage of CPU used.
+
+image::/img/blog/20001-highcpuload.png[align="center"]
+image::/img/blog/20001-lowcpuload.png[align="center"]
+
+
+With all the machines cores being used and there are no constraints on the processors (32 processors) - The old version and new version display the same data.
+
+image::/img/blog/20001-noconstraints.png[align="center"]
+
+== Faster application startups with Liberty annotation caching
+
+Application startup times have been made faster by adding cache capabilities `annotation caching` to core class and annotation scanning function. Depending on application characteristics, startup times are reduced by 10% to more than 50%. Applications with many jar files, or which use CDI or JAX-RS function, see the best improvements:
+
+image::/img/blog/190011-annotationcaching-graph.png[align="center"]
+
+Good news! Annotation caching is enabled by default.
+
+Annotation cache data is stored in the server workarea. Cache of application class data is cleared when performing a clean server start (starting the server with the `--clean` option). In normal operations, the clearing of cache data is not necessary, since the cache automatically regenerates cache data for changed application classes.
+
+In container environments, for annotation caching to be effective, the server image must be "warmed" when the container image is created. Warming the server an be done by starting and stopping the server during the container build. Warming the image moves the annotation scan into the container build meaning you get optimal startup on the container deployment. Using the configure.sh file in the base open-liberty docker images causes the server to be started and stopped during the container build.
+
+[#JSS]
+== Bug Fixes in the JavaServer Faces 2.3
+
+JavaServer Faces 2.3 contains a new feature to get bug fixes that are in Apache MyFaces 2.3.6. The jsf-2.3 feature pulls in the Apache MyFaces implementation and integrates it into the Liberty runtime.
+
+The Apache MyFaces 2.3.6 release contains bug fixes. View link:https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=10600&version=12346352[the release notes for more information.]
+
+To use the JSF 2.3, enable the `jsf-2.3` feature to leverage the latest Apache MyFaces 2.3. release For more information about the JavaServer Feature, view the link:https://myfaces.apache.org/[Apache website.]
 
 
 :leveloffset!:
 
 == Resolved issues
 
-See the https://github.com/OpenLiberty/open-liberty/issues?q=label%3A%22release+bug%22+label%3Arelease%3A190010+is%3Aclosed[Open Liberty 19.0.0.12 issues that were resolved for this release].
+See the https://github.com/OpenLiberty/open-liberty/issues?utf8=%E2%9C%93&q=label%3A%22release+bug%22+label%3Arelease%3A20001+is%3Aclosed+[Open Liberty 20.0.0.1 issues that were resolved for this release].
 
 == Fixed CVEs
 
-For a list of CVEs that were fixed in Open Liberty 19.0.0.12, see https://openliberty.io/docs/ref/general/#security-vulnerabilities.html[security vulnerabilities].
+For a list of CVEs that were fixed in Open Liberty 20.0.0.1, see https://openliberty.io/docs/ref/general/#security-vulnerabilities.html[security vulnerabilities].
 
 == Known issues
 
-See the https://github.com/OpenLiberty/open-liberty/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3A%22release+bug%22+created%3A2019-11-08..2019-12-06+-label%3Arelease%3A190012+[list of issues that were found but not fixed during the development of 19.0.0.12].
+See the https://github.com/OpenLiberty/open-liberty/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3A%22release+bug%22+created%3A2019-12-06..2020-1-16+-label%3Arelease%3A190012+[list of issues that were found but not fixed during the development of 20.0.0.1].
