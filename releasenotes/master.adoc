@@ -1,5 +1,5 @@
 :context: online
-:imagesdir: ../
+:imagesdir:
 = Release Notes for Open Liberty 20.0.0.1 on Red Hat OpenShift Container Platform
 
 == Features
@@ -97,7 +97,9 @@ Server configuration to use OpenShift OAuth server:
 
   <keyStore id="defaultKeyStore" password="keyspass" />
 
-  <!-- more application config would go here -->
+  <!-- more applicaERROR: Image missing: tmp/en-US/xml/images/20001-highcpuload.png
+ at /usr/share/perl5/vendor_perl/HTML/Element.pm line 1564.
+tion config would go here -->
 
 </server>
 ----
