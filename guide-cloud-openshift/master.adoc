@@ -236,7 +236,12 @@ oc registry login
 You can store your Docker credentials in a custom external credential store, which is more secure than using a Docker configuration file.
 If you are using a custom credential store for securing your registry credentials, or if you are unsure where your credentials are stored, use the following command:
 
-Unresolved directive in README.adoc - include::https://raw.githubusercontent.com/OpenLiberty/guides-common/master/os-tabs.adoc[]
+[.tab_link.windows_link]
+`*WINDOWS*`
+[.tab_link.mac_link]
+`*MAC*`
+[.tab_link.linux_link]
+`*LINUX*`
 
 [.tab_content.mac_section.linux_section]
 --
@@ -278,7 +283,12 @@ oc registry info
 
 Ensure that you are logged in to OpenShift and the registry, and run the following commands to tag your applications:
 
-Unresolved directive in README.adoc - include::https://raw.githubusercontent.com/OpenLiberty/guides-common/master/os-tabs.adoc[]
+[.tab_link.windows_link]
+`*WINDOWS*`
+[.tab_link.mac_link]
+`*MAC*`
+[.tab_link.linux_link]
+`*LINUX*`
 
 [.tab_content.mac_section.linux_section]
 --

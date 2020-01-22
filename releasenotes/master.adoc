@@ -10,8 +10,6 @@ In Open Liberty 20.0.0.1, you can configure the Social Login feature to use Red 
 
 Give it a try in link:/about/[Open Liberty] 20.0.0.1
 
-If you're interested in what's coming soon in Open Liberty, take a look at our <<previews,current development builds>>. Performance improvements through faster startups with annotation caching, and GraphQL support.
-
 In Open Liberty 20.0.0.1:
 
 * <<SSAA,Support OpenShift OAuth server for authentication and authorization>>
@@ -159,6 +157,7 @@ With all the machines cores being used and there are no constraints on the proce
 
 image::img/blog/20001-noconstraints.png[align="center"]
 
+[#ACC]
 == Faster application startups with Liberty annotation caching
 
 Application startup times have been made faster by adding cache capabilities `annotation caching` to core class and annotation scanning function. Depending on application characteristics, startup times are reduced by 10% to more than 50%. Applications with many jar files, or which use CDI or JAX-RS function, see the best improvements:
