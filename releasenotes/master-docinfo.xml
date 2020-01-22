@@ -1,13 +1,13 @@
 <productname>Open Liberty</productname>
-<productnumber>2019</productnumber>
-<subtitle>Release Notes for Open Liberty 2019 on Red Hat OpenShift Container Platform</subtitle>
+<productnumber>2020</productnumber>
+<subtitle>Release Notes for Open Liberty 2020 on Red Hat OpenShift Container Platform</subtitle>
 <abstract>
   <para>These release notes contain the latest information about new
-  features, enhancements, fixes, and issues contained in 
-  Open Liberty 2019 on Red Hat OpenShift Container Platform release.</para>
+  features, enhancements, fixes, and issues contained in
+  Open Liberty 2020 on Red Hat OpenShift Container Platform release.</para>
 </abstract>
 <legalnotice lang="en-US" version="5.0" xmlns="http://docbook.org/ns/docbook">
-  <para>                Copyright <trademark class="copyright"></trademark> 2019 IBM Corp  </para>
+  <para>                Copyright <trademark class="copyright"></trademark> 2020 IBM Corp  </para>
   <para>Code and build scripts are licensed under the Eclipse Public License v1
 Documentation files are licensed under Creative Commons Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)
 
