@@ -1,5 +1,7 @@
 :context: online
 :imagesdir:
+:url-prefix: https://openliberty.io
+
 = Release Notes for Open Liberty 20.0.0.1 on Red Hat OpenShift Container Platform
 
 == Features
@@ -8,7 +10,7 @@
 
 In Open Liberty 20.0.0.1, you can configure the Social Login feature to use Red Hat OpenShift's OAuth server for authentication. In addition, there is a new MicroProfile Metric to measure CPU time, memory heap and response time.
 
-Give it a try in link:/about/[Open Liberty] 20.0.0.1
+Give it a try in link:{url-prefix}/about/[Open Liberty] 20.0.0.1
 
 In Open Liberty 20.0.0.1:
 
@@ -24,7 +26,7 @@ View the list of fixed bugs in https://github.com/OpenLiberty/open-liberty/issue
 
 == Run your apps using 20.0.0.1
 
-If you're using link:/guides/maven-intro.html[Maven], here are the coordinates:
+If you're using link:{url-prefix}/guides/maven-intro.html[Maven], here are the coordinates:
 
 [source,xml]
 ----
@@ -36,7 +38,7 @@ If you're using link:/guides/maven-intro.html[Maven], here are the coordinates:
 </dependency>
 ----
 
-Or for link:/guides/gradle-intro.html[Gradle]:
+Or for link:{url-prefix}/guides/gradle-intro.html[Gradle]:
 
 [source,gradle]
 ----
@@ -97,9 +99,7 @@ Server configuration to use OpenShift OAuth server:
 
   <keyStore id="defaultKeyStore" password="keyspass" />
 
-  <!-- more applicaERROR: Image missing: tmp/en-US/xml/images/20001-highcpuload.png
- at /usr/share/perl5/vendor_perl/HTML/Element.pm line 1564.
-tion config would go here -->
+  <!-- more application config would go here -->
 
 </server>
 ----
@@ -152,6 +152,7 @@ The new `processCpuTime` metric is displayed on the `/metrics` endpoint with the
 The following images show that the old metric, `processCpuLoad`, plateaus at 12.5% (4/23), while the new metric, `processCpuTime`, more accurately represents the percentage of CPU used.
 
 image::img/blog/20001-highcpuload.png[align="center"]
+
 image::img/blog/20001-lowcpuload.png[align="center"]
 
 
