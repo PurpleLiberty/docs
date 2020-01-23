@@ -1,6 +1,7 @@
 :context: online
-:imagesdir: 
+:imagesdir:
 :url-prefix: https://openliberty.io
+:url-about: https://access.redhat.com/products/open-liberty/
 
 = Release Notes for Open Liberty 20.0.0.1 on Red Hat OpenShift Container Platform
 
