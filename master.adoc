@@ -8,10 +8,6 @@
 
 :leveloffset: +1
 
-// Module included in the following assemblies:
-//
-//
-
 [id="what-is-openliberty-{context}"]
 = What is Open Liberty
 
