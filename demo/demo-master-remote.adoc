@@ -22,4 +22,4 @@ include::docs/modules/demo-features.adoc[leveloffset=+1]
 include::docs/modules/demo-server-config.adoc[leveloffset=+1]
 
 [appendix]
-include::docs/modules/additional-openliberty-resources.adoc[leveloffset=+1]
+include::docs/modules/demo-additional-openliberty-resources.adoc[leveloffset=+1]
