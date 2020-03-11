@@ -2,7 +2,7 @@
 //
 //
 
-[id="testing-with-container-{context}"]
+[id="server-config-{context}"]
 = Server configuration
 
 strategy to pull in autogen server config docs currently under development

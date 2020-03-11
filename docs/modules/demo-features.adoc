@@ -2,7 +2,7 @@
 //
 //
 
-[id="testing-with-container-{context}"]
+[id="features-{context}"]
 = Features
 
 strategy to pull in autogen feature docs currently under development

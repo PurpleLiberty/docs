@@ -2,7 +2,7 @@
 //
 //
 
-[id="packaging-and-deploying-applications-{context}"]
+[id="deploy-openshift-{context}"]
 = Deploying an app to OpenShift
 
 Doc currently in development
