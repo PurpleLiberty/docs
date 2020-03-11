@@ -1,0 +1,8 @@
+// Module included in the following assemblies:
+//
+//
+
+[id="server-config-{context}"]
+= Server configuration
+
+strategy to pull in autogen server config docs currently under development
