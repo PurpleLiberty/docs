@@ -1,0 +1,8 @@
+// Module included in the following assemblies:
+//
+//
+
+[id="testing-with-container-{context}"]
+= Server configuration
+
+strategy to pull in autogen server config docs currently under development
