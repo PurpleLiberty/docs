@@ -15,46 +15,9 @@
 [id="what-is-openliberty-{context}"]
 = What is Open Liberty
 
-Open Liberty is a lightweight Java runtime for building cloud-native applications and microservices.
+Doc currently in development
 
-With Open Liberty, it's easy to add and remove modular features from the latest versions of Jakarta EE and Eclipse MicroProfile. This modular structure simplifies microservice development, enabling you to run Just enough Application Server to support the features that your application needs. Furthermore, with Open Liberty zero migration architecture, you can upgrade to the latest version with minimal impact to your current applications and configurations. Open Liberty is compatible with the Jakarta EE 8 Full Platform and Web Profile specifications and with MicroProfile 3.0. For more information, see the link:https://openliberty.io/[Open Liberty website]. For the latest updates about Open Liberty features and capabilities, see the link:https://openliberty.io/blog/[Open Liberty blog] and https://openliberty.io/docs/[Open Liberty docs].
-
-Open Liberty is one of the Java runtimes available on OpenShift, and support is provided as part of a Red Hat subscription. Run Open Liberty on OpenShift to build and deploy cloud-native applications with the benefits of the OpenShift platform. For more information about using Open Liberty with OpenShift, see link:https://openliberty.io/guides/cloud-openshift.html[Deploying microservices to OpenShift].
-
-== Open Liberty Versioning
-
-Traditional versioning follows some variation of the major.minor.micro scheme, where significant new function is only delivered in a major release. These major releases contain key new capabilities, but they also make behavior changes that require application migration and significant regression testing to adopt. As a result, multiple major versions are supported at any one time. The modular feature architecture of Open Liberty, in combination with zero migration, allows the delivery of new function incrementally, without following a major.minor.micro versioning scheme.
-
-Instead of major releases, each Open Liberty release is considered a micro, or patch release. These patch releases follow a yy.0.0.nn version scheme. The first two digits indicate the year of release and the last two digits indicate the number of the release within that year. Even though the first set of digits changes each year, the releases are of equal standing. For example, the difference between 20.0.0.1 (the first release of 2020) and 19.0.0.12 (the last release of 2019) is identical to the difference between 19.0.0.10 and 19.0.0.11.
-
-The lack of major release streams is unusual for server runtimes, but is common for desktop and mobile applications. Some publication systems expect software to have a major version. As a result, in cases where a major version is needed, the year of publication is used as a stand-in. For example, Open Liberty documentation that is published for this guide in 2019 uses the year 2019 as the version number. However, this documentation is as applicable to releases in 2020 as it is to releases in 2019.
-
-:leveloffset: -1
-
-:leveloffset: +1
-
-// Module included in the following assemblies:
-//
-//
-
-[id="packaging-and-deploying-applications-{context}"]
-= Packaging and Deploying applications
-
-You can package everything you need to run your application in a container image and use containers to deploy it in different environments. When you run Open Liberty applications on OpenShift, you combine the most flexible server runtime available to Java developers with a streamlined DevOps process and an intuitive development pipeline.
-
-For more information, see link:https://www.openliberty.io/guides/cloud-openshift.html[Deploying microservices to OpenShift].
-
-To learn how to containerize and run your microservices with Open Liberty, see link:https://openliberty.io/guides/containerize.html[Containerizing microservices].
-
-Open Liberty supports all MicroProfile and Java EE APIs and deploys to every major cloud platform. To get started with Open Liberty, learn how to to run and update a simple REST microservice with link:https://openliberty.io/guides/getting-started.html[Packaging and deploying applications].
-
-
-
-
-.Additional resources
-* link:https://openliberty.io/guides/kubernetes-intro.html[Deploying microservices to Kubernetes]
-
-:leveloffset: -1
+:leveloffset!:
 
 :leveloffset: +1
 
@@ -65,7 +28,7 @@ Open Liberty supports all MicroProfile and Java EE APIs and deploys to every maj
 
 Features are the discrete units of functionality by which you control the pieces of the runtime environment that are loaded into a particular server. By adding or removing features from your server configuration, you can control what functions the server can perform. Features provide the programming models and services that applications require. You can specify any feature in the server configuration files. Some features include other features within them, and the same feature might be included in one or more other features.
 
-When the server is started, the JVM is launched and control is passed to the Open Liberty kernel. The configuration is loaded as described in the link:https://www.openliberty.io/docs/ref/config/[Server configuration overview]. When the configuration is parsed, the feature manager gains control and processes the `featureManager` configuration to load the requested features into the server and start the required components. Finally, the applications are started. When the configuration is changed, the feature manager reevaluates the code that is required for the newly requested features by starting and stopping parts of the runtime as necessary without restarting the server. Changes to applications are processed in a similar way.
+When the server is started, the JVM is launched and control is passed to the Open Liberty kernel. The configuration is loaded as described in the link:/docs/ref/config/[server configuration overview]. When the configuration is parsed, the feature manager gains control and processes the `featureManager` configuration to load the requested features into the server and start the required components. Finally, the applications are started. When the configuration is changed, the feature manager reevaluates the code that is required for the newly requested features by starting and stopping parts of the runtime as necessary without restarting the server. Changes to applications are processed in a similar way.
 
 == Using features
 Features are specified in the system configuration files that are the `server.xml` file and any other included files. The feature manager is configured by using the `featureManager` element in the `server.xml` file. Each feature that is required is configured by using the `feature` element. The following example configures the `servlet-4.0` and `jdbc-4.3` features:
@@ -80,12 +43,12 @@ Features are specified in the system configuration files that are the `server.xm
 </server>
 ----
 
-The runtime contains default configuration settings so that the configuration you need to specify is kept to a minimum. You specify the features that you need, along with any additions or overrides to the default settings, in the `server.xml` file. For details about the server configuration, see the link:/docs/ref/config/[Server configuration overview].
+The runtime contains default configuration settings so that the configuration you need to specify is kept to a minimum. Specify the features that you need, along with any additions or overrides to the default settings, in the `server.xml` file. For details about the server configuration, see the link:/docs/ref/config/[server configuration overview].
 
-== Zero-migration
-With the Open Liberty zero-migration architecture, you can move to the latest version of Open Liberty with minimal impact to your current applications and configurations. Zero-migration architecture means that you can use existing, unmodified configuration and application files with an updated version of the Open Liberty runtime environment without unwanted or unexpected change in behavior.
+== Zero migration
+With the Open Liberty zero migration architecture, you can move to the latest version of Open Liberty with minimal impact to your current applications and configurations. Zero migration architecture means that you can use existing, unmodified configuration and application files with an updated version of the Open Liberty runtime environment without unwanted or unexpected change in behavior.
 
-With the use of pluggable features in the Open Liberty runtime environment, your existing APIs and behaviors are supported in new product versions, and new APIs and behaviors are added in new features. For example, both the Servlet 3.1 and 4.0 specifications are supported. Changes in API behavior only happen in new feature versions, so you can choose the appropriate feature version for your application. These versioned features continue to be supported across Open Liberty updates.
+With the use of pluggable features in the Open Liberty runtime environment, your existing APIs and behaviors are supported in new product versions, and new APIs and behaviors are added in new features. For example, both the Servlet 3.1 and 4.0 specifications are supported. An API behavior change is made available as a new version of a feature so that you can choose the appropriate feature version for your application. These versioned features continue to be supported across Open Liberty updates.
 
 If you continue to use the same feature version, you never need to migrate your application. For example, if your application uses Servlet 3.1, the Open Liberty server that runs the application must have the `servlet-3.1` feature. You can update Open Liberty and continue to use the `servlet-3.1` feature indefinitely, regardless of how many other Servlet specification levels are supported. You need to migrate your applications only if you choose to use the `servlet-4.0` feature instead.
 
@@ -98,23 +61,23 @@ Liberty doesn't support combining features from both Java EE 7 and Java EE 8, ex
 
 The following features are included in both Java EE 7 and Java EE 8:
 
-* link:https://www.openliberty.io/docs/ref/feature/#appClientSupport-1.0.html[appClientSupport-1.0]
-* link:https://www.openliberty.io/docs/ref/feature/#batch-1.0.html[batch-1.0]
-* link:https://www.openliberty.io/docs/ref/feature/#concurrent-1.0.html[concurrent-1.0]
-* link:https://www.openliberty.io/docs/ref/feature/#ejb-3.2.html[ejb-3.2]
-* link:https://www.openliberty.io/docs/ref/feature/#j2eeManagement-1.1.html[j2eeManagement-1.1]
-* link:https://www.openliberty.io/docs/ref/feature/#jacc-1.5.html[jacc-1.5]
-* link:https://www.openliberty.io/docs/ref/feature/#jaxws-2.2.html[jaxws-2.2]
-* link:https://www.openliberty.io/docs/ref/feature/#jca-1.7.html[jca-1.7]
-* link:https://www.openliberty.io/docs/ref/feature/#jcaInboundSecurity-1.0.html[jcaInboundSecurity-1.0]
-* link:https://www.openliberty.io/docs/ref/feature/#jdbc-4.2.html[jdbc-4.2]
-* link:https://www.openliberty.io/docs/ref/feature/#jdbc-4.3.html[jdbc-4.3]
-* link:https://www.openliberty.io/docs/ref/feature/#jms-2.0.html[jms-2.0]
-* link:https://www.openliberty.io/docs/ref/feature/#wasJmsClient-2.0.html[wasJmsClient-2.0]
-* link:https://www.openliberty.io/docs/ref/feature/#wasJmsSecurity-1.0.html[wasJmsSecurity-1.0]
-* link:https://www.openliberty.io/docs/ref/feature/#wasJmsServer-1.0.html[wasJmsServer-1.0]
+* feature:appClientSupport-1.0[]
+* feature:batch-1.0[]
+* feature:concurrent-1.0[]
+* feature:ejb-3.2[]
+* feature:j2eeManagement-1.1[]
+* feature:jacc-1.5[]
+* feature:jaxws-2.2[]
+* feature:jca-1.7[]
+* feature:jcaInboundSecurity-1.0[]
+* feature:jdbc-4.2[]
+* feature:jdbc-4.3[]
+* feature:jms-2.0[]
+* feature:wasJmsClient-2.0[]
+* feature:wasJmsSecurity-1.0[]
+* feature:wasJmsServer-1.0[]
 
-For a complete list of features that support Java EE 7, see the link:https://www.openliberty.io/docs/ref/feature/#javaee-7.0.html[javaee-7.0] feature. For a complete list of features that support Java EE 8, see the link:https://www.openliberty.io/docs/ref/feature/#javaee-8.0.html[javaee-8.0] feature.
+For a complete list of features that support Java EE 7, see the feature:javaee-7.0[] feature. For a complete list of features that support Java EE 8, see the feature:javaee-8.0[] feature.
 
 == Superseded features
 If a feature is superseded, a new feature or a combination of features might provide an advantage over the superseded feature. The new feature or features might not completely replace the function of the superseded feature, so you must consider your scenario before you decide whether to change your configuration. Superseded features remain supported and valid for use in your configuration, but you might be able to improve your configuration by using the newer features.
@@ -132,7 +95,7 @@ The following table lists the Open Liberty features that are superseded:
 
 |`appSecurity-1.0`
 |`appSecurity-2.0`
-|The link:https://www.openliberty.io/docs/ref/config/#ldapRegistry.html[ldapRegistry] and the `servlet-3.0` feature were removed from the definition of the `appSecurity-2.0` feature.
+|The `ldapRegistry-3.0` and `servlet-3.0` features were removed from the definition of the `appSecurity-2.0` feature.
 
 |`jmsMdb-3.2`
 |`jms-2.0` and `mdb-3.2`
@@ -144,7 +107,7 @@ The following table lists the Open Liberty features that are superseded:
 
 |===
 
-:leveloffset: -1
+:leveloffset!:
 
 :leveloffset: +1
 
@@ -560,7 +523,33 @@ Based on the following server XML config example, the `dataStore` element and th
 </server>
 ----
 
-:leveloffset: -1
+:leveloffset!:
+
+:leveloffset: +1
+
+// Module included in the following assemblies:
+//
+//
+
+[id="packaging-and-deploying-applications-{context}"]
+= Packaging and Deploying applications
+
+Doc currently in development
+
+:leveloffset!:
+
+:leveloffset: +1
+
+// Module included in the following assemblies:
+//
+//
+
+[id="deploy-openshift-{context}"]
+= Deploying an app to OpenShift
+
+Doc currently in development
+
+:leveloffset!:
 
 :leveloffset: +1
 
@@ -634,6 +623,23 @@ WLP_LOGGING_MESSAGE_SOURCE=message,trace,accessLog,ffdc,audit
 +
 When using `server.xml` to configure json format some log lines are written in the default non-JSON format prior to `server.xml` startup which can cause issues with some tools. For example, https://stedolan.github.io/jq/[`jq`] would have trouble understanding the log files.
 
+=== Configuring JSON field names
+When logs are in JSON format, you can use the `jsonFieldMappings` attribute to replace default field names with new field names. The following examples show sample configurations for renaming a JSON field:
+
+* To configure a field name, include the following in the `server.env.` file:
++
+[source,properties,linenums,role="code_column"]
+----
+WLP_LOGGING_JSON_FIELD_MAPPINGS=loglevel:level
+----
++
+* To configure a field name for a specific source, include the following in the `server.env.` file:
++
+[source,properties,linenums,role="code_column"]
+----
+WLP_LOGGING_JSON_FIELD_MAPPINGS=message:message:log
+----
+
 === Configuring logging for a Docker image
 
 It is common in Docker environments to disable `messages.log` and instead format the console output as JSON. This can be done using environment variables:
@@ -678,7 +684,7 @@ binaryLog view defaultServer
 
 == Configuration settings by source
 
-The table below shows the equivalent `server.xml`, `bootstrap.properties`, and environment variable configurations along with brief descriptions. Full configuration documentation is available in the config reference for the link:https://www.openliberty.io/docs/ref/config/#logging.html[logging] element.
+The table below shows the equivalent `server.xml`, `bootstrap.properties`, and environment variable configurations along with brief descriptions. Full configuration documentation is available in the config reference for the config:logging[] element.
 
 
 |===
@@ -688,6 +694,23 @@ The table below shows the equivalent `server.xml`, `bootstrap.properties`, and e
 |com.ibm.ws.logging.hideMessage
 |
 |You can use this attribute to configure the messages keys that you want to hide from the `console.log` and `messages.log` files. If the messages are configured to be hidden, then they are redirected to the `trace.log` file.
+
+|jsonFieldMappings
+|com.ibm.ws.logging.json.field.mappings
+|WLP_LOGGING_JSON_FIELD_MAPPINGS
+|When logs are in JSON format, use this attribute to replace default field names with new field names. Configure the new field name by using the following format:
+
+
+`defaultFieldName:newFieldName`
+
+For field names that are associated with logs of a specified source, use the following format:
+
+`[source:]?defaultFieldName:newFieldName`
+
+where `[source]` is the source you want to specify (such as `message`, `trace`, or `accessLog`).
+
+To rename multiple fields, specify a comma-separated list of field name mappings.
+
 
 |logDirectory
 |com.ibm.ws.logging.log.directory
@@ -709,7 +732,7 @@ The table below shows the equivalent `server.xml`, `bootstrap.properties`, and e
 |consoleSource
 |com.ibm.ws.logging.console.source
 |WLP_LOGGING_CONSOLE_SOURCE
-|The list of comma-separated sources that route to the console. This property applies only when `consoleFormat="json"`. Valid values are `message`, `trace`, `accessLog`, `ffdc`, and `audit`. By default, `consoleSource` is set to `message`. To use the `audit` source, enable the Liberty link:https://www.openliberty.io/docs/ref/feature/#audit-1.0.html[audit-1.0] feature. To use the `accessLog` source you need to have configured link:https://www.openliberty.io/docs/ref/config/#httpAccessLogging.html[httpAccessLogging].
+|The list of comma-separated sources that route to the console. This property applies only when `consoleFormat="json"`. Valid values are `message`, `trace`, `accessLog`, `ffdc`, and `audit`. By default, `consoleSource` is set to `message`. To use the `audit` source, enable the Liberty feature:audit-1.0[] feature. To use the `accessLog` source you need to have configured config:httpAccessLogging[].d
 
 |copySystemStreams
 |com.ibm.ws.logging.copy.system.streams
@@ -755,7 +778,7 @@ If you specify a value of `false`, the date and time are formatted according to 
 |messageSource
 |com.ibm.ws.logging.message.source
 |WLP_LOGGING_MESSAGE_SOURCE
-|The list of comma-separated sources that route to the `messages.log` file. This property applies only when `messageFormat="json"`. Valid values are `message`, `trace`, `accessLog`, `ffdc`, and `audit`. By default, `messageSource` is set to `message`. To use the `audit` source, enable the Liberty link:https://www.openliberty.io/docs/ref/feature/#audit-1.0.html[audit-1.0] feature. To use the `accessLog` source you need to have configured link:https://www.openliberty.io/docs/ref/config/#httpAccessLogging.html[httpAccessLogging].
+|The list of comma-separated sources that route to the `messages.log` file. This property applies only when `messageFormat="json"`. Valid values are `message`, `trace`, `accessLog`, `ffdc`, and `audit`. By default, `messageSource` is set to `message`. To use the `audit` source, enable the Liberty feature:audit-1.0[] feature. To use the `accessLog` source you need to have configured config:httpAccessLogging[].
 
 4+|Trace Config
 
@@ -793,7 +816,7 @@ A component can be a logger name, trace group or class name. An asterisk pass:[*
 
 |===
 
-:leveloffset: -1
+:leveloffset!:
 
 :leveloffset: +1
 
@@ -804,120 +827,9 @@ A component can be a logger name, trace group or class name. An asterisk pass:[*
 [id="testing-with-container-{context}"]
 = Testing with a container
 
+doc currently under development
 
-You can use MicroShed Testing to develop integration tests for your Open Liberty application. You test your application from outside its container so that the tests run against the same image that you use in production.
-
-
-To write a test with MircoShed testing, first add `microshed-testing-testcontainers` and `junit-jupiter` artifact IDs as test-scoped dependencies, as shown in the following example:
-
-[source,xml]
-----
-<dependency>
-    <groupId>org.microshed</groupId>
-    <artifactId>microshed-testing-testcontainers</artifactId>
-    <version>0.4.1</version>
-    <scope>test</scope>
-</dependency>
-
-<!-- Any compatible version of JUnit Jupiter 5.X will work -->
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter</artifactId>
-    <version>5.4.2</version>
-    <scope>test</scope>
-</dependency>
-----
-
-Next, create a test class with the  `MicroShedTest` annotation. Then, create a public `static MicroProfileApplication` method and inject one or more `public static JAX-RS` resources, as shown in the following example:
-
-[source,xml]
-----
-@MicroShedTest
-public class MyTest {
-
-    @Container
-    public static MicroProfileApplication app = new MicroProfileApplication()
-                    .withAppContextRoot("/myservice");
-
-    @Inject
-    public static MyService mySvc;
-
-    // write @Test methods as normal
-----
-
-In cases where a Dockerfile or container image is not available, use the link:https://github.com/MicroShed/microshed-testing/tree/master/sample-apps/liberty-app[`microshed-testing-liberty` adapter]. This adapter produces a container image that is similar to the following Dockerfile:
-
-[source,xml]
-----
-FROM open-liberty:microProfile3
-ADD build/libs/$APP_FILE /config/dropins
-COPY src/main/liberty/config /config
-----
-For more information, see link:https://microshed.org/microshed-testing/[MicroShed Testing].
-
-.Additional resources
-* link:http://arquillian.org/modules/arquillian-liberty-managed-container-adapter/[Arquillian Liberty managed container adapter]
-
-:leveloffset: -1
-
-:leveloffset: +1
-
-:parent-context: {context}
-
-[id="debugging-assembly-{context}"]
-= Debugging
-:context: debugging-assembly
-
-:leveloffset: +1
-
-// Module included in the following assemblies:
-//<debugging-assembly>
-//
-
-[id="dev-mode-{context}"]
-= Dev Mode
-
-
-With Liberty dev mode, you can rapidly code, deploy, and debug applications with Liberty. You enable dev mode through the Liberty Maven-plugin.
-
-To use dev mode, add the following code to your Maven pom.xml file and run the `mvn liberty:dev` command.
-
-
-[source,xml]
-----
-<plugin>
-    <groupId>io.openliberty.tools</groupId>
-    <artifactId>liberty-maven-plugin</artifactId>
-    <version>3.1.0</version>
-</plugin>
-----
-
-Dev mode provides three key features:
-
-- Your running server can detect, recompile, and pick up code changes.
-- You can run unit and integration tests on demand, by pressing `Enter` in the command window where dev mode is running.
-- You can attach a debugger to the running server to step through your code at any time.
-
-When you use dev mode, Liberty automatically detects the following changes to your application source:
-
-- Java source file changes and Java test file changes.
-- Dependencies that are added to your pom.xml file. Liberty detects the dependencies and adds them to your class path.
-- Resource file changes. Liberty detects them and copies them into your target directory.
-- Configuration directory and configuration file changes. Liberty detects them and copies them into your target directory.
-- Addition of new features in the Liberty server configuration. Liberty detects the new features, installs them, and starts them.
-
-Dev Mode does not detect some changes. These changes include the following ones:
-
-- The addition of a configuration directory or file.
-- Changes to the host and port for Liberty.
-
-
-If either of these changes are made, Liberty can detect them after you restart dev mode. To restart, first exit dev mode by typing `Control-C`, or by typing `q` and pressing `Enter`. Then, run the `mvn liberty:dev` command to restart.
-
-
-For more information, see link:https://github.com/OpenLiberty/ci.maven/blob/master/docs/dev.md[Liberty Dev mode].
-
-:leveloffset: -1
+:leveloffset!:
 
 :leveloffset: +1
 
@@ -925,116 +837,25 @@ For more information, see link:https://github.com/OpenLiberty/ci.maven/blob/mast
 //
 //
 
-[id="managing-with-maven-{context}"]
-= Managing build processes with the Open Liberty Maven plug-in
+[id="features-{context}"]
+= Features
 
-You can build and test your applications, whether they are simple applications with a single module or more complex applications that consist of multiple modules.
+strategy to pull in autogen feature docs currently under development
 
-After you define the details and dependencies of a project, Maven automatically downloads and installs all of the dependencies. It also runs automated tests on an application after it is built. If the tests don’t pass after you update an application, the build fails. You must fix your code.
-
-The following coordinates for the Maven plug-in are required:
-
-[source,xml]
-----
-<groupId>io.openliberty.tools</groupId>
-<artifactId>liberty-maven-plugin</artifactId>
-<version>3.1.0</version>
-----
-
-To learn how to configure a simple web servlet application by using Maven and the Liberty Maven plug-in, see link:https://openliberty.io/guides/maven-intro.html[Building a web application with Maven].
-
-Jakarta EE applications consist of multiple modules that work together as one entity. To learn how to build an application with multiple modules by using Maven and Open Liberty, see link:https://openliberty.io/guides/maven-multimodules.html[Creating a multi-module application].
-
-:leveloffset: -1
+:leveloffset!:
 
 :leveloffset: +1
 
 // Module included in the following assemblies:
 //
-// <debugging-assembly>
-
-[id="tracing-requests-{context}"]
-= Tracing Requests
-
-Distributed tracing helps you troubleshoot microservices by examining and logging requests as they propagate through a distributed system, allowing developers to tackle the otherwise difficult task of debugging these requests. Without a distributed tracing system in place, it's difficult to analyze workflows and pinpoint when and by whom a request is received or when a response is returned.
-
-To learn how to monitor and trace logging requests across microservices in an application, see link:https://www.openliberty.io/guides/microprofile-opentracing.html[Enabling distributed tracing in microservices].
-
-:leveloffset: -1
-
-:context: {parent-context}
-
-:leveloffset: -1
-
-:leveloffset: +1
-
-:parent-context: {context}
-
-[id="monitoring-assembly-{context}"]
-= Monitoring Open Liberty
-:context: monitoring-assembly
-
-You can use MicroProfile Metrics and MicroProfile Health to monitor microservices and applications that run on Open Liberty. Enabling and reporting metric and health check data for your microservices helps you pinpoint issues, collect data for capacity planning, and decide when to scale a service up or down.
-
-:leveloffset: +1
-
-// Module included in the following assemblies:
 //
-// <monitoring-assembly>
 
-[id="enabling-monitoring-microservices-{context}"]
-= Enabling monitoring in microservices
+[id="server-config-{context}"]
+= Server configuration
 
-Building observability into microservices externalizes the internal status of a system to enable operations teams to monitor microservice systems more effectively. It's important that microservices are written to produce metrics that can be used by operations teams when the microservices are running in production.
+strategy to pull in autogen server config docs currently under development
 
-Metrics are emitted from a number of different places. You can obtain them from applications, the Open Liberty runtime, and the Java virtual machine (JVM). link:https://github.com/eclipse/microprofile-metrics#eclipse-microprofile-metrics[MicroProfile Metrics] provides a `/metrics` endpoint from which you can access all metrics that are emitted by the Open Liberty server and deployed applications. They can be gathered and stored in database tools, such as Prometheus, and displayed on dashboards, such as Grafana.
-
-Metrics come in various forms, including counters, gauges, timers, histograms, and meters. You can enable metrics in your Open Liberty application with the MicroProfile Metrics feature, which defines annotations that help you quickly build metrics into your code.
-
-For a list of all available Open Liberty metrics, see the link:https://openliberty.io/docs/ref/general/#metrics-catalog.html[metrics reference list].
-
-To learn how to use MicroProfile Metrics to enable and provide metrics from a microservice, see link:https://openliberty.io/guides/microprofile-metrics.html[Providing metrics from a microservice].
-
-.Additional Resources
-* link:https://openliberty.io/docs/ref/general/#microservice_observability_metrics.html[Microservice observability with metrics]
-
-:leveloffset: -1
-
-:leveloffset: +1
-
-// Module included in the following assemblies:
-//
-// <monitoring-assembly>
-
-[id="enabling-health-checks{context}"]
-= Enabling health checks in microservices
-
-A health check is a special REST API that you can use to validate the status of a microservice and its dependencies. link:https://github.com/eclipse/microprofile-health[MicroProfile Health] enables services in an application to self-check their health and then publishes the overall health status to a defined endpoint.
-
-A self-check can be used to assess anything that the service needs, such as:
-
-- Dependencies
-
-- System properties
-
-- Database connections
-
-- Endpoint connections
-
-- Resource availability
-
-With MicroProfile Health, you can enable the services in your liberty application to self-check for liveness and readiness. A liveness check determines whether a service encountered a bug or deadlock. If this check fails, the service is not running and can be terminated. This check corresponds to the Kubernetes liveness probe, which automatically restarts the pod if the check fails. A readiness check determines whether a service is ready to process requests. This check corresponds to the readiness probe in Kubernetes.
-
-To learn how to use MicroProfile Health to enable and report microservice health checks, see link:https://openliberty.io/guides/microprofile-health.html[Adding health reports to microservices].
-
-.Additional resources
-* link:https://www.openliberty.io/docs/ref/general/#health-check-microservices.html[Enabling health checking of microservices]
-
-:leveloffset: -1
-
-:context: {parent-context}
-
-:leveloffset: -1
+:leveloffset!:
 
 [appendix]
 :leveloffset: +1
@@ -1053,4 +874,4 @@ You can learn more about Open Liberty and the APIs it supports by viewing resour
 * link:https://openliberty.io/docs/ref/javaee/[Java EE API]
 * link:https://openliberty.io/docs/ref/microprofile/[MicroProfile API]
 
-:leveloffset: -1
+:leveloffset!:
