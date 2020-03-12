@@ -1,8 +1,0 @@
-
-= The {name-example-secured} project structure
-
-The SSO example contains:
-
-* the sources for the Greeting service, which is the one which we are going to to secure
-* a template file (`service.sso.yaml`) to deploy the SSO server
-* the Keycloak adapter configuration to secure the service

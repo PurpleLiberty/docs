@@ -1,2 +1,0 @@
-// Enter nothing except :launcher-docs-only: or :portal-docs-only:
-:launcher-docs-only:
