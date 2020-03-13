@@ -98,8 +98,8 @@ MicroProfile Config Properties
 
 [source, java]
 ----
-mp.reactive.messaging.outgoing.channel3.connector=liberty-kafka
-mp.reactive.messaging.outgoing.channel3.topic=myOtherTopic #Overrides value in code
+mp.messaging.outgoing.channel3.connector=liberty-kafka
+mp.messaging.outgoing.channel3.topic=myOtherTopic #Overrides value in code
 ----
 Reactive Messaging Bean
 
@@ -139,7 +139,7 @@ Set the `LTPA/JWT` Cookie SameSite attribute using the following server.xml conf
 3. The default value is `Disabled`. This means no SameSite attribute will be added.
 Set the SameSite attribute on Cookies via the following server.xml configuration:
 
-[server, xml]
+[source, xml]
 ----
     <httpEndpoint id="defaultHttpEndpoint"
                   httpPort="9080"
@@ -152,7 +152,7 @@ The `<httpEndpoint/>` SameSite configuration allows the use of wildcards in the 
 
 A standalone wildcard ( * ). All cookies would have the SameSite=Lax attribute. This includes the Session and LTPA/JWT cookies unless the `<httpSession/>` and/or `<webAppSecurity/>` configuration has also been set.
 
-[server, xml]
+[source, xml]
 ----
     <httpEndpoint id="defaultHttpEndpoint"
                   httpPort="9080"
@@ -167,7 +167,7 @@ At the end of one or more cookie names. The below snippet would map the followin
 * cookieTwo -> SameSite=Strict
 * cookieThree -> SameSite=None
 
-[server,xml]
+[source, xml]
 ----
     <httpEndpoint id="defaultHttpEndpoint"
                   httpPort="9080"
