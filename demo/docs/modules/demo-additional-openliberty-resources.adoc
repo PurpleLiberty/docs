@@ -1,0 +1,13 @@
+// Module included in the following assemblies:
+//
+//
+
+[id="additional-open-liberty-resources-{context}"]
+= Additional Open Liberty resources
+
+You can learn more about Open Liberty and the APIs it supports by viewing resources on the Open Liberty website. 
+
+* link:https://openliberty.io/docs/ref/command/[Open Liberty server commands]
+* link:https://openliberty.io/guides/[Open Liberty guides]
+* link:https://openliberty.io/docs/ref/javaee/[Java EE API]
+* link:https://openliberty.io/docs/ref/microprofile/[MicroProfile API]

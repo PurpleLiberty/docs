@@ -1,0 +1,877 @@
+:toc:
+:ProjectName: My{nbsp}Project
+:ProjectNameID: my-project
+:ProjectVersion: 0.1
+
+= Open Liberty Runtime Guide
+:context: open-liberty
+
+:leveloffset: +1
+
+// Module included in the following assemblies:
+//
+//
+
+[id="what-is-openliberty-{context}"]
+= What is Open Liberty
+
+Doc currently in development
+
+:leveloffset!:
+
+:leveloffset: +1
+
+= Feature overview
+:projectName: Open Liberty
+:page-layout: feature
+:page-type: overview
+
+Features are the discrete units of functionality by which you control the pieces of the runtime environment that are loaded into a particular server. By adding or removing features from your server configuration, you can control what functions the server can perform. Features provide the programming models and services that applications require. You can specify any feature in the server configuration files. Some features include other features within them, and the same feature might be included in one or more other features.
+
+When the server is started, the JVM is launched and control is passed to the Open Liberty kernel. The configuration is loaded as described in the link:/docs/ref/config/[server configuration overview]. When the configuration is parsed, the feature manager gains control and processes the `featureManager` configuration to load the requested features into the server and start the required components. Finally, the applications are started. When the configuration is changed, the feature manager reevaluates the code that is required for the newly requested features by starting and stopping parts of the runtime as necessary without restarting the server. Changes to applications are processed in a similar way.
+
+== Using features
+Features are specified in the system configuration files that are the `server.xml` file and any other included files. The feature manager is configured by using the `featureManager` element in the `server.xml` file. Each feature that is required is configured by using the `feature` element. The following example configures the `servlet-4.0` and `jdbc-4.3` features:
+
+[source,xml]
+----
+<server>
+  <featureManager>
+    <feature>servlet-4.0</feature>
+    <feature>jdbc-4.3</feature>
+  </featureManager>
+</server>
+----
+
+The runtime contains default configuration settings so that the configuration you need to specify is kept to a minimum. Specify the features that you need, along with any additions or overrides to the default settings, in the `server.xml` file. For details about the server configuration, see the link:/docs/ref/config/[server configuration overview].
+
+== Zero migration
+With the Open Liberty zero migration architecture, you can move to the latest version of Open Liberty with minimal impact to your current applications and configurations. Zero migration architecture means that you can use existing, unmodified configuration and application files with an updated version of the Open Liberty runtime environment without unwanted or unexpected change in behavior.
+
+With the use of pluggable features in the Open Liberty runtime environment, your existing APIs and behaviors are supported in new product versions, and new APIs and behaviors are added in new features. For example, both the Servlet 3.1 and 4.0 specifications are supported. An API behavior change is made available as a new version of a feature so that you can choose the appropriate feature version for your application. These versioned features continue to be supported across Open Liberty updates.
+
+If you continue to use the same feature version, you never need to migrate your application. For example, if your application uses Servlet 3.1, the Open Liberty server that runs the application must have the `servlet-3.1` feature. You can update Open Liberty and continue to use the `servlet-3.1` feature indefinitely, regardless of how many other Servlet specification levels are supported. You need to migrate your applications only if you choose to use the `servlet-4.0` feature instead.
+
+== Combining features
+If you try to configure a server to have different versions of a feature, an error is reported because Open Liberty doesn't support combining different versions of the same feature. This means that most Open Liberty features are singleton features. A singleton feature is a feature for which you can configure only one version for use in a server.
+
+If you have applications that need different versions of the singleton feature, you must deploy them in different servers. If your server configuration includes multiple versions of a singleton feature, either through direct configuration in the `server.xml` file, or through feature dependencies, that configuration is in error and neither version of that feature is loaded. To resolve this problem, ensure that the configured features all specify, or tolerate, the same version of that singleton feature. If you have hard requirements on both feature versions, you must move some of your applications to a different server.
+
+Liberty doesn't support combining features from both Java EE 7 and Java EE 8, except when the Java EE 7 and Java EE 8 specifications share a component specification version. If you combine Java EE 7 and Java EE 8 features in a server configuration, the server reports errors at startup.
+
+The following features are included in both Java EE 7 and Java EE 8:
+
+* feature:appClientSupport-1.0[]
+* feature:batch-1.0[]
+* feature:concurrent-1.0[]
+* feature:ejb-3.2[]
+* feature:j2eeManagement-1.1[]
+* feature:jacc-1.5[]
+* feature:jaxws-2.2[]
+* feature:jca-1.7[]
+* feature:jcaInboundSecurity-1.0[]
+* feature:jdbc-4.2[]
+* feature:jdbc-4.3[]
+* feature:jms-2.0[]
+* feature:wasJmsClient-2.0[]
+* feature:wasJmsSecurity-1.0[]
+* feature:wasJmsServer-1.0[]
+
+For a complete list of features that support Java EE 7, see the feature:javaee-7.0[] feature. For a complete list of features that support Java EE 8, see the feature:javaee-8.0[] feature.
+
+== Superseded features
+If a feature is superseded, a new feature or a combination of features might provide an advantage over the superseded feature. The new feature or features might not completely replace the function of the superseded feature, so you must consider your scenario before you decide whether to change your configuration. Superseded features remain supported and valid for use in your configuration, but you might be able to improve your configuration by using the newer features.
+
+Occasionally, a feature that includes other features is superseded by a new version of the feature that does not include all those features. The features that are not included in the new version are considered to be separated. If your application depends on the functions of a separated feature, you must explicitly add the separated feature to your configuration.
+
+The following table lists the Open Liberty features that are superseded:
+
+[%header,cols=3*]
+|===
+
+|Superseded feature
+|Superseding feature
+|Dependent feature removed
+
+|`appSecurity-1.0`
+|`appSecurity-2.0`
+|The `ldapRegistry-3.0` and `servlet-3.0` features were removed from the definition of the `appSecurity-2.0` feature.
+
+|`jmsMdb-3.2`
+|`jms-2.0` and `mdb-3.2`
+|Together, the `jms-2.0` and `mdb-3.2` features provide the same function as the `jmsMdb-3.2` feature.
+
+|`ssl-1.0`
+|`transportSecurity-1.0`
+|The `ssl-1.0` and `transportSecurity-1.0` features are functionally equivalent. However, `ssl-1.0` implies that an insecure network protocol is used, so `transportSecurity-1.0` supersedes it.
+
+|===
+
+:leveloffset!:
+
+:leveloffset: +1
+
+= Server configuration overview
+:projectName: Open Liberty
+:page-layout: config
+:page-type: overview
+
+The {projectName} server config is made up of one mandatory file, the `server.xml` file, and a set of optional files.
+The `server.xml` file must be well-formed XML and the root element must be `server`.
+When the `server.xml` file is processed, any elements or attributes that are not understood are ignored.
+
+This example `server.xml` file configures the server to do the following things:
+
+[source,xml]
+----
+<server description="new server">
+    <featureManager>
+        <feature>jsp-2.3</feature> // <!--1-->
+    </featureManager>
+    <httpEndpoint id="defaultHttpEndpoint"
+                  httpPort="9080" // <!--2-->
+                  httpsPort="9443" />
+    <applicationManager autoExpand="true" /> // <!--3-->
+</server>
+----
+<1> Support the JavaServer Pages 2.3 feature
+<2> Listen to incoming traffic to `localhost` on port `9080`
+<3> Automatically expand WAR files when they are deployed
+
+The term _server config_ can be used to refer to all of the files that make up the server config, or specifically to the config that's in the XML files.
+If it's not clear in context, the term _server XML config_ might be used to refer to the config in the XML files.
+
+== Config files
+
+The server config files are processed in the following order:
+
+. <<server-env,`server.env`>> - Environment variables are specified in this file.
+. <<jvm-options,`jvm.options`>> - JVM options are set in this file.
+. <<bootstrap-properties,`bootstrap.properties`>> - This file influences the startup of the {projectName} server.
+. <<server-xml,`server.xml`>> - This mandatory file specifies the server config and features.
+
+[#server-env]
+=== server.env
+The `server.env` files are optional.
+These files are read by the `bin/server` shell script and specify environment variables that are primarily used to influence the behavior of the `bin/server` script.
+`server.env` files are read from the following locations in order:
+
+. `${wlp.install.dir}/etc/`
+. `${wlp.user.dir}/shared/`
+. `${server.config.dir}/`
+
+If the same property is set in multiple locations, then the last value found is used.
+
+The most common use of these files is to set the following environment variables:
+
+* `JAVA_HOME` - Indicates which JVM to use.
+If this is not set, the system default is used.
+* `WLP_USER_DIR` - Indicates the location of the `usr` directory that contains the server config.
+This can only be set in the `etc/server.env` file because the other locations are relative to the `usr` directory.
+* `WLP_OUTPUT_DIR` - Indicates where the server writes files to.
+By default, the server writes to the directory structure that the config is read from.
+However, in some secure profiles the server config needs to be read-only so the server must write files to another location.
+
+The `server.env` file is in `KEY=value` format, as shown in the following example:
+
+[source,properties]
+----
+JAVA_HOME=/opt/ibm/java
+WLP_USER_DIR=/opt/wlp-usr
+----
+
+Key values must not contain spaces.
+The values are interpreted literally so you don’t need to escape special characters, such as spaces.
+These files don't support variable substitution.
+
+[#jvm-options]
+=== jvm.options
+The `jvm.options` files are optional.
+These files are read by the `bin/server` shell script to determine what options to use when the JVM is launched for {projectName}.
+`jvm.options` files are read from the following locations in order:
+
+. `${wlp.user.dir}/shared/jvm.options`
+. `${server.config.dir}/configDropins/defaults/`
+. `${server.config.dir}/`
+. `${server.config.dir}/configDropins/overrides/`
+
+If no `jvm.options` files exist in these locations, then the server script looks for the file in `${wlp.install.dir}/etc`, if such a directory exists.
+
+Common uses of `jvm.options` files include:
+
+* Setting JVM memory limits
+* Enabling Java Agents that are provided by monitoring products
+* Setting Java System Properties
+
+The `jvm.options` file format uses one line per JVM option, as shown in the following example:
+
+[source,properties]
+----
+-Xmx512m
+-Dmy.system.prop=This is the value.
+----
+
+You don’t need to escape special characters, such as spaces.
+Options are read and provided to the JVM in order.
+If you provide multiple options, then they are all seen by the JVM.
+These files do not support variable substitution.
+
+[#bootstrap-properties]
+=== bootstrap.properties
+The `bootstrap.properties` file is optional.
+This file is read during {projectName} bootstrap to provide config for the earliest stages of the server startup.
+It is read by the server earlier than the `server.xml` file so it can affect the startup and behavior of the {projectName} kernel from the start.
+The `bootstrap.properties` file is a simple Java properties file and is located in `${server.config.dir}`.
+A common use of the `bootstrap.properties` file is to configure logging because it can affect logging behavior before the `server.xml` file is read.
+
+The `bootstrap.properties` file supports a special optional property, `bootstrap.include`, which specifies another properties file to also be read during the bootstrap stage.
+For example, this `boostrap.include` file can contain a common set of bootstrap properties for multiple servers to use.
+Set the `bootstrap.include` file to an absolute or relative file path.
+
+[#server-xml]
+=== server.xml
+The most important and only required config file is the `server.xml` file.
+The `server.xml` file must be well-formed XML and the root element must be `server`.
+The exact elements that are supported by a server depend on which features are configured, and any unknown config is ignored.
+
+{projectName} uses a principle of configuration by exception, which allows for succinct config files.
+The runtime environment operates from a set of built-in config default settings.
+You only specify config that overrides those default settings.
+
+Server config files are read from the following locations in order:
+
+. `${server.config.dir}/configDropins/defaults/`
+. `${server.config.dir}/server.xml`
+. `${server.config.dir}/configDropins/overrides/`
+
+The `${server.config.dir}/server.xml` file must be present, but the other files are optional.
+You can flexibly compose config by dropping server-formatted XML files into directories.
+Files are read in alphabetical order in each of the two `configDropins` directories.
+
+== Variable substitution
+You can use variables to parameterize the server config.
+To resolve variable references to their values, the following sources are consulted in order:
+
+. `server.xml` default variable values
+. environment variables
+. `bootstrap.properties`
+. Java system properties
+. `server.xml` config
+. variables declared on the command line
+
+Variables are referenced by using the `${variableName}` syntax.
+Specify variables in the server config, as shown in the following example:
+
+[source,xml]
+----
+<variable name="variableName" value="some.value" />
+----
+
+Default values, which are specified in the `server.xml` file, are used only if no other value is specified:
+
+[source,xml]
+----
+<variable name="variableName" defaultValue="some.default.value" />
+----
+
+You can also specify variables at startup from the command line.
+If you do, the variables that are specified on the command line override all other sources of variables and can't be changed after the server starts.
+
+Environment variables can be accessed as variables.
+As of version 19.0.0.3, you can reference the environment variable name directly.
+If the variable cannot be resolved as specified, the `server.xml` file looks for the following variations on the environment variable name:
+
+* Replace all non-alphanumeric characters with the underscore character (`_`)
+* Change all characters to uppercase
+
+For example, if you enter `${my.env.var}` in the `server.xml` file, it looks for environment variables with the following names:
+
+. my.env.var
+. my_env_var
+. MY_ENV_VAR
+
+For versions 19.0.0.3 and earlier, you can access environment variables by adding `env.` to the start of the environment variable name, as shown in the following example:
+
+[source,xml]
+----
+<httpEndpoint id="defaultHttpEndpoint"
+              host="${env.HOST}"
+              httpPort="9080" />
+----
+
+Variable values are always interpreted as a string with simple type conversion.
+Therefore, a list of ports (such as `80,443`) might be interpreted as a single string rather than as two port numbers.
+You can force the variable substitution to split on the `,` by using a `list` function, as shown in the following example:
+
+[source,xml]
+----
+<mongo ports="${list(mongoPorts)}" hosts="${list(mongoHosts)}" />
+----
+
+Simple arithmetic is supported for variables with integer values.
+The left and right sides of the operator can be either a variable or a number.
+The operator can be `+`, `-`, `*`, or `/`, as shown in the following example:
+
+[source,xml]
+----
+<variable name="one" value="1" />
+<variable name="two" value="${one+1}" />
+<variable name="three" value="${one+two}" />
+<variable name="six" value="${two*three}" />
+<variable name="five" value="${six-one}" />
+<variable name="threeagain" value="${six/two}" />
+----
+
+There are a number of predefined variables:
+
+* `wlp.install.dir` - the directory where the {projectName} runtime is installed.
+* `wlp.server.name` - the name of the server.
+* `wlp.user.dir` - the directory of the `usr` folder.
+The default is `${wlp.install.dir}/usr`.
+* `shared.app.dir` - the directory of shared applications.
+The default is `${wlp.user.dir}/shared/apps`.
+* `shared.config.dir` - the directory of shared config files.
+The default is `${wlp.user.dir}/shared/config`.
+* `shared.resource.dir` - the directory of shared resource files.
+The default is `${wlp.user.dir}/shared/resources`.
+* `server.config.dir` - the directory where the server config is stored.
+The default is `${wlp.user.dir}/servers/${wlp.server.name}`.
+* `server.output.dir` - the directory where the server writes the workarea, logs, and other runtime-generated files.
+The default is `${server.config.dir}`.
+
+== Config merging
+Since the config can consist of multiple files, it is possible that two files provide the same config.
+In these situations, the server config is merged according to a set of simple rules.
+In {projectName}, config is separated into singleton and factory config, each of which has its own rules for merging.
+Singleton config is used to configure a single element (for example, logging).
+Factory config is used to configure multiple entities, such as an entire application or data source.
+
+=== Merging singleton config
+For singleton config elements that are specified more than once, the config is merged.
+If two elements exist with different attributes, both attributes are used.
+For example:
+
+[source,xml]
+----
+<server>
+    <logging a="true" />
+    <logging b="false" />
+</server>
+----
+
+is treated as:
+
+[source,xml]
+----
+<server>
+    <logging a="true" b="false" />
+</server>
+----
+
+If the same attribute is specified twice, then the last instance takes precedence.
+For example:
+
+[source,xml]
+----
+<server>
+    <logging b="false" />
+</server>
+----
+
+is treated as:
+
+[source,xml]
+----
+<server>
+    <logging a="true" b="false" />
+</server>
+----
+
+Config is sometimes provided by using child elements that take text.
+In these cases, the config is merged by using all of the values specified.
+The most common scenario is configuring features.
+For example:
+
+[source,xml]
+----
+<server>
+    <featureManager>
+        <feature>servlet-4.0</feature>
+    </featureManager>
+    <featureManager>
+        <feature>restConnector-2.0</feature>
+    </featureManager>
+</server>
+----
+
+is treated as:
+
+[source,xml]
+----
+<server>
+    <featureManager>
+        <feature>servlet-4.0</feature>
+        <feature>restConnector-2.0</feature>
+    </featureManager>
+</server>
+----
+
+=== Merging factory config
+Factory config merges use the same rules as singleton config except elements are not automatically merged just because the element names match.
+With factory config, it is valid to configure the same element and mean two different logical objects.
+Therefore, each element is assumed to configure a distinct object.
+If a single logical object is configured by two elements, the `id` attribute must be set on each element to indicate they are the same thing.
+Variable substitution on an `id` attribute is not supported.
+
+The following example configures two applications.
+The first application is `myapp.war`, which has a context root of `myawesomeapp`. The other application is `myapp2.war`, which has `myapp2` as the context root:
+
+[source,xml]
+----
+<server>
+    <webApplication id="app1" location="myapp.war" />
+    <webApplication location="myapp2.war" />
+    <webApplication id="app1" contextRoot="/myawesomeapp" />
+</server>
+----
+
+== Include processing
+
+In addition to the default locations, additional config files can be brought in by using the `include` element.
+When a server config file contains an include reference to another file, the server processes the contents of the referenced file as if they were included inline in place of the `include` element.
+In the following example, the server processes the contents of the `other.xml` file before it processes the contents of the `other2.xml` file:
+
+[source,xml]
+----
+<server>
+    <include location="other.xml" />
+    <include location="other2.xml" />
+</server>
+----
+
+By default, the include file must exist.
+If the include file might not be present, set the `optional` attribute to `true`, as shown in the following example:
+
+[source,xml]
+----
+<server>
+    <include location="other.xml" optional="true" />
+</server>
+----
+
+When you include a file, you can specify the `onConflict` attribute to change the normal merge rules.
+You can set the value of the `onConflict` attribute to `IGNORE` or `REPLACE` any conflicting config:
+
+[source,xml]
+----
+<server>
+    <include location="other.xml" onConflict="IGNORE" />
+    <include location="other2.xml" onConflict="REPLACE" />
+</server>
+----
+
+You can set the `location` attribute to a relative or absolute file path, or to an HTTP URL.
+
+
+== Config references
+Most config in {projectName} is self-contained but it is often useful to share config.
+For example, the JDBC driver config might be shared by multiple data sources.
+You can refer to any factory config element that is defined as a direct child of the `server` element.
+
+A reference to config always uses the `id` attribute of the element that is being referenced.
+The config element that makes the reference uses an attribute that always ends with `Ref`, as shown in the following example:
+
+[source,xml]
+----
+<server>
+  <dataSource jndiName="jdbc/fred" jdbcDriverRef="myDriver" />
+  <jdbcDriver id="myDriver" />
+</server>
+----
+
+== Dynamic updates
+The server monitors the server XML config for updates and dynamically reloads when changes are detected.
+Changes to non-XML files (`server.env`, `bootstrap.properties`, and `jvm.options`) are not dynamic because they are only read at startup.
+Any server XML config file on the local disk is monitored for updates every 500ms. You can configure the frequency of XML config file monitoring.
+For example, to configure the server to monitor every 10 minutes, specify:
+
+[source,xml]
+----
+<config monitorInterval="10m" />
+----
+
+To disable file system polling and reload only when an MBean is notified, specify:
+
+[source,xml]
+----
+<config updateTrigger="mbean" />
+----
+
+== Log messages
+When the server runs, it might output log messages that reference config.
+The references in the log use an XPath-like structure to specify config elements.
+The element name is given with the value of the `id` attribute inside square brackets.
+If no `id` is specified in the server config, an `id` is automatically generated.
+Based on the following server XML config example, the `dataStore` element and the child `dataSource` are identified in the logs as `dataStore[myDS]` and `dataStore[myDS]/dataSource[default-0]`.
+
+[source,xml]
+----
+<server>
+    <dataStore id="myDS">
+        <dataSource />
+    </dataStore>
+</server>
+----
+
+:leveloffset!:
+
+:leveloffset: +1
+
+// Module included in the following assemblies:
+//
+//
+
+[id="packaging-and-deploying-applications-{context}"]
+= Packaging and Deploying applications
+
+Doc currently in development
+
+:leveloffset!:
+
+:leveloffset: +1
+
+// Module included in the following assemblies:
+//
+//
+
+[id="deploy-openshift-{context}"]
+= Deploying an app to OpenShift
+
+Doc currently in development
+
+:leveloffset!:
+
+:leveloffset: +1
+
+// Copyright (c) 2013, 2019 IBM Corporation and others.
+// Licensed under Creative Commons Attribution-NoDerivatives
+// 4.0 International (CC BY-ND 4.0)
+//   https://creativecommons.org/licenses/by-nd/4.0/
+//
+// Contributors:
+//     IBM Corporation
+//
+:page-layout: general-reference
+:page-type: general
+= Logging and tracing
+
+Open Liberty has a unified logging component that handles messages that are written by applications and the runtime, and provides First Failure Data Capture (FFDC) capability. Logging data written by applications using `System.out`, `System.err`, or `java.util.logging.Logger` are combined into the server logs.
+
+There are three primary log files for a server:
+
+- `console.log` - This file is created by the `server start` command. It contains the redirected standard output and standard error streams from the JVM process. This console output is intended for direct human consumption so lacks some information useful for automated log analysis.
+- `messages.log` - This file contains all messages that are written or captured by the logging component. All messages that are written to this file contain additional information such as the message time stamp and the ID of the thread that wrote the message. This file is suitable for automated log analysis. This file does not contain messages that are written directly by the JVM process.
+- `trace.log` - This file contains all messages that are written or captured by the logging component and any additional trace. This file is created only if you enable additional trace. This file does not contain messages that are written directly by the JVM process.
+
+== Logging configuration
+The logging component can be controlled through the server configuration. The logging component can be fully configured in `server.xml` using the `logging` element. However, logging is initialized before `server.xml` has been processed so configuring logging through `server.xml` can result in early log entries using a different log configuration from later ones. For this reason it is also possible to provide much of the logging configuration using `boostrap.properties` and in some cases using environment variables.
+
+== Example logging configuration
+
+Some common logging configuration examples are given in the following sections.
+
+=== Managing log file storage
+
+
+The `console.log` file is created by redirecting the process `stdout` and `stderr` to a file. As a result, Liberty is unable to offer the same level of management, like log rollover, as it offers for `messages.log`. If you are concerned about the increasing size of the `console.log` file, you can disable the `console.log` file and use the `messages.log` file instead. All the log messages sent to `console.log` are written to the `messages.log` file, and you can configure file rollover.
+
+To disable the console log, and configure `messages.log` to roll over three times at 100Mb, use the following configuration:
+
+[source,properties,linenums,role="code_column"]
+----
+com.ibm.ws.logging.max.file.size=100
+com.ibm.ws.logging.max.files=3
+com.ibm.ws.logging.console.log.level=OFF
+com.ibm.ws.logging.copy.system.streams=false
+----
+
+=== JSON logging
+When feeding log files into modern log aggregation and management tools it can be advantageous to have the log files stored using JSON format. This can be done in one of three ways:
+
+* Using the `bootstrap.properties` file:
++
+[source,properties,linenums,role="code_column"]
+----
+com.ibm.ws.logging.message.format=json
+com.ibm.ws.logging.message.source=message,trace,accessLog,ffdc,audit
+----
++
+* Using environment variables:
++
+[source,properties,linenums,role="code_column"]
+----
+WLP_LOGGING_MESSAGE_FORMAT=json
+WLP_LOGGING_MESSAGE_SOURCE=message,trace,accessLog,ffdc,audit
+----
++
+* Using the `server.xml` file:
++
+[source,xml,linenums,role="code_column"]
+----
+<logging messageFormat="json" messageSource="message,trace,accessLog,ffdc,audit" />
+----
++
+When using `server.xml` to configure json format some log lines are written in the default non-JSON format prior to `server.xml` startup which can cause issues with some tools. For example, https://stedolan.github.io/jq/[`jq`] would have trouble understanding the log files.
+
+=== Configuring JSON field names
+When logs are in JSON format, you can use the `jsonFieldMappings` attribute to replace default field names with new field names. The following examples show sample configurations for renaming a JSON field:
+
+* To configure a field name, include the following in the `server.env.` file:
++
+[source,properties,linenums,role="code_column"]
+----
+WLP_LOGGING_JSON_FIELD_MAPPINGS=loglevel:level
+----
++
+* To configure a field name for a specific source, include the following in the `server.env.` file:
++
+[source,properties,linenums,role="code_column"]
+----
+WLP_LOGGING_JSON_FIELD_MAPPINGS=message:message:log
+----
+
+=== Configuring logging for a Docker image
+
+It is common in Docker environments to disable `messages.log` and instead format the console output as JSON. This can be done using environment variables:
+
+[source,properties,linenums,role="code_column"]
+----
+WLP_LOGGING_MESSAGE_FORMAT=json
+WLP_LOGGING_MESSAGE_SOURCE=
+WLP_LOGGING_CONSOLE_FORMAT=json
+WLP_LOGGING_CONSOLE_LOGLEVEL=info
+WLP_LOGGING_CONSOLE_SOURCE=message,trace,accessLog,ffdc,audit
+----
+
+This can be simply set when running the `docker run` command by using `-e` to set the envrionment variables:
+
+[role='command']
+```
+docker run -e "WLP_LOGGING_CONSOLE_SOURCE=message,trace,accessLog,ffdc"
+           -e "WLP_LOGGING_CONSOLE_FORMAT=json"
+           -e "WLP_LOGGING_CONSOLE_LOGLEVEL=info"
+           -e "WLP_LOGGING_MESSAGE_FORMAT=json"
+           -e "WLP_LOGGING_MESSAGE_SOURCE=" open-liberty
+```
+
+=== Binary logging
+
+Liberty has a high performance binary log format option that significantly reduces the overhead of writing trace files. Generally, when configuring binary logging, the `console.log` is disabled for best performance. This must be enabled using `bootstrap.properties`:
+
+[source,properties,linenums,role="code_column"]
+----
+websphere.log.provider=binaryLogging-1.0
+com.ibm.ws.logging.console.log.level=OFF
+com.ibm.ws.logging.copy.system.streams=false
+----
+
+The `binaryLog` command line tool can be used to convert the binary log to a text file:
+
+[role='command']
+```
+binaryLog view defaultServer
+```
+
+== Configuration settings by source
+
+The table below shows the equivalent `server.xml`, `bootstrap.properties`, and environment variable configurations along with brief descriptions. Full configuration documentation is available in the config reference for the config:logging[] element.
+
+
+|===
+| Server XML Attribute|bootstrap property|Env var|Description
+
+|hideMessage
+|com.ibm.ws.logging.hideMessage
+|
+|You can use this attribute to configure the messages keys that you want to hide from the `console.log` and `messages.log` files. If the messages are configured to be hidden, then they are redirected to the `trace.log` file.
+
+|jsonFieldMappings
+|com.ibm.ws.logging.json.field.mappings
+|WLP_LOGGING_JSON_FIELD_MAPPINGS
+|When logs are in JSON format, use this attribute to replace default field names with new field names. Configure the new field name by using the following format:
+
+
+`defaultFieldName:newFieldName`
+
+For field names that are associated with logs of a specified source, use the following format:
+
+`[source:]?defaultFieldName:newFieldName`
+
+where `[source]` is the source you want to specify (such as `message`, `trace`, or `accessLog`).
+
+To rename multiple fields, specify a comma-separated list of field name mappings.
+
+
+|logDirectory
+|com.ibm.ws.logging.log.directory
+|LOG_DIR
+|You can use this attribute to set a directory for all log files, excluding the `console.log` file, but including FFDC. The default is `WLP_OUTPUT_DIR/serverName/logs`. It is not recommended to set the `logDirectory` in `server.xml` since it can result in some log data being written to the default location prior to `server.xml` being read.
+
+4+|Console Log Config
+
+|consoleFormat
+|com.ibm.ws.logging.console.format
+|WLP_LOGGING_CONSOLE_FORMAT
+|The required format for the console. Valid values are `basic` or `json` format. By default, `consoleFormat` is set to `basic`.
+
+|consoleLogLevel
+|com.ibm.ws.logging.console.log.level
+|WLP_LOGGING_CONSOLE_LOGLEVEL
+|This filter controls the granularity of messages that go to the console. The valid values are INFO, AUDIT, WARNING, ERROR, and OFF. The default is AUDIT. If using with the Eclipse developer tools this must be set to the default.
+
+|consoleSource
+|com.ibm.ws.logging.console.source
+|WLP_LOGGING_CONSOLE_SOURCE
+|The list of comma-separated sources that route to the console. This property applies only when `consoleFormat="json"`. Valid values are `message`, `trace`, `accessLog`, `ffdc`, and `audit`. By default, `consoleSource` is set to `message`. To use the `audit` source, enable the Liberty feature:audit-1.0[] feature. To use the `accessLog` source you need to have configured config:httpAccessLogging[].d
+
+|copySystemStreams
+|com.ibm.ws.logging.copy.system.streams
+|
+|If true, messages that are written to the System.out and System.err streams are copied to process `stdout` and `stderr` and so appear in `console.log`. If false, those messages are written to configured logs such as `messages.log` or `trace.log`, but they are not copied to `stdout` and `stderr` and do not appear in `console.log`. The default value is true.
+
+4+|Message Log Config
+
+|
+|com.ibm.ws.logging.newLogsOnStart
+|
+|If set to true when Liberty starts, any existing `messages.log` or `trace.log` files are rolled over and logging writes to a new `messages.log` or `trace.log` file. If set to false `messages.log` or trace.log files only refresh when they hit the `maxFileSize`. The default is `true`. This setting cannot be provided using the `logging` element in `server.xml` because it is only processed during server bootstrap.
+
+|isoDateFormat
+|com.ibm.ws.logging.isoDateFormat
+|
+|Specifies whether to use ISO-8601 formatted dates in log files. The default value is false.
+
+If set to true, the ISO-8601 format is used in the `messages.log` file, the `trace.log` file, and the FFDC logs. The format is `yyyy-MM-dd'T'HH:mm:ss.SSSZ`.
+
+If you specify a value of `false`, the date and time are formatted according to the default locale set in the system. If the default locale is not found, the format is `dd/MMM/yyyy HH:mm:ss:SSS z`.
+
+|maxFiles
+|com.ibm.ws.logging.max.files
+|
+|How many of each of the logs files are kept. This setting also applies to the number of exception summary logs for FFDC. So if this number is `10`, you might have 10 message logs, 10 trace logs, and 10 exception summaries in the `ffdc/` directory. By default, the value is `2`. The `console.log` does not roll so this setting does not apply.
+
+|maxFileSize
+|com.ibm.ws.logging.max.file.size
+|
+|The maximum size (in MB) that a log file can reach before it is rolled. Setting the value to `0` disables log rolling. The default value is `20`. The `console.log` does not roll so this setting does not apply.
+
+|messageFileName
+|com.ibm.ws.logging.message.file.name
+|
+|The message log has a default name of `messages.log`. This file always exists, and contains INFO and other (AUDIT, WARNING, ERROR, FAILURE) messages in addition to `System.out` and `System.err`. This log also contains time stamps and the issuing thread ID. If the log file is rolled over, the names of earlier log files have the format `messages_timestamp.log`
+
+|messageFormat
+|com.ibm.ws.logging.message.format
+|WLP_LOGGING_MESSAGE_FORMAT
+|The required format for the `messages.log` file. Valid values are `basic` or `json` format. By default, `messageFormat` is set to `basic`.
+
+|messageSource
+|com.ibm.ws.logging.message.source
+|WLP_LOGGING_MESSAGE_SOURCE
+|The list of comma-separated sources that route to the `messages.log` file. This property applies only when `messageFormat="json"`. Valid values are `message`, `trace`, `accessLog`, `ffdc`, and `audit`. By default, `messageSource` is set to `message`. To use the `audit` source, enable the Liberty feature:audit-1.0[] feature. To use the `accessLog` source you need to have configured config:httpAccessLogging[].
+
+4+|Trace Config
+
+|suppressSensitiveTrace
+|
+|
+|The server trace can expose sensitive data when it traces untyped data, such as bytes received over a network connection. This attribute, when set to `true`, prevents potentially sensitive information from being exposed in log and trace files. The default value is `false`.
+
+|traceFileName
+|com.ibm.ws.logging.trace.file.name
+|
+|The `trace.log` file is only created if additional or detailed trace is enabled. `stdout` is recognized as a special value, and causes trace to be directed to the original standard out stream.
+
+|traceFormat
+|com.ibm.ws.logging.trace.format
+|
+|This attribute controls the format of the trace log. The default format for Liberty is `ENHANCED`. You can also use `BASIC` and `ADVANCED` formats.
+
+|traceSpecification
+|com.ibm.ws.logging.trace.specification
+|
+a|The trace string is used to selectively enable trace. The format of the log detail level specification:
+
+component = level
+
+where `component` specifies what log sources the `level` should be set to, and `level` specifies how much trace should be output using one of: `off`, `fatal`, `severe`, `warning`, `audit`, `info`, `config`, `detail`, `fine`, `finer`, `finest`, `all`. Multiple log detail level specifications can be provided by separating them with colons.
+
+A component can be a logger name, trace group or class name. An asterisk pass:[*] acts as a wildcard to match multiple components based on a prefix. For example:
+
+- `pass:[*]` Specifies all traceable code that is running in the application server, including the product system code and customer code.
+
+- `com.ibm.ws.pass:[*]` Specifies all classes with the package name beginning with com.ibm.ws.
+
+- `com.ibm.ws.classloading.AppClassLoader` Specifies the AppClassLoader class only.
+
+|===
+
+:leveloffset!:
+
+:leveloffset: +1
+
+// Module included in the following assemblies:
+//
+//
+
+[id="testing-with-container-{context}"]
+= Testing with a container
+
+doc currently under development
+
+:leveloffset!:
+
+:leveloffset: +1
+
+// Module included in the following assemblies:
+//
+//
+
+[id="features-{context}"]
+= Features
+
+strategy to pull in autogen feature docs currently under development
+
+:leveloffset!:
+
+:leveloffset: +1
+
+// Module included in the following assemblies:
+//
+//
+
+[id="server-config-{context}"]
+= Server configuration
+
+strategy to pull in autogen server config docs currently under development
+
+:leveloffset!:
+
+[appendix]
+:leveloffset: +1
+
+// Module included in the following assemblies:
+//
+//
+
+[id="additional-open-liberty-resources-{context}"]
+= Additional Open Liberty resources
+
+You can learn more about Open Liberty and the APIs it supports by viewing resources on the Open Liberty website.
+
+* link:https://openliberty.io/docs/ref/command/[Open Liberty server commands]
+* link:https://openliberty.io/guides/[Open Liberty guides]
+* link:https://openliberty.io/docs/ref/javaee/[Java EE API]
+* link:https://openliberty.io/docs/ref/microprofile/[MicroProfile API]
+
+:leveloffset!:
