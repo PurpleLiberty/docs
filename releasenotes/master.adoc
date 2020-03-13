@@ -3,27 +3,24 @@
 :url-prefix: https://openliberty.io
 :url-about: https://access.redhat.com/products/open-liberty/
 
-= Release Notes for Open Liberty 20.0.0.2 on Red Hat OpenShift Container Platform
-////
+= Release Notes for Open Liberty 20.0.0.3 on Red Hat OpenShift Container Platform
+
 == Features
 
 :leveloffset: +1
 
-In Open Liberty 20.0.0.1, you can configure the Social Login feature to use Red Hat OpenShift's OAuth server for authentication. In addition, there is a new MicroProfile Metric to measure CPU time, memory heap and response time.
+In Open Liberty 20.0.0.3, you can now access Kafka specific properties such as the message key and message headers, not just the payload of the message, as was the case previously with the MicroProfile Reactive Messaging Message API. Also, you can now set the SameSite attribute on the Session cookie, the LTPA, and JWT cookies as well as application-defined cookies.
 
-In link:{url-about}[Open Liberty] 20.0.0.1:
+In link:{url-about}[Open Liberty] 20.0.0.3:
 
-* <<SSAA,Support OpenShift OAuth server for authentication and authorization>>
-* <<NMM, Monitor the process CPU time (MicroProfile Metrics 2.0)>>
-* <<ACC, Faster application startups with Liberty annotation caching>>
-* <<JSS, Updated JavaServer Faces>>
+* <<kafka,Kafka specific properties>>
+* <<ASCA,Adding the SameSite cookie attribute>>
 
 
-
-View the list of fixed bugs in https://github.com/OpenLiberty/open-liberty/issues?utf8=%E2%9C%93&q=label%3Arelease%3A20001+label%3A%22release+bug%22[20.0.0.1].
+View the list of fixed bugs in https://github.com/OpenLiberty/open-liberty/issues?utf8=%E2%9C%93&q=label%3Arelease%3A20003+label%3A%22release+bug%22[20.0.0.3].
 [#run]
 
-== Run your apps using 20.0.0.1
+== Run your apps using 20.0.0.3
 
 If you're using link:{url-prefix}/guides/maven-intro.html[Maven], here are the coordinates:
 
@@ -32,7 +29,7 @@ If you're using link:{url-prefix}/guides/maven-intro.html[Maven], here are the c
 <dependency>
     <groupId>io.openliberty</groupId>
     <artifactId>openliberty-runtime</artifactId>
-    <version>20.0.0.1</version>
+    <version>20.0.0.3</version>
     <type>zip</type>
 </dependency>
 ----
@@ -42,7 +39,7 @@ Or for link:{url-prefix}/guides/gradle-intro.html[Gradle]:
 [source,gradle]
 ----
 dependencies {
-    libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version: '[20.0.0.1,)'
+    libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version: '[20.0.0.3,)'
 }
 ----
 
@@ -52,147 +49,151 @@ Or if you're using Docker:
 ----
 FROM open-liberty
 ----
-[#SSAA]
-== Using Liberty Social Login with Red Hat OpenShift
 
-The Social Login feature `socialLogin-1.0` can now be configured to use OpenShift’s built-in OAuth server and OAuth Proxy sidecar as authentication providers. The Social Login feature has several pre-configured providers (e.g. Google, GitHub, Facebook) but you can also configure additional providers (e.g. Instagram). OpenShift's OAuth server and OAuth Proxy sidecar can now be configured as additional providers too. The first is a standard OAuth Authorization Code flow, where a web browser accessing an app running in Liberty is redirected to the OpenShift OAuth server to authenticate.
-The second is accepting an inbound token from the OpenShift OAuth Proxy sidecar or obtained from an OpenShift API call. This approach requires less cluster-specific configuration.
+[#kafka]
+== Kafka specific properties
 
-Most users of this will run Liberty in a pod; however, in the Authorization Code flow, Liberty can run outside the OpenShift cluster. In either mode, an optional JWT can be created for propagation to downstream services.
+New to Open Liberty is Kafka specific properties. The basic MicroProfile Reactive Messaging `Message` API does not let the user access anything other than the payload of the message. The native Kafka client API allows the user to access some Kafka specific message properties, such as the message key and message headers.
 
-Using OpenShift as a provider differs slightly from other OAuth providers, it requires a service account token to obtain information about the OAuth tokens.
-Once the: client ID, secret, and token have been obtained from OpenShift, Liberty can be configured as shown below.
+=== Incoming Messages
+For incoming messages, we have now allowed the user to unwrap a Message to gain access to the underlying `ConsumerRecord`.
 
-To enable the feature add it to the `server.xml`
-
-Server configuration to use OpenShift OAuth server:
-
-[source, xml]
+[source, java]
 ----
-<server description="social">
-
-  <!-- Enable features -->
-  <featureManager>
-    <feature>appSecurity-3.0</feature>
-    <feature>socialLogin-1.0</feature>
-  </featureManager>
-
-<logging traceSpecification="com.ibm.ws.security.*=all=enabled" maxFiles="8" maxFileSize="200"/>
-
-<httpEndpoint  id="defaultHttpEndpoint" host="*" httpPort="8941" httpsPort="8946" > <tcpOptions soReuseAddr="true" /> </httpEndpoint>
-
-
-  <!-- specify your clientId, clientSecret and userApiToken as liberty variables or environment variables -->
-  <oauth2Login id="openshiftLogin"
-    scope="user:full"
-    clientId="${myclientId}"
-    clientSecret="${myclientSecret}"
-    authorizationEndpoint="https://oauth-openshift.apps.papains.os.fyre.ibm.com/oauth/authorize"
-    tokenEndpoint="https://oauth-openshift.apps.papains.os.fyre.ibm.com/oauth/token"
-    userNameAttribute="username"
-    groupNameAttribute="groups"
-    userApiToken="${serviceAccountToken}"
-    userApiType="kube"
-    userApi="https://api.papains.os.fyre.ibm.com:6443/apis/authentication.k8s.io/v1/tokenreviews">
-  </oauth2Login>
-
-  <keyStore id="defaultKeyStore" password="keyspass" />
-
-  <!-- more application config would go here -->
-
-</server>
-----
-
-In the sidecar scenario, the configuration changes to accept an inbound token from the sidecar.
-Server configuration to use OAuth proxy sidecar:
-
-[source, xml]
-----
-<!-- specify your userApiToken as a liberty variable or environment variable -->
-  <!-- note that no clientId or clientSecret are needed -->
-  <oauth2Login id="openshiftLogin"
-    scope="user:full"
-    userNameAttribute="username"
-    groupNameAttribute="groups"
-    userApiToken="${serviceAccountToken}"
-    userApiType="kube"
-    accessTokenHeaderName="X-Forwarded-Access-Token"
-    accessTokenRequired="true"
-    userApi="https://kubernetes.default.svc/apis/authentication.k8s.io/v1/tokenreviews">
-  </oauth2Login>
-----
-
-Use of HTTPS communication requires that the server either have a key signed by a well-known certificate authority, which Liberty can trust automatically or that the server's public key be added to the Liberty trust store. OpenShift does not come with CA-signed keys by default, so the Red Hat OpenShift OAuth server's public key will need to be added. The most convenient way to do this is to specify an environment variable in `server.env`. That identifies the file containing the public key in PEM format. Liberty will read the file and add the key to its trust store.
-
-[source, xml]
-----
-# server.env
-
-# OAuth sidecar scenario: causes the Kubernetes default certificate that is pre-installed in pods to be added to Liberty trust store.
-cert_defaultKeyStore=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-
-# OAuth server scenario: causes the public keys from /tmp/trustedcert.pem (obtained seperetly) to be added to Liberty trust store.
-cert_defaultKeyStore=/tmp/trustedcert.pem
+@Incoming("channel1")
+public CompletionStage<Void> consume(Message<String> message) {
+    ConsumerRecord<String, String> cr = (ConsumerRecord<String, String>) message.unwrap(ConsumerRecord.class);
+    String key = consumerRecord.key();
+    String value = consumerRecord.value();
+    String topic = consumerRecord.topic();
+    int partition = consumerRecord.partition();
+    long timestamp = consumerRecord.timestamp();
+    Headers headers = consumerRecord.headers();
+    // some more code....
+    return CompletableFuture.completedFuture(null);
+}
 
 ----
 
-[#NMM]
-== Monitor the process CPU time (MicroProfile Metrics 2.0)
+=== Outgoing Messages
 
-A new metric, `processCpuTime,` which returns the CPU time used by the process on which the JVM is running. The MicroProfile Metrics feature provides information monitoring an application, such as CPU time used, memory heap, response time of servlets.
+For outgoing messages, if the payload is a ProducerRecord then the properties within it are passed on to Kafka.
+[source, java]
+----
+@Outgoing("channel2")
+public Message<ProducerRecord> publish() throws UnsupportedEncodingException {
+   ProducerRecord<String, String> producerRecord = new ProducerRecord<String, String>("myTopic", null, "myKey", "myValue");
+   producerRecord.headers().add("HeaderKey", "HeaderValue".getBytes("UTF-8"));
+   return Message.of(producerRecord);
+}
+----
 
-The new `processCpuTime` metric provides a more accurate CPU load percentage on cloud platforms via Grafana. Previously, the CPU load percentage was shown with the metric `processCpuLoad`. However, the load percentage was calculated using the total number of cores allocated to the deployment. If the deployment has a restricted number of cores, the `processCpuLoad` ends up showing a plateau on Grafana when the maximum number of cores is reached. For example, on a deployment with 32 cores allocated but restricted to four cores, the `processCpuLoad` graph shows a plateau at 12.5% when all four cores are used.
+The example above assumes that no topic has been explicitly pre-configured in the MicroProfile Config for the channel. If the topic is pre-configured then that will take precedence and the topic in the ProducerRecord will be ignored.
 
-The new metric, `processCpuTime,` can be manipulated on Grafana to create a more accurate representation of the CPU being used. `rate(processCpuTime)[1m]` shows the average rate of increase in CPU time over one minute. Dividing this by the total number of CPU cores, we can see a more accurate percentage of the CPU used, taking into account the constraints.
+=== Example using a pre-configured topic
 
-The new `processCpuTime` metric is displayed on the `/metrics` endpoint with the MicroProfile Metrics 2.0 and 2.2 features. On the dashboard, a new panel can be created with the following PromQL query: `(rate(base:cpu_process_cpu_time[2m])/1e9) / base:cpu_available_processors{app=~[[app]]}.` link:https://github.com/OpenLiberty/open-liberty-operator/tree/master/deploy/dashboards/metrics[View full dashboard.]
+In this example, the topic is pre-configured using MicroProfile Config to be `myOtherTopic` so the topic set in the ProducerRecord is ignored.
 
+MicroProfile Config Properties
 
-The following images show that the old metric, `processCpuLoad`, plateaus at 12.5% (4/23), while the new metric, `processCpuTime`, more accurately represents the percentage of CPU used.
+[source, java]
+----
+mp.reactive.messaging.outgoing.channel3.connector=liberty-kafka
+mp.reactive.messaging.outgoing.channel3.topic=myOtherTopic #Overrides value in code
+----
+Reactive Messaging Bean
 
-image::img/blog/20001-highcpuload.png[align="center"]
+[source, java]
+----
+@Outgoing("channel3")
+public Message<ProducerRecord<K, V>> publish() {
+   ProducerRecord pr = new ProducerRecord("myTopic", "myValue");
+   return Message.of(pr);
+}
+----
 
-image::img/blog/20001-lowcpuload.png[align="center"]
+[#ASCA]
+== Adding the SameSite cookie attribute
 
+Open Liberty now offers the ability to set the SameSite attribute on the Session cookie, the LTPA, and JWT cookies as well as application-defined cookies. The SameSite attribute can be added by adding one or more `server.xml` configuration options.
 
-With all the machines cores being used and there are no constraints on the processors (32 processors) - The old version and new version display the same data.
+The Servlet `javax.servlet.http.Cookie` API does not offer the ability to set the SameSite attribute on a Cookie. If the SameSite attribute is needed, the options for setting it are currently limited to using the `HttpServletResponse.addHeader` and `HttpServletResponse.setHeader` and constructing the Set-Cookie header. The SameSite attribute is used by browsers to determine if a particular cookie should be sent with a request.
 
-image::img/blog/20001-noconstraints.png[align="center"]
+There are three values for the SameSite attribute: `Lax`, `Strict`, `None`.
 
-[#ACC]
-== Faster application startups with Liberty annotation caching
+* `SameSite=Strict`: The cookie is only sent with "same-site" requests. The cookie is only sent by the web browser if the site for the cookie matches the site in the address bar for example.
 
-Application startup time is now faster due to adding annotation caching to the core class and annotation scanning function. Depending on application characteristics, startup times are reduced by 10% to more than 50%. Applications with many jar files, or which use CDI or JAX-RS functions, see the best improvements:
+* `SameSite=Lax`: The cookie is sent with both "same-site" and "cross-site" top-level navigation requests. Clicking a link for example.
 
-image::img/blog/20001annocache.png[align="center"]
+* `SameSite=None`: The cookie is sent with both "same-site" and "cross-site" requests. The cookie is sent by the web browser for third party contexts, embedded content for example.
 
-Good news! Annotation caching is enabled by default.
+To use SameSite cookie attribute:
 
-Annotation cache data is stored in the server workarea. Cache of application class data is cleared when performing a clean server start (starting the server with the `--clean` option). In normal operations, the clearing of cache data is not necessary, since the cache automatically regenerates cache data for changed application classes.
+1.  Set the Session Cookie SameSite attribute using the following `server.xml` configuration:
+`<httpSession cookieSameSite="Disabled|Strict|Lax|None"/>`
 
-In container environments, for annotation caching to be effective, the server image must be "warmed" when the container image is created. Warming the server an be done by starting and stopping the server during the container build. Warming the image moves the annotation scan into the container build meaning you get optimal startup on the container deployment. Using the configure.sh file in the base open-liberty docker images causes the server to be started and stopped during the container build.
+2. The default value is `Disabled`. This means no SameSite attribute will be added.
+Set the `LTPA/JWT` Cookie SameSite attribute using the following server.xml configuration:
+`<webAppSecurity sameSiteCookie="Disabled|Strict|Lax|None"/>`
 
-[#JSS]
-== Bug fixes in JavaServer Faces 2.3
+3. The default value is `Disabled`. This means no SameSite attribute will be added.
+Set the SameSite attribute on Cookies via the following server.xml configuration:
 
-JavaServer Faces 2.3 contains a new feature to get bug fixes that are in Apache MyFaces 2.3.6. The jsf-2.3 feature pulls in the Apache MyFaces implementation and integrates it into the Liberty runtime.
+[server, xml]
+```
+    <httpEndpoint id="defaultHttpEndpoint"
+                  httpPort="9080"
+                  httpsPort="9443" >
+        <samesite lax="cookieOne" strict="cookieTwo" none="cookieThree"/>
+    </httpEndpoint>
+```
 
-The Apache MyFaces 2.3.6 release contains bug fixes. View link:https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=10600&version=12346352[the release notes for more information.]
+The `<httpEndpoint/>` SameSite configuration allows the use of wildcards in the following ways:
 
-To use the JSF 2.3, enable the `jsf-2.3` feature to leverage the latest Apache MyFaces 2.3. release For more information about the JavaServer Feature, view the link:https://myfaces.apache.org/[Apache website.]
+A standalone wildcard ( * ). All cookies would have the SameSite=Lax attribute. This includes the Session and LTPA/JWT cookies unless the `<httpSession/>` and/or `<webAppSecurity/>` configuration has also been set.
+
+[server, xml]
+```
+    <httpEndpoint id="defaultHttpEndpoint"
+                  httpPort="9080"
+                  httpsPort="9443" >
+        <samesite lax="*" />
+    </httpEndpoint>
+```
+
+At the end of one or more cookie names. The below snippet would map the following cookie name to SameSite attributes:
+
+* cookieOne -> SameSite=Lax
+* cookieTwo -> SameSite=Strict
+* cookieThree -> SameSite=None
+```
+    <httpEndpoint id="defaultHttpEndpoint"
+                  httpPort="9080"
+                  httpsPort="9443" >
+        <samesite lax="cookie*" strict="cookieTwo" none="cookieThree"/>
+    </httpEndpoint>
+```
+
+The `<httpSession/>` and `<webAppSecurity/>` configuration takes precedence over the `<httpEndpont/>configuration`.
+
+When a cookie matches the `SameSite=None` configuration then the `Secure` attribute will be automatically added to the cookie.
+
+The `<httpEndpoint/>` configuration can apply to any `Set-Cookie` header.
+
+Technical details regarding the SameSite attribute can be found in the following RFC: link:https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-03#section-4.1.2.7[Cookies: HTTP State Management Mechanism]
 
 
 :leveloffset!:
-////
+
 
 == Resolved issues
 
-See the https://github.com/OpenLiberty/open-liberty/issues?utf8=%E2%9C%93&q=label%3A%22release+bug%22+label%3Arelease%3A20002+is%3Aclosed+[Open Liberty 20.0.0.2 issues that were resolved for this release].
+See the https://github.com/OpenLiberty/open-liberty/issues?q=label%3A%22release+bug%22+label%3Arelease%3A20003+is%3Aclosed+[Open Liberty 20.0.0.3 issues that were resolved for this release].
 
 == Fixed CVEs
 
-For a list of CVEs that were fixed in Open Liberty 20.0.0.2, see https://openliberty.io/docs/ref/general/#security-vulnerabilities.html[security vulnerabilities].
+For a list of CVEs that were fixed in Open Liberty 20.0.0.3, see https://openliberty.io/docs/ref/general/#security-vulnerabilities.html[security vulnerabilities].
 
 == Known issues
 
-See the https://github.com/OpenLiberty/open-liberty/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3A%22release+bug%22+created%3A2020-1-16..2020-2-07+-label%3Arelease%3A190012+[list of issues that were found but not fixed during the development of 20.0.0.2].
+See the https://github.com/OpenLiberty/open-liberty/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3A%22release+bug%22+created%3A2020-2-07..2020-3-13+-label%3Arelease%3A20003+[list of issues that were found but not fixed during the development of 20.0.0.3].
