@@ -11,6 +11,10 @@ include::docs/modules/featureOverview-purple.adoc[leveloffset=+1]
 
 include::https://raw.githubusercontent.com/OpenLiberty/docs/master/ref/config/serverConfiguration.adoc[leveloffset=+1]
 
+include::https://raw.githubusercontent.com/OpenLiberty/docs/draft/ref/general/development-mode.adoc[leveloffset=+1]
+
+include::https://raw.githubusercontent.com/OpenLiberty/docs/draft/ref/general/thread-pool-tuning.adoc[leveloffset=+1]
+
 include::docs/modules/logging-purple.adoc[leveloffset=+1]
 
 include::docs/modules/testing-with-container.adoc[leveloffset=+1]
