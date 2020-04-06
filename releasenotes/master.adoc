@@ -3,7 +3,7 @@
 :url-prefix: https://openliberty.io
 :url-about: https://access.redhat.com/products/open-liberty/
 
-= Release Notes for Open Liberty 20.0.0.3 on Red Hat OpenShift Container Platform
+= Release Notes for Open Liberty 20.0.0.4 on Red Hat OpenShift Container Platform
 
 == Features
 
@@ -182,6 +182,8 @@ When a cookie matches the `SameSite=None` configuration then the `Secure` attrib
 
 The `<httpEndpoint/>` configuration can apply to any `Set-Cookie` header.
 
+For more information, see Paul's blog post: link:{url-prefix}/blog/2020/03/25/set-samesite-attribute-cookies-liberty.html[Setting the SameSite attribute on cookies with Open Liberty].
+
 Technical details regarding the SameSite attribute can be found in the following RFC: link:https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-03#section-4.1.2.7[Cookies: HTTP State Management Mechanism]
 
 
@@ -190,12 +192,12 @@ Technical details regarding the SameSite attribute can be found in the following
 
 == Resolved issues
 
-See the https://github.com/OpenLiberty/open-liberty/issues?q=label%3A%22release+bug%22+label%3Arelease%3A20003+is%3Aclosed+[Open Liberty 20.0.0.3 issues that were resolved for this release].
+See the https://github.com/OpenLiberty/open-liberty/issues?q=label%3A%22release+bug%22+label%3Arelease%3A20004+is%3Aclosed+[Open Liberty 20.0.0.4 issues that were resolved for this release].
 
 == Fixed CVEs
 
-For a list of CVEs that were fixed in Open Liberty 20.0.0.3, see https://openliberty.io/docs/ref/general/#security-vulnerabilities.html[security vulnerabilities].
+For a list of CVEs that were fixed in Open Liberty 20.0.0.4, see https://openliberty.io/docs/ref/general/#security-vulnerabilities.html[security vulnerabilities].
 
 == Known issues
 
-See the https://github.com/OpenLiberty/open-liberty/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3A%22release+bug%22+created%3A2020-2-07..2020-3-13+-label%3Arelease%3A20003+[list of issues that were found but not fixed during the development of 20.0.0.3].
+See the https://github.com/OpenLiberty/open-liberty/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3A%22release+bug%22+created%3A2020-3-13..2020-4-09+-label%3Arelease%3A20003+[list of issues that were found but not fixed during the development of 20.0.0.4].
