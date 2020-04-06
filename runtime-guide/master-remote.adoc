@@ -3,11 +3,11 @@ include::attributes.adoc[]
 = Open Liberty Runtime Guide
 :context: open-liberty
 
-include::docs/modules/what-is-openliberty.adoc[leveloffset=+1]
+include::modules/what-is-openliberty.adoc[leveloffset=+1]
 
-include::docs/modules/packaging-and-deploying-applications.adoc[leveloffset=+1]
+include::modules/packaging-and-deploying-applications.adoc[leveloffset=+1]
 
-include::docs/modules/featureOverview-purple.adoc[leveloffset=+1]
+include::modules/featureOverview-purple.adoc[leveloffset=+1]
 
 include::https://raw.githubusercontent.com/OpenLiberty/docs/master/ref/config/serverConfiguration.adoc[leveloffset=+1]
 
@@ -15,13 +15,13 @@ include::https://raw.githubusercontent.com/OpenLiberty/docs/draft/ref/general/de
 
 include::https://raw.githubusercontent.com/OpenLiberty/docs/draft/ref/general/thread-pool-tuning.adoc[leveloffset=+1]
 
-include::docs/modules/logging-purple.adoc[leveloffset=+1]
+include::modules/logging-purple.adoc[leveloffset=+1]
 
-include::docs/modules/testing-with-container.adoc[leveloffset=+1]
+include::modules/testing-with-container.adoc[leveloffset=+1]
 
-include::docs/debugging-assembly.adoc[leveloffset=+1]
+include::assemblies/debugging-assembly.adoc[leveloffset=+1]
 
-include::docs/monitoring-assembly.adoc[leveloffset=+1]
+include::assemblies/monitoring-assembly.adoc[leveloffset=+1]
 
 [appendix]
-include::docs/modules/additional-openliberty-resources.adoc[leveloffset=+1]
+include::modules/additional-openliberty-resources.adoc[leveloffset=+1]
