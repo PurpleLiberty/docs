@@ -49,7 +49,7 @@ git checkout -b NEWBRANCH
 ./bin/fetch-upstream.sh
 ----
 +
-. Confirm that the guides build without error
+. Confirm that the guides build without error by running ccutil in each book folder
 +
 [source]
 ----
@@ -62,7 +62,11 @@ ccutil compile --lang en_US --type asciidoc
 ----
 git add --all
 git commit -a -m "COMMIT MESSAGE"
+git push origin HEAD
 ----
++
+. Go to the link:https://gitlab.cee.redhat.com/open-liberty-documentation/docs[Open Liberty] GitLab repository
+. Complete the merge request 
 
 == Build tips
 
