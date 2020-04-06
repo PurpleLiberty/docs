@@ -67,6 +67,11 @@ git push origin HEAD
 +
 . Go to the link:https://gitlab.cee.redhat.com/open-liberty-documentation/docs[Open Liberty] GitLab repository
 . Complete the merge request 
+. Visit link:https://pantheon.int.us-west.aws.prod.paas.redhat.com/#/titles/open_liberty/[Pantheon]
+** If this is a new title (or new release) add the new title and confirm that it builds
+** If this is an update to an exisiting title, confirm that the title builds
+. If you are ready to publish, visit the link:https://docs2-app-server-docs2-lightblue-management.int.open.paas.redhat.com/product/open_liberty/2020?iframe=true[splash page editor] and add the new title
+. Once the guide is published update the related link:https://issues.redhat.com/projects/IBMRT[IBMRT JIRA]
 
 == Build tips
 
