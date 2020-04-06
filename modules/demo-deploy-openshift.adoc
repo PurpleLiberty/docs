@@ -1,0 +1,8 @@
+// Module included in the following assemblies:
+//
+//
+
+[id="deploy-openshift-{context}"]
+= Deploying an app to OpenShift
+
+Doc currently in development
