@@ -1,4 +1,7 @@
-Unresolved directive in master-remote.adoc - include::attributes.adoc[]
+:toc:
+:ProjectName: My{nbsp}Project
+:ProjectNameID: my-project
+:ProjectVersion: 0.1
 
 = Open Liberty Runtime Guide
 :context: open-liberty
@@ -26,7 +29,7 @@ Instead of major releases, each Open Liberty release is considered a micro, or p
 
 The lack of major release streams is unusual for server runtimes, but is common for desktop and mobile applications. Some publication systems expect software to have a major version. As a result, in cases where a major version is needed, the year of publication is used as a stand-in. For example, Open Liberty documentation that is published for this guide in 2019 uses the year 2019 as the version number. However, this documentation is as applicable to releases in 2020 as it is to releases in 2019.
 
-:leveloffset!:
+:leveloffset: -1
 
 :leveloffset: +1
 
@@ -51,7 +54,7 @@ Open Liberty supports all MicroProfile and Java EE APIs and deploys to every maj
 .Additional resources
 * link:https://openliberty.io/guides/kubernetes-intro.html[Deploying microservices to Kubernetes]
 
-:leveloffset!:
+:leveloffset: -1
 
 :leveloffset: +1
 
@@ -141,7 +144,7 @@ The following table lists the Open Liberty features that are superseded:
 
 |===
 
-:leveloffset!:
+:leveloffset: -1
 
 :leveloffset: +1
 
@@ -557,7 +560,7 @@ Based on the following server XML config example, the `dataStore` element and th
 </server>
 ----
 
-:leveloffset!:
+:leveloffset: -1
 
 :leveloffset: +1
 
@@ -654,7 +657,7 @@ You can access development mode functions by right-clicking your project name an
 
 - View command examples, explanations of available development mode parameters, and more in link:https://github.com/OpenLiberty/ci.maven/blob/master/docs/dev.md#dev[the dev goal of the Open Liberty Maven plug-in] and link:https://github.com/OpenLiberty/ci.gradle/blob/master/docs/libertyDev.md#libertydev-task[the libertyDev task of the Open Liberty Gradle plug-in].
 
-:leveloffset!:
+:leveloffset: -1
 
 :leveloffset: +1
 
@@ -755,7 +758,7 @@ The Open Liberty thread pool controller is designed to handle a wide range of wo
 
 For more information, see link:/docs/ref/config/#executor.html[Executor Management].
 
-:leveloffset!:
+:leveloffset: -1
 
 :leveloffset: +1
 
@@ -988,7 +991,7 @@ A component can be a logger name, trace group or class name. An asterisk pass:[*
 
 |===
 
-:leveloffset!:
+:leveloffset: -1
 
 :leveloffset: +1
 
@@ -1053,7 +1056,7 @@ For more information, see link:https://microshed.org/microshed-testing/[MicroShe
 .Additional resources
 * link:http://arquillian.org/modules/arquillian-liberty-managed-container-adapter/[Arquillian Liberty managed container adapter]
 
-:leveloffset!:
+:leveloffset: -1
 
 :leveloffset: +1
 
@@ -1112,7 +1115,7 @@ If either of these changes are made, Liberty can detect them after you restart d
 
 For more information, see link:https://github.com/OpenLiberty/ci.maven/blob/master/docs/dev.md[Liberty Dev mode].
 
-:leveloffset!:
+:leveloffset: -1
 
 :leveloffset: +1
 
@@ -1140,7 +1143,7 @@ To learn how to configure a simple web servlet application by using Maven and th
 
 Jakarta EE applications consist of multiple modules that work together as one entity. To learn how to build an application with multiple modules by using Maven and Open Liberty, see link:https://openliberty.io/guides/maven-multimodules.html[Creating a multi-module application].
 
-:leveloffset!:
+:leveloffset: -1
 
 :leveloffset: +1
 
@@ -1155,11 +1158,11 @@ Distributed tracing helps you troubleshoot microservices by examining and loggin
 
 To learn how to monitor and trace logging requests across microservices in an application, see link:https://www.openliberty.io/guides/microprofile-opentracing.html[Enabling distributed tracing in microservices].
 
-:leveloffset!:
+:leveloffset: -1
 
 :context: {parent-context}
 
-:leveloffset!:
+:leveloffset: -1
 
 :leveloffset: +1
 
@@ -1193,7 +1196,7 @@ To learn how to use MicroProfile Metrics to enable and provide metrics from a mi
 .Additional Resources
 * link:https://openliberty.io/docs/ref/general/#microservice_observability_metrics.html[Microservice observability with metrics]
 
-:leveloffset!:
+:leveloffset: -1
 
 :leveloffset: +1
 
@@ -1225,11 +1228,11 @@ To learn how to use MicroProfile Health to enable and report microservice health
 .Additional resources
 * link:https://www.openliberty.io/docs/ref/general/#health-check-microservices.html[Enabling health checking of microservices]
 
-:leveloffset!:
+:leveloffset: -1
 
 :context: {parent-context}
 
-:leveloffset!:
+:leveloffset: -1
 
 [appendix]
 :leveloffset: +1
@@ -1248,4 +1251,4 @@ You can learn more about Open Liberty and the APIs it supports by viewing resour
 * link:https://openliberty.io/docs/ref/javaee/[Java EE API]
 * link:https://openliberty.io/docs/ref/microprofile/[MicroProfile API]
 
-:leveloffset!:
+:leveloffset: -1
