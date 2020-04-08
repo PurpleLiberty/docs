@@ -102,7 +102,7 @@ Clone your forked repository to bring your GitHub repository files to your local
 +
 [source,options="nowrap",subs="+quotes"]
 ----
-$ git clone https://gitlab.cee.redhat.com/USERNAME/docs
+$ git clone git@gitlab.cee.redhat.com:USERNAME/eap-documentation.git
 ----
 . Navigate to the newly created `docs` folder.
 +
