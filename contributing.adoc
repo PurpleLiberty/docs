@@ -18,6 +18,11 @@ IBM writers will commit their additions to the link:https://github.com/PurpleLib
 
 .Prequisites
 * link:git-setup.adoc[Set up Git]
+* Install the asciidoctor-diagram Ruby gem
++
+----
+gem install asciidoctor-diagram
+----
 
 .Procedure
 . Visit https://github.com/PurpleLiberty/docs
