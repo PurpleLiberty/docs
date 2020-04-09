@@ -49,6 +49,8 @@ git checkout -b NEWBRANCH
 ./bin/fetch-upstream.sh
 ----
 +
+NOTE: You won't see any confirmation in the terminal that the script worked.  You can check the directories to see if there is a new master.adoc file to confirm that the script ran properly.
++
 . Confirm that the guides build without error by running ccutil in each book folder
 +
 [source]
