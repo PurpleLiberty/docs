@@ -15,6 +15,11 @@ include::docs/modules/demo-deploy-openshift.adoc[leveloffset=+1]
 
 include::https://raw.githubusercontent.com/OpenLiberty/docs/master/ref/general/logging.adoc[leveloffset=+1]
 
+include::https://raw.githubusercontent.com/OpenLiberty/docs/master/ref/general/development-mode-applications.adoc[leveloffset=+1]
+
+include::https://raw.githubusercontent.com/OpenLiberty/docs/master/ref/general/thread-pool-tuning.adoc[leveloffset=+1]
+
+
 include::docs/modules/demo-testing-with-container.adoc[leveloffset=+1]
 
 include::docs/modules/demo-features.adoc[leveloffset=+1]
