@@ -7,8 +7,7 @@
 
 == Features
 
-include::https://raw.githubusercontent.com/OpenLiberty/blogs/master/publish/2020-05-07-EJB-persistent-timers-20005.adoc[leveloffset=+1,tags=intro;run;features]
-
+include::https://raw.githubusercontent.com/OpenLiberty/blogs/prod/posts/2020-06-05-graphql-open-liberty-20006.adoc[leveloffset=+1,tags=intro;run;features]
 
 == Resolved issues
 
