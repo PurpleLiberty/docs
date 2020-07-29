@@ -9,11 +9,11 @@ include::modules/packaging-and-deploying-applications.adoc[leveloffset=+1]
 
 include::modules/featureOverview-purple.adoc[leveloffset=+1]
 
-include::https://raw.githubusercontent.com/OpenLiberty/docs/master/ref/config/serverConfiguration.adoc[leveloffset=+1]
+include::https://raw.githubusercontent.com/OpenLiberty/docs/vNext/modules/reference/pages/config/serverConfiguration.adoc[leveloffset=+1]
 
-include::https://raw.githubusercontent.com/OpenLiberty/docs/master/ref/general/development-mode-applications.adoc[leveloffset=+1]
+include::https://raw.githubusercontent.com/OpenLiberty/docs/vNext/modules/ROOT/pages/development-mode.adoc[leveloffset=+1]
 
-include::https://raw.githubusercontent.com/OpenLiberty/docs/master/ref/general/thread-pool-tuning.adoc[leveloffset=+1]
+include::https://raw.githubusercontent.com/OpenLiberty/docs/vNext/modules/ROOT/pages/thread-pool-tuning.adoc[leveloffset=+1]
 
 include::modules/logging-purple.adoc[leveloffset=+1]
 

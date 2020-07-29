@@ -4,7 +4,7 @@
 = Debugging
 :context: debugging-assembly
 
-include::modules/dev-mode.adoc[leveloffset=+1]
+include::https://raw.githubusercontent.com/OpenLiberty/docs/vNext/modules/ROOT/pages/development-mode.adoc[leveloffset=+1]
 
 include::modules/managing-with-maven.adoc[leveloffset=+1]
 
