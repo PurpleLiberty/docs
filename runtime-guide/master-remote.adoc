@@ -5,19 +5,19 @@ include::common/attributes.adoc[]
 
 include::modules/what-is-openliberty.adoc[leveloffset=+1]
 
-include::modules/packaging-and-deploying-applications.adoc[leveloffset=+1]
+include::modules/deployment-openshift.adoc[leveloffset=+1]
 
 include::modules/featureOverview-purple.adoc[leveloffset=+1]
 
-include::https://raw.githubusercontent.com/OpenLiberty/docs/vNext/modules/reference/pages/config/server-configuration-overview.adoc[leveloffset=+1]
+include::modules/server-configuration-overview.adoc[leveloffset=+1]
 
-include::https://raw.githubusercontent.com/OpenLiberty/docs/vNext/modules/ROOT/pages/development-mode.adoc[leveloffset=+1]
+include::modules/development-mode.adoc[leveloffset=+1]
 
-include::https://raw.githubusercontent.com/OpenLiberty/docs/vNext/modules/ROOT/pages/thread-pool-tuning.adoc[leveloffset=+1]
+include::modules/thread-pool-tuning.adoc[leveloffset=+1]
 
 include::modules/logging-purple.adoc[leveloffset=+1]
 
-include::modules/testing-with-container.adoc[leveloffset=+1]
+include::modules/integration-testing.adoc[leveloffset=+1]
 
 include::assemblies/debugging-assembly.adoc[leveloffset=+1]
 
