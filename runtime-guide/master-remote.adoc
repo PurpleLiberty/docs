@@ -5,7 +5,7 @@ include::common/attributes.adoc[]
 
 include::modules/what-is-openliberty.adoc[leveloffset=+1]
 
-include::https://raw.githubusercontent.com/OpenLiberty/docs/vNext/modules/ROOT/pages/deployment-openshift.adoc[leveloffset=+1]
+include::modules/packaging-and-deploying-applications.adoc[leveloffset=+1]
 
 include::modules/featureOverview-purple.adoc[leveloffset=+1]
 
@@ -17,7 +17,7 @@ include::https://raw.githubusercontent.com/OpenLiberty/docs/vNext/modules/ROOT/p
 
 include::modules/logging-purple.adoc[leveloffset=+1]
 
-include::https://raw.githubusercontent.com/OpenLiberty/docs/vNext/modules/ROOT/pages/integration-testing.adoc[leveloffset=+1]
+include::modules/testing-with-container.adoc[leveloffset=+1]
 
 include::assemblies/debugging-assembly.adoc[leveloffset=+1]
 
