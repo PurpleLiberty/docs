@@ -11,7 +11,7 @@ For more information, see link:https://www.openliberty.io/guides/cloud-openshift
 
 To learn how to containerize and run your microservices with Open Liberty, see link:https://openliberty.io/guides/containerize.html[Containerizing microservices].
 
-Open Liberty supports all MicroProfile and Java EE APIs and deploys to every major cloud platform. To get started with Open Liberty, learn how to to run and update a simple REST microservice with link:https://openliberty.io/guides/getting-started.html[Packaging and deploying applications].
+Open Liberty supports all MicroProfile and Java EE APIs and deploys to every major cloud platform. To get started with Open Liberty, learn how to to run and update a simple REST microservice in the link:https://openliberty.io/guides/getting-started.html[Getting started with Open Liberty] guide.
 
 
 
