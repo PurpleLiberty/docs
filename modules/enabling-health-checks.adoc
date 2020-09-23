@@ -24,4 +24,4 @@ With MicroProfile Health, you can enable the services in your liberty applicatio
 To learn how to use MicroProfile Health to enable and report microservice health checks, see link:https://openliberty.io/guides/microprofile-health.html[Adding health reports to microservices].
 
 .Additional resources
-* link:https://www.openliberty.io/docs/ref/general/#health-check-microservices.html[Enabling health checking of microservices]
+* link:https://www.openliberty.io/docs/ref/general/#health-check-microservices.html[Health checks for microservices]
