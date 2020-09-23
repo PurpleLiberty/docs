@@ -11,9 +11,9 @@ Metrics are emitted from a number of different places. You can obtain them from 
 
 Metrics come in various forms, including counters, gauges, timers, histograms, and meters. You can enable metrics in your Open Liberty application with the MicroProfile Metrics feature, which defines annotations that help you quickly build metrics into your code.
 
-For a list of all available Open Liberty metrics, see the link:https://openliberty.io/docs/ref/general/#metrics-catalog.html[metrics reference list].
+For a list of all available Open Liberty metrics, see the link:https://www.openliberty.io/docs/latest/metrics-list.html[metrics reference list].
 
 To learn how to use MicroProfile Metrics to enable and provide metrics from a microservice, see link:https://openliberty.io/guides/microprofile-metrics.html[Providing metrics from a microservice].
 
 .Additional Resources
-* link:https://openliberty.io/docs/ref/general/#microservice_observability_metrics.html[Microservice observability with metrics]
+* link:https://www.openliberty.io/docs/latest/microservice-observability-metrics.html[Microservice observability with metrics]
