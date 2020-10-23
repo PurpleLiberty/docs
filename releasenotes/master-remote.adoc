@@ -3,7 +3,7 @@
 :url-prefix: https://openliberty.io
 :url-about: https://access.redhat.com/products/open-liberty/
 
-= Release Notes for Open Liberty 20.0.0.10 on Red Hat OpenShift Container Platform
+= Release Notes for Open Liberty 20.0.0.11 on Red Hat OpenShift Container Platform
 
 == Features
 
