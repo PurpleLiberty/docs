@@ -2,7 +2,7 @@
 //
 // <monitoring-assembly>
 
-[id="introduction-monitoring-metrics-{context}"]
+[id="health-check-microservices-{context}"]
 = Health checks for microservices
 
 A health check is a special REST API implementation that you can use to validate the status of a microservice and its dependencies. MicroProfile Health enables microservices in an application to self-check their health and then publishes the overall health status to a defined endpoint.
