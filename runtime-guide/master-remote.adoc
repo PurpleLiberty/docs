@@ -5,11 +5,15 @@ include::common/attributes.adoc[]
 
 include::modules/what-is-openliberty.adoc[leveloffset=+1]
 
+include::modules/zero-migration-architecture.adoc[leveloffset=+1]
+
 include::modules/deployment-openshift.adoc[leveloffset=+1]
 
 include::modules/featureOverview-purple.adoc[leveloffset=+1]
 
 include::modules/server-configuration-overview.adoc[leveloffset=+1]
+
+include::modules/open-liberty-operator.adoc[leveloffset=+1]
 
 include::modules/development-mode.adoc[leveloffset=+1]
 
