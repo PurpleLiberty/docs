@@ -105,7 +105,7 @@ The following example shows the JSON response from the `/health/ready` endpoint 
 
 == See also:
 
-- Guide: link:/guides/microprofile-health.html[Adding health reports to microservices]
-- Guide: link:/guides/kubernetes-microprofile-health.html[Checking the health of microservices on Kubernetes].
-- xref:reference:feature/mpHealth-2.2.adoc[MicroProfile Health feature]
+- Guide: https://www.openliberty.io/guides/microprofile-health.html[Adding health reports to microservices]
+- Guide: https://www.openliberty.io/guides/kubernetes-microprofile-health.html[Checking the health of microservices on Kubernetes].
+- https://www.openliberty.io/docs/latest/reference/feature/mpHealth-2.2.html[MicroProfile Health feature]
 - https://github.com/eclipse/microprofile-health[MicroProfile Health on GitHub]

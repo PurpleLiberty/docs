@@ -45,7 +45,7 @@ With this information, the operator automatically handles Kubernetes-level detai
 
 * **Single sign-on (SSO) delegation**
 +
-With Open Liberty, you can xref:single-sign-on.adoc[delegate SSO authentication to external providers].
+With Open Liberty, you can https://www.openliberty.io/docs/latest/single-sign-on.html[delegate SSO authentication to external providers].
 The Open Liberty Operator enables easier configuration and management of SSO information for your applications.
 
 * **OpenShift Serverless (Knative) integration**
@@ -86,5 +86,5 @@ The Open Liberty Operator documentation provides details about configuring the o
 
 == See also
 
-* link:/guides/cloud-openshift-operator.html[Guide: Deploying an application to OpenShift by using Kubernetes Operators]
+* https://www.openliberty.io/guides/cloud-openshift-operator.html[Guide: Deploying an application to OpenShift by using Kubernetes Operators]
 * https://github.com/OpenLiberty/open-liberty-operator/blob/master/doc/troubleshooting.adoc[Troubleshooting the Open Liberty Operator]
