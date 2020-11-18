@@ -1,8 +1,0 @@
-// Module included in the following assemblies:
-//
-//
-
-[id="packaging-and-deploying-applications-{context}"]
-= Packaging and Deploying applications
-
-Doc currently in development
